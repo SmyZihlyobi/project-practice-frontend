@@ -6,6 +6,7 @@ export const DEFAULT_FORM_VALUES = {
   firstName: '',
   secondName: '',
   lastName: '',
+  course: 1,
   firstPriority: -1,
   middlePriority: -1,
   lastPriority: -1,

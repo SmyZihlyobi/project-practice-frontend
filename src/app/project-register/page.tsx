@@ -19,10 +19,12 @@ import {
   DEFAULT_FORM_VALUES,
   LOCALSTORAGE_NAME,
 } from './lib/constant';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 export default function Page() {
   const [isLoading, setIsLoading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<z.infer<typeof REGISTER_FORM_SCHEMA>>({
     resolver: zodResolver(REGISTER_FORM_SCHEMA),
@@ -38,7 +40,9 @@ export default function Page() {
 
   useEffect(() => {
     const subscription = form.watch(value => {
-      localStorage.setItem(LOCALSTORAGE_NAME, JSON.stringify(value));
+      // eslint-disable-next-line
+      const { resumePDF, ...rest } = value;
+      localStorage.setItem(LOCALSTORAGE_NAME, JSON.stringify(rest));
     });
 
     return () => subscription.unsubscribe();
@@ -53,6 +57,10 @@ export default function Page() {
       console.log(data);
       localStorage.removeItem(LOCALSTORAGE_NAME);
       form.reset(DEFAULT_FORM_VALUES);
+
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     } catch (error) {
       console.error(error);
       // to-do обработать ошибки
@@ -63,6 +71,7 @@ export default function Page() {
 
   return (
     <div className="w-full md:w-1/2 mx-auto mt-5 mb-3 px-4">
+      <h2 className="mb-2">Регистрация на проект</h2>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onFormSubmit)}
@@ -110,7 +119,7 @@ export default function Page() {
             />
             <FormField
               control={form.control}
-              name="secondName"
+              name="lastName"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Фамилия</FormLabel>
@@ -136,7 +145,7 @@ export default function Page() {
             />
             <FormField
               control={form.control}
-              name="lastName"
+              name="patronymic"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Отчество</FormLabel>
@@ -144,6 +153,35 @@ export default function Page() {
                     <Input {...field} className="w-full" />
                   </FormControl>
                   <FormDescription>Опционально</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="course"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Курс</FormLabel>
+                  <FormControl>
+                    <RadioGroup
+                      onValueChange={e => field.onChange(Number(e))}
+                      defaultValue={String(field.value)}
+                    >
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="1" />
+                        </FormControl>
+                        <FormLabel className="font-normal">1 курс</FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="2" />
+                        </FormControl>
+                        <FormLabel className="font-normal">2 курс</FormLabel>
+                      </FormItem>
+                    </RadioGroup>
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -242,6 +280,7 @@ export default function Page() {
                 </FormItem>
               )}
             />
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
@@ -256,7 +295,6 @@ export default function Page() {
                   </FormItem>
                 )}
               />
-
               <FormField
                 control={form.control}
                 name="resumePDF"
@@ -274,6 +312,7 @@ export default function Page() {
                           }
                         }}
                         className="w-full"
+                        ref={fileInputRef}
                       />
                     </FormControl>
                     <FormMessage />
