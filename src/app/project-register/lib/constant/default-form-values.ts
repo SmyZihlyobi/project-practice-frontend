@@ -1,0 +1,16 @@
+export const DEFAULT_FORM_VALUES = {
+  commandName: '',
+  studentId: '',
+  studentGroupId: '',
+  groupId: '',
+  firstName: '',
+  secondName: '',
+  lastName: '',
+  firstPriority: -1,
+  middlePriority: -1,
+  lastPriority: -1,
+  otherPriority: '',
+  telegram: '',
+  resumeLink: '',
+  resumePDF: undefined,
+};
