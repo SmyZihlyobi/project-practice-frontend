@@ -8,8 +8,6 @@
     "start": "next start",
     "lint": "next lint",
     "test": "jest",
-    "prettier:pre-commit": "prettier",
-    "eslint:pre-commit": "eslint",
     "prepare": "husky"
   },
   "dependencies": {
