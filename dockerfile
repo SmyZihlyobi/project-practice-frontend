@@ -1,11 +1,17 @@
 # syntax=docker.io/docker/dockerfile:1
+
+# Базовый образ
 FROM node:18-alpine AS base
 
+# Этап установки зависимостей
 FROM base AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
+# Копируем файлы зависимостей
 COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* .npmrc* ./
+
+# Устанавливаем зависимости в зависимости от lock-файла
 RUN \
   if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
   elif [ -f package-lock.json ]; then npm ci; \
@@ -13,14 +19,16 @@ RUN \
   else echo "Lockfile not found." && exit 1; \
   fi
 
-
+# Этап сборки
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+# Отключаем телеметрию Next.js
 ENV NEXT_TELEMETRY_DISABLED=1
 
+# Собираем приложение
 RUN \
   if [ -f yarn.lock ]; then yarn run build; \
   elif [ -f package-lock.json ]; then npm run build; \
@@ -28,30 +36,17 @@ RUN \
   else echo "Lockfile not found." && exit 1; \
   fi
 
-# Production image
-FROM base AS runner
-WORKDIR /app
+# Этап production
+FROM nginx:alpine AS runner
 
-ENV NODE_ENV=production
-ENV NEXT_TELEMETRY_DISABLED=1
+# Копируем статические файлы из сборки Next.js
+COPY --from=builder /app/out /usr/share/nginx/html
 
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+# Копируем конфигурацию Nginx (опционально)
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-COPY --from=builder /app/public ./public
+# Открываем порт 80
+EXPOSE 80
 
-# Automatically leverage output traces to reduce image size
-# https://nextjs.org/docs/advanced-features/output-file-tracing
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-
-USER nextjs
-
-EXPOSE 3000
-
-ENV PORT=3000
-
-# server.js is created by next build from the standalone output
-# https://nextjs.org/docs/pages/api-reference/config/next-config-js/output
-ENV HOSTNAME="0.0.0.0"
-CMD ["node", "server.js"]
+# Запускаем Nginx
+CMD ["nginx", "-g", "daemon off;"]

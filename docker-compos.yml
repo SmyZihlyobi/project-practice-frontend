@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    environment:
+      - NEXT_PUBLIC_BACKEND_URL=http://62.233.43.154:8080/graphiql
+    ports:
+      - '3000:80'
+    restart: always
