@@ -21,6 +21,5 @@ yarn dev
 ## Запуск прод версии
 
 ```
-docker build -t pp-front .
-docker run -p 3000:3000 pp-front
+docker compose up -d
 ```
