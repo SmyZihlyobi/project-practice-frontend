@@ -21,10 +21,13 @@ import {
 } from './lib/constant';
 import { useEffect, useState, useRef } from 'react';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { CREATE_STUDENT } from './api/mutations';
+import { useMutation } from '@apollo/client';
 
 export default function Page() {
   const [isLoading, setIsLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [createStudent] = useMutation(CREATE_STUDENT);
 
   const form = useForm<z.infer<typeof REGISTER_FORM_SCHEMA>>({
     resolver: zodResolver(REGISTER_FORM_SCHEMA),
@@ -53,8 +56,39 @@ export default function Page() {
   ): Promise<void> => {
     try {
       setIsLoading(true);
-      // to-do переписать на запрос под бек
-      console.log(data);
+      const { resumePDF, ...student } = data;
+
+      const variables = {
+        team_name: student.commandName,
+        group_id: student.studentGroupId,
+        year: student.course,
+        lastName: student.lastName,
+        firstName: student.firstName,
+        patronymic: student.patronymic || '',
+        firstPriority: student.firstPriority,
+        secondPriority: student.middlePriority,
+        thirdPriority: student.lastPriority,
+        resumeLink: student.resumeLink || '',
+        resumePdf: '', // Это поле будет передаваться по id в хранилище
+        telegram: student.telegram,
+        otherPriorities: student.otherPriority || '',
+      };
+
+      const {
+        data: { createStudent: newStudent },
+      } = await createStudent({ variables });
+
+      if (resumePDF) {
+        const formData = new FormData();
+        formData.append('userId', String(newStudent.id));
+        formData.append('file', resumePDF);
+
+        await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/v1/files/resume`, {
+          method: 'POST',
+          body: formData,
+        });
+      }
+
       localStorage.removeItem(LOCALSTORAGE_NAME);
       form.reset(DEFAULT_FORM_VALUES);
 
