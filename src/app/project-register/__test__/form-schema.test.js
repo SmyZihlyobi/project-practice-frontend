@@ -14,7 +14,7 @@ describe('REGISTER_FORM_SCHEMA', () => {
     otherPriority: '4, 5, 6',
     telegram: 'https://t.me/it',
     resumePDF: new File([''], 'resume.pdf', { type: 'application/pdf' }),
-    resumeLink: 'https://example.com/resume',
+    resumeLink: 'https://hh.ru/resume/8e',
   };
 
   it('validates correct data', () => {
@@ -48,32 +48,44 @@ describe('REGISTER_FORM_SCHEMA', () => {
 
   it('throws error if commandName exceeds 256 characters', () => {
     const data = { ...validData, commandName: 'a'.repeat(257) };
-    expect(() => REGISTER_FORM_SCHEMA.parse(data)).toThrow('Имя команды не может превышать 256 символов');
+    expect(() => REGISTER_FORM_SCHEMA.parse(data)).toThrow(
+      'Имя команды не может превышать 256 символов',
+    );
   });
 
   it('throws error if studentId exceeds 256 characters', () => {
     const data = { ...validData, studentId: 'a'.repeat(257) };
-    expect(() => REGISTER_FORM_SCHEMA.parse(data)).toThrow('Номер студенческого билета не может превышать 256 символов');
+    expect(() => REGISTER_FORM_SCHEMA.parse(data)).toThrow(
+      'Номер студенческого билета не может превышать 256 символов',
+    );
   });
 
   it('throws error if studentGroupId exceeds 100 characters', () => {
     const data = { ...validData, studentGroupId: 'a'.repeat(101) };
-    expect(() => REGISTER_FORM_SCHEMA.parse(data)).toThrow('Группа не может превышать 100 символов');
+    expect(() => REGISTER_FORM_SCHEMA.parse(data)).toThrow(
+      'Группа не может превышать 100 символов',
+    );
   });
 
   it('throws error if firstPriority is not a number', () => {
     const data = { ...validData, firstPriority: 'not-a-number' };
-    expect(() => REGISTER_FORM_SCHEMA.parse(data)).toThrow('ID проекта должен быть числом');
+    expect(() => REGISTER_FORM_SCHEMA.parse(data)).toThrow(
+      'ID проекта должен быть числом',
+    );
   });
 
   it('throws error if firstPriority is not positive', () => {
     const data = { ...validData, firstPriority: -1 };
-    expect(() => REGISTER_FORM_SCHEMA.parse(data)).toThrow('ID проекта должен быть положительным числом');
+    expect(() => REGISTER_FORM_SCHEMA.parse(data)).toThrow(
+      'ID проекта должен быть положительным числом',
+    );
   });
 
   it('throws error if telegram link is invalid', () => {
     const data = { ...validData, telegram: 'invalid-link' };
-    expect(() => REGISTER_FORM_SCHEMA.parse(data)).toThrow('Ссылка должна быть виде: https://t.me/... или @... или https://telegram.me/...');
+    expect(() => REGISTER_FORM_SCHEMA.parse(data)).toThrow(
+      'Ссылка должна быть виде: https://t.me/... или @... или https://telegram.me/...',
+    );
   });
 
   it('throws error if resumeLink is invalid', () => {
@@ -84,33 +96,39 @@ describe('REGISTER_FORM_SCHEMA', () => {
   it('throws error if otherPriority is invalid', () => {
     const data = { ...validData, otherPriority: '4,5,6' };
     expect(() => REGISTER_FORM_SCHEMA.parse(data)).toThrow(
-        expect.objectContaining({
+      expect.objectContaining({
         errors: expect.arrayContaining([
-            expect.objectContaining({
+          expect.objectContaining({
             message: 'Формат вида: "4, 5, 6"',
-            }),
+          }),
         ]),
-        })
+      }),
     );
   });
 
-  
   it('throws error if resumePDF is not a PDF', () => {
-    const data = { ...validData, resumePDF: new File([''], 'resume.txt', { type: 'text/plain' }) };
-    expect(() => REGISTER_FORM_SCHEMA.parse(data)).toThrow('Необходимо прислать PDF файл');
+    const data = {
+      ...validData,
+      resumePDF: new File([''], 'resume.txt', { type: 'text/plain' }),
+    };
+    expect(() => REGISTER_FORM_SCHEMA.parse(data)).toThrow(
+      'Необходимо прислать PDF файл',
+    );
   });
 
   it('throws error if resumePDF exceeds size limit', () => {
-    const largeFile = new File(['a'.repeat(RESUME_SIZE_LIMIT + 1)], 'resume.pdf', { type: 'application/pdf' });
+    const largeFile = new File(['a'.repeat(RESUME_SIZE_LIMIT + 1)], 'resume.pdf', {
+      type: 'application/pdf',
+    });
     const data = { ...validData, resumePDF: largeFile };
     expect(() => REGISTER_FORM_SCHEMA.parse(data)).toThrow(
-        expect.objectContaining({
+      expect.objectContaining({
         errors: expect.arrayContaining([
-            expect.objectContaining({
+          expect.objectContaining({
             message: 'Файл должен быть меньше 5 МБ',
-            }),
+          }),
         ]),
-        })
+      }),
     );
   });
 
