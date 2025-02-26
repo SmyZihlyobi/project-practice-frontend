@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { RESUME_SIZE_LIMIT } from './resume-size-limit';
-import { TELEGRAM_LINK_REGEX, URL_REGEX, OTHER_PRIORITY_REGEX } from './regex';
+import { TELEGRAM_LINK_REGEX, OTHER_PRIORITY_REGEX, HH_URL_REGEX } from './regex';
 
 const REGISTER_FORM_CONFIG = {
   commandName: z
@@ -65,7 +65,7 @@ const REGISTER_FORM_CONFIG = {
     .refine(val => val.trim() !== '', { message: 'Необходимо заполнить' })
     .refine(val => TELEGRAM_LINK_REGEX.test(val), {
       message:
-        'Ссылка должна быть виде: https://t.me/... или @... или https://telegram.me/...',
+        'Ссылка должна быть в виде: https://t.me/... или @... или https://telegram.me/...',
     }),
   resumePDF: z
     .instanceof(File)
@@ -79,7 +79,9 @@ const REGISTER_FORM_CONFIG = {
   resumeLink: z
     .string()
     .max(256, { message: 'Ссылка на резюме не может превышать 256 символов' })
-    .refine(val => !val || URL_REGEX.test(val), { message: 'Неверный формат ссылки' })
+    .refine(val => !val || HH_URL_REGEX.test(val), {
+      message: 'Формат должен быть в виде: https://hh.ru/resume/...',
+    })
     .optional(),
 };
 

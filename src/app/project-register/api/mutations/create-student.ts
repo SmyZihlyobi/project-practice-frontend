@@ -1,9 +1,9 @@
 import { gql } from '@apollo/client';
 
 export const CREATE_STUDENT = gql`
-  mutation MyMutation(
-    $team_name: String!
-    $group_id: String!
+  mutation createStudent(
+    $teamName: String!
+    $groupId: String!
     $year: Int!
     $lastName: String!
     $firstName: String!
@@ -18,8 +18,8 @@ export const CREATE_STUDENT = gql`
   ) {
     createStudent(
       input: {
-        teamName: $team_name
-        groupId: $group_id
+        teamName: $teamName
+        groupId: $groupId
         year: $year
         lastName: $lastName
         firstName: $firstName

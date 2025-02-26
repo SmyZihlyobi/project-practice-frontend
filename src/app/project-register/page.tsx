@@ -18,16 +18,21 @@ import {
   REGISTER_FORM_SCHEMA,
   DEFAULT_FORM_VALUES,
   LOCALSTORAGE_NAME,
+  SUCCESS_RESUME_DELAY,
+  RESUME_UPLOAD_URL,
 } from './lib/constant';
 import { useEffect, useState, useRef } from 'react';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { CREATE_STUDENT } from './api/mutations';
 import { useMutation } from '@apollo/client';
+import { toast } from 'sonner';
+import { useAxios } from '@/lib';
 
 export default function Page() {
   const [isLoading, setIsLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [createStudent] = useMutation(CREATE_STUDENT);
+  const api = useAxios();
 
   const form = useForm<z.infer<typeof REGISTER_FORM_SCHEMA>>({
     resolver: zodResolver(REGISTER_FORM_SCHEMA),
@@ -59,8 +64,8 @@ export default function Page() {
       const { resumePDF, ...student } = data;
 
       const variables = {
-        team_name: student.commandName,
-        group_id: student.studentGroupId,
+        teamName: student.commandName,
+        groupId: student.studentGroupId,
         year: student.course,
         lastName: student.lastName,
         firstName: student.firstName,
@@ -74,19 +79,48 @@ export default function Page() {
         otherPriorities: student.otherPriority || '',
       };
 
+      const response = await createStudent({ variables });
+
+      if (response.errors) {
+        response.errors.forEach(error => {
+          if (error.extensions?.code === 'BAD_USER_INPUT') {
+            toast.error(
+              'Ошибка ввода данных. Пожалуйста, проверьте правильность заполнения всех полей.',
+            );
+          } else if (error.extensions?.code === 'INTERNAL_SERVER_ERROR') {
+            toast.error(
+              'Произошла внутренняя ошибка сервера. Пожалуйста, попробуйте позже.',
+            );
+          } else {
+            toast.error(
+              'Произошла ошибка при отправке формы. Пожалуйста, попробуйте еще раз или обратитесь в поддержку.',
+            );
+          }
+        });
+        return;
+      }
+
       const {
         data: { createStudent: newStudent },
-      } = await createStudent({ variables });
+      } = response;
 
       if (resumePDF) {
         const formData = new FormData();
         formData.append('userId', String(newStudent.id));
         formData.append('file', resumePDF);
 
-        await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/v1/files/resume`, {
-          method: 'POST',
-          body: formData,
-        });
+        toast.success('Вы успешно прикреплены');
+        try {
+          await api.post(RESUME_UPLOAD_URL, formData);
+          setTimeout(() => {
+            toast.success('Ваше резюме успешно доставлено');
+          }, SUCCESS_RESUME_DELAY);
+        } catch (error) {
+          console.error(error);
+          setTimeout(() => {
+            toast.error('Произошла ошибка при загрузке файла...');
+          }, SUCCESS_RESUME_DELAY);
+        }
       }
 
       localStorage.removeItem(LOCALSTORAGE_NAME);
@@ -97,15 +131,17 @@ export default function Page() {
       }
     } catch (error) {
       console.error(error);
-      // to-do обработать ошибки
+      toast.error(
+        'Произошла ошибка при отправке формы. Пожалуйста, попробуйте еще раз или обратитесь в поддержку.',
+      );
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="w-full md:w-1/2 mx-auto mt-5 mb-3 px-4">
-      <h2 className="mb-2">Регистрация на проект</h2>
+    <div className="w-full md:w-2/3 lg:w-1/2 mx-auto mt-5 mb-3 px-4">
+      <h2 className="text-2xl font-bold mb-4 text-center">Регистрация на проект</h2>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onFormSubmit)}
@@ -121,10 +157,14 @@ export default function Page() {
                   <FormControl>
                     <Input {...field} className="w-full" />
                   </FormControl>
+                  <FormDescription className="text-red-500">
+                    Название команды должно полностью совпадать у всех членов команды
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="studentId"
@@ -138,6 +178,7 @@ export default function Page() {
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="studentGroupId"
@@ -151,6 +192,7 @@ export default function Page() {
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="lastName"
@@ -164,6 +206,7 @@ export default function Page() {
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="firstName"
@@ -177,6 +220,7 @@ export default function Page() {
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="patronymic"
@@ -191,6 +235,7 @@ export default function Page() {
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="course"
@@ -220,6 +265,7 @@ export default function Page() {
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="firstPriority"
@@ -243,6 +289,7 @@ export default function Page() {
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="middlePriority"
@@ -265,6 +312,7 @@ export default function Page() {
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="lastPriority"
@@ -287,6 +335,7 @@ export default function Page() {
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="otherPriority"
@@ -301,6 +350,7 @@ export default function Page() {
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="telegram"
@@ -321,7 +371,7 @@ export default function Page() {
                 name="resumeLink"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Ссылка на ваше резюме</FormLabel>
+                    <FormLabel>Ссылка на ваше резюме c hh.ru</FormLabel>
                     <FormControl>
                       <Input {...field} className="w-full" />
                     </FormControl>
@@ -329,6 +379,7 @@ export default function Page() {
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
                 name="resumePDF"
@@ -355,8 +406,12 @@ export default function Page() {
               />
             </div>
           </div>
-          <Button type="submit" disabled={isLoading} className="w-full md:w-auto">
-            Присоединиться
+          <Button
+            type="submit"
+            disabled={isLoading}
+            className="w-full md:w-auto font-bold py-2 px-4 rounded-lg transition-all duration-200"
+          >
+            {isLoading ? 'Отправка...' : 'Присоединиться'}
           </Button>
         </form>
       </Form>
