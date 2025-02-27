@@ -1,0 +1,1 @@
+export const SUCCESS_RESUME_DELAY = 1000;
