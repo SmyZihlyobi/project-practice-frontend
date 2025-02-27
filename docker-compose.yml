@@ -4,7 +4,7 @@ services:
   web:
     build: .
     environment:
-      - NEXT_PUBLIC_BACKEND_URL=http://62.233.43.154:8080/graphiql
+      - NEXT_PUBLIC_BACKEND_URL=${NEXT_PUBLIC_BACKEND_URL}
     ports:
-      - '3000:80'
+      - '${FRONTEND_URL}:80'
     restart: always
