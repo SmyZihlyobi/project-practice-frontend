@@ -122,7 +122,7 @@ export default function Page() {
           </Button>
           <Link
             href={{
-              pathname: '/user/login',
+              pathname: '/student/login',
             }}
             className="mt-12 w-1/4 bg-primary hover:bg-transparent
                 text-white hover:text-primary border border-bg-primary hover:border-primary rounded
