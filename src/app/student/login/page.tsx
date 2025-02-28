@@ -15,15 +15,15 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { DEFAULT_FORM_VALUES, LOCALSTORAGE_NAME } from '../login/lib/constant';
 import { useEffect, useState, useRef } from 'react';
-import { USER_LOGIN_FORM_SCHEMA } from '@/app/user/login/lib/constant/user-login-form-schema';
+import { STUDENT_LOGIN_FORM_SCHEMA } from '@/app/student/login/lib/constant/student-login-form-schema';
 import Link from 'next/link';
 
 export default function Page() {
   const [isLoading, setIsLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const form = useForm<z.infer<typeof USER_LOGIN_FORM_SCHEMA>>({
-    resolver: zodResolver(USER_LOGIN_FORM_SCHEMA),
+  const form = useForm<z.infer<typeof STUDENT_LOGIN_FORM_SCHEMA>>({
+    resolver: zodResolver(STUDENT_LOGIN_FORM_SCHEMA),
     defaultValues: DEFAULT_FORM_VALUES,
   });
 
@@ -44,7 +44,7 @@ export default function Page() {
   }, [form]);
 
   const onFormSubmit = async (
-    data: z.infer<typeof USER_LOGIN_FORM_SCHEMA>,
+    data: z.infer<typeof STUDENT_LOGIN_FORM_SCHEMA>,
   ): Promise<void> => {
     try {
       setIsLoading(true);

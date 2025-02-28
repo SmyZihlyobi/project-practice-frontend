@@ -1,4 +1,4 @@
-import { USER_LOGIN_FORM_SCHEMA } from '../../lib/constant';
+import { USER_LOGIN_FORM_SCHEMA } from '../lib/constant';
 
 describe('USER_LOGIN_FORM_SCHEMA', () => {
   test('should validate correct login and password', () => {
