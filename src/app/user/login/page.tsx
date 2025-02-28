@@ -13,9 +13,9 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { DEFAULT_FORM_VALUES, LOCALSTORAGE_NAME } from '../lib/constant';
+import { DEFAULT_FORM_VALUES, LOCALSTORAGE_NAME } from '../login/lib/constant';
 import { useEffect, useState, useRef } from 'react';
-import { USER_LOGIN_FORM_SCHEMA } from '@/app/user/lib/constant/user-login-form-schema';
+import { USER_LOGIN_FORM_SCHEMA } from '@/app/user/login/lib/constant/user-login-form-schema';
 import Link from 'next/link';
 
 export default function Page() {
