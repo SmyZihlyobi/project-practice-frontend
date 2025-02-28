@@ -6,7 +6,7 @@ const REGISTER_FORM_CONFIG = {
   commandName: z
     .string()
     .max(256, { message: 'Имя команды не может превышать 256 символов' })
-    .refine(val => val.trim() !== '', { message: 'Необходимо заполнить' }),
+    .optional(),
   studentId: z
     .string()
     .max(256, { message: 'Номер студенческого билета не может превышать 256 символов' })
