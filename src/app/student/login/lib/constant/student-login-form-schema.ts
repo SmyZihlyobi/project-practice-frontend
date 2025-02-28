@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const USER_LOGIN_FORM_CONFIG = {
+const STUDENT_LOGIN_FORM_CONFIG = {
   login: z
     .string()
     .max(255, { message: 'Логин не может превышать 256 символов' })
@@ -11,4 +11,4 @@ const USER_LOGIN_FORM_CONFIG = {
     .refine(val => val.trim() !== '', { message: 'Необходимо заполнить' }),
 };
 
-export const USER_LOGIN_FORM_SCHEMA = z.object(USER_LOGIN_FORM_CONFIG);
+export const STUDENT_LOGIN_FORM_SCHEMA = z.object(STUDENT_LOGIN_FORM_CONFIG);

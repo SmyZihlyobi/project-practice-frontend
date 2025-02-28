@@ -130,6 +130,14 @@ export default function Page() {
           >
             Вход для студентов
           </Link>
+          <Link
+            href={{
+              pathname: '/company/reset-password',
+            }}
+            className="mt-12 w-1/4 text-primary"
+          >
+            Забыли пароль?
+          </Link>
         </form>
       </Form>
     </div>
