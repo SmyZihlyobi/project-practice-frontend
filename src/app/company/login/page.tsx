@@ -13,9 +13,10 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { DEFAULT_FORM_VALUES, LOCALSTORAGE_NAME } from './lib/constant';
+import { DEFAULT_FORM_VALUES, LOCALSTORAGE_NAME } from '../lib/constant';
 import { useEffect, useState, useRef } from 'react';
-import { COMPANY_LOGIN_FORM_SCHEMA } from '@/app/company_login/lib/constant/company-login-form-schema';
+import { COMPANY_LOGIN_FORM_SCHEMA } from '@/app/company/lib/constant/company-login-form-schema';
+import Link from 'next/link';
 
 export default function Page() {
   const [isLoading, setIsLoading] = useState(false);
@@ -35,7 +36,6 @@ export default function Page() {
 
   useEffect(() => {
     const subscription = form.watch(value => {
-       
       const { ...rest } = value;
       localStorage.setItem(LOCALSTORAGE_NAME, JSON.stringify(rest));
     });
@@ -103,6 +103,16 @@ export default function Page() {
           <Button type="submit" disabled={isLoading} className="w-full md:w-auto">
             Войти
           </Button>
+          <Link
+            href={{
+              pathname: '/user/login',
+            }}
+            className="mt-12 w-1/4 bg-primary hover:bg-transparent
+                text-white hover:text-primary border border-bg-primary hover:border-primary rounded
+                 pl-2 pr-2 pt-2 pb-2"
+          >
+            Вход для студентов
+          </Link>
         </form>
       </Form>
     </div>
