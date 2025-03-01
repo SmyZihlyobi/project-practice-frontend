@@ -17,6 +17,7 @@ import { DEFAULT_FORM_VALUES, LOCALSTORAGE_NAME } from './lib/constant';
 import { useEffect, useState, useRef } from 'react';
 import { COMPANY_LOGIN_FORM_SCHEMA } from '@/app/company/login/lib/constant/company-login-form-schema';
 import Link from 'next/link';
+import { Card } from '@/components/ui/card';
 
 export default function Page() {
   const [isLoading, setIsLoading] = useState(false);
@@ -83,63 +84,65 @@ export default function Page() {
 
   return (
     <div className="w-full md:w-1/2 mx-auto mt-5 mb-3 px-4">
-      <h2 className="mb-2">Вход для компаний</h2>
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onFormSubmit)}
-          className="flex flex-col gap-4 w-full"
-        >
-          <div className="space-y-4">
-            <FormField
-              control={form.control}
-              name="login"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Логин</FormLabel>
-                  <FormControl>
-                    <Input {...field} className="w-full" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Пароль</FormLabel>
-                  <FormControl>
-                    <Input {...field} className="w-full" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-          <Button type="submit" disabled={isLoading} className="w-full md:w-auto">
-            Войти
-          </Button>
-          <Link
-            href={{
-              pathname: '/user/login',
-            }}
-            className="mt-12 w-1/4 bg-primary hover:bg-transparent
+      <Card className="p-4">
+        <h2 className="mb-2">Вход для компаний</h2>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onFormSubmit)}
+            className="flex flex-col gap-4 w-full"
+          >
+            <div className="space-y-4">
+              <FormField
+                control={form.control}
+                name="login"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Логин</FormLabel>
+                    <FormControl>
+                      <Input {...field} className="w-full" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Пароль</FormLabel>
+                    <FormControl>
+                      <Input {...field} className="w-full" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <Button type="submit" disabled={isLoading} className="w-full md:w-auto">
+              Войти
+            </Button>
+            <Link
+              href={{
+                pathname: '/user/login',
+              }}
+              className="mt-12 w-1/4 bg-primary hover:bg-transparent
                 text-white hover:text-primary border border-bg-primary hover:border-primary rounded
                  pl-2 pr-2 pt-2 pb-2"
-          >
-            Вход для студентов
-          </Link>
-          <Link
-            href={{
-              pathname: '/company/reset-password',
-            }}
-            className="mt-12 w-1/4 text-primary"
-          >
-            Забыли пароль?
-          </Link>
-        </form>
-      </Form>
+            >
+              Вход для студентов
+            </Link>
+            <Link
+              href={{
+                pathname: '/company/reset-password',
+              }}
+              className="mt-12 w-1/4 text-primary"
+            >
+              Забыли пароль?
+            </Link>
+          </form>
+        </Form>
+      </Card>
     </div>
   );
 }
