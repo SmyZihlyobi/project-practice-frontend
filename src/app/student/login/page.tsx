@@ -68,7 +68,7 @@ export default function Page() {
   return (
     <div className="w-full md:w-1/2 mx-auto mt-5 mb-3 px-4">
       <Card className="p-4">
-        <h2 className="mb-2">Вход</h2>
+        <h2 className="mb-2 text-xl">Вход</h2>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onFormSubmit)}
@@ -115,6 +115,14 @@ export default function Page() {
                    pl-2 pr-2 pt-2 pb-2"
             >
               Вход для компаний
+            </Link>
+            <Link
+              href={{
+                pathname: '/',
+              }}
+              className="mt-4 w-full flex justify-center"
+            >
+              На главную
             </Link>
           </form>
         </Form>

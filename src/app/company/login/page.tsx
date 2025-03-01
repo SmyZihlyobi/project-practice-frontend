@@ -85,7 +85,7 @@ export default function Page() {
   return (
     <div className="w-full md:w-1/2 mx-auto mt-5 mb-3 px-4">
       <Card className="p-4">
-        <h2 className="mb-2">Вход для компаний</h2>
+        <h2 className="mb-2 text-xl">Вход для компаний</h2>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onFormSubmit)}
@@ -97,7 +97,7 @@ export default function Page() {
                 name="login"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Логин</FormLabel>
+                    <FormLabel>e-mail</FormLabel>
                     <FormControl>
                       <Input {...field} className="w-full" />
                     </FormControl>
@@ -124,7 +124,7 @@ export default function Page() {
             </Button>
             <Link
               href={{
-                pathname: '/user/login',
+                pathname: '/student/login',
               }}
               className="mt-12 w-1/4 bg-primary hover:bg-transparent
                 text-white hover:text-primary border border-bg-primary hover:border-primary rounded
@@ -139,6 +139,14 @@ export default function Page() {
               className="mt-12 w-1/4 text-primary"
             >
               Забыли пароль?
+            </Link>
+            <Link
+              href={{
+                pathname: '/',
+              }}
+              className="mt-4 w-full flex justify-center"
+            >
+              На главную
             </Link>
           </form>
         </Form>
