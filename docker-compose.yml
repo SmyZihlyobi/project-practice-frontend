@@ -1,10 +1,20 @@
-version: '3.8'
+version: '3.9'
 
 services:
   web:
-    build: .
+    build:
+      context: .
+      args:
+        DOCKER_BUILDKIT: 1
     environment:
       - NEXT_PUBLIC_BACKEND_URL=${NEXT_PUBLIC_BACKEND_URL}
     ports:
-      - '${FRONTEND_URL}:80'
+      - '${FRONTEND_PORT}:80'
+      - '${FRONTEND_PORT_SSL}:443'
     restart: always
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -f http://localhost:80 || curl -fk https://localhost:443']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
