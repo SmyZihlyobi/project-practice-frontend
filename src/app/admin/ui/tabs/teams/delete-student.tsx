@@ -3,8 +3,10 @@
 import { observer } from 'mobx-react-lite';
 import { DeleteButton } from '../../delete-button';
 import { useAdminStore } from '../../../store';
+import { DeleteStudentProps } from '@/app/admin/types';
 
-export const DeleteStudent = observer(({ fio, id }: { fio: string; id: string }) => {
+export const DeleteStudent = observer((props: DeleteStudentProps) => {
+  const { fio, id } = props;
   const { teamStore } = useAdminStore;
 
   return (
