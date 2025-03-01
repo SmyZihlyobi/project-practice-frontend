@@ -19,9 +19,11 @@ import { COMPANY_LOGIN_FORM_SCHEMA } from '@/app/company/login/lib/constant/comp
 import Link from 'next/link';
 import { Card } from '@/components/ui/card';
 import { DEFAULT_FORM_VALUES, LOCALSTORAGE_NAME } from '@/app/company/login/lib/constant';
+import { useAxios } from '@/lib';
 
 export default function Page() {
   const [isLoading, setIsLoading] = useState(false);
+  const api = useAxios();
 
   const form = useForm<z.infer<typeof COMPANY_LOGIN_FORM_SCHEMA>>({
     resolver: zodResolver(COMPANY_LOGIN_FORM_SCHEMA),
@@ -42,24 +44,7 @@ export default function Page() {
     try {
       setIsLoading(true);
 
-      const response = await fetch('/company/change-password', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        const token = result.token;
-
-        localStorage.setItem('authToken', token);
-
-        console.log('Login successful, token:', token);
-      } else {
-        console.error('Login failed');
-      }
+      await api.post('/company/change-password', data);
 
       localStorage.removeItem(LOCALSTORAGE_NAME);
       form.reset(DEFAULT_FORM_VALUES);
@@ -84,7 +69,7 @@ export default function Page() {
             <div className="space-y-4">
               <FormField
                 control={form.control}
-                name="login"
+                name="email"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>e-mail</FormLabel>
