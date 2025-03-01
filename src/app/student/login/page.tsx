@@ -110,8 +110,8 @@ export default function Page() {
               href={{
                 pathname: '/company/login',
               }}
-              className="mt-12 w-1/4 bg-primary hover:bg-transparent
-                  text-white hover:text-primary border border-bg-primary hover:border-primary rounded
+              className="mt-12 w-1/4
+                    border border-bg-primary hover:border-primary rounded
                    pl-2 pr-2 pt-2 pb-2"
             >
               Вход для компаний

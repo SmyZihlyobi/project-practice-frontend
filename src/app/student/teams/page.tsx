@@ -1,11 +1,9 @@
 import { Filter, Search, Teams } from './ui';
 import { Card } from '@/components/ui/card';
-import Header from '@/components/ui/header';
 
 export default function Pages() {
   return (
     <div>
-      <Header></Header>
       <div className="w-full max-w-7xl mx-auto p-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="md:col-span-1">

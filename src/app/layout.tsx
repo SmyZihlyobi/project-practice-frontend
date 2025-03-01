@@ -3,6 +3,8 @@ import { Fira_Code } from 'next/font/google';
 import './globals.css';
 import { ApolloWrapper } from '@/lib';
 import { Toaster } from '@/components/ui/sonner';
+import { ThemeProvider } from '@/components/ui/theme-provider';
+import Header from '@/components/ui/header';
 
 const firaCode = Fira_Code({
   variable: '--font-fira-code-sans',
@@ -23,8 +25,16 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <body className={`${firaCode.variable} antialiased`}>
-        <ApolloWrapper>{children}</ApolloWrapper>
-        <Toaster />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <Header></Header>
+          <ApolloWrapper>{children}</ApolloWrapper>
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );
