@@ -5,6 +5,8 @@ import { ApolloWrapper } from '@/lib';
 import { Toaster } from '@/components/ui/sonner';
 import { ThemeProvider } from '@/components/ui/theme-provider';
 import Header from '@/components/ui/header';
+import { AuthProvider } from '@/lib/auth/use-auth';
+import { ReactNode } from 'react';
 
 const firaCode = Fira_Code({
   variable: '--font-fira-code-sans',
@@ -14,13 +16,13 @@ const firaCode = Fira_Code({
 export const metadata: Metadata = {
   title: 'Проектная практика',
   description:
-    'Сайт созданный для упровления проектами и командами по проектной деятельности ПГНИУ ИКНТ',
+    'Сайт созданный для управления проектами и командами по проектной деятельности ПГНИУ ИКНТ',
 };
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
   return (
     <html lang="ru">
@@ -31,9 +33,11 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Header></Header>
-          <ApolloWrapper>{children}</ApolloWrapper>
-          <Toaster />
+          <AuthProvider>
+            <Header />
+            <ApolloWrapper>{children}</ApolloWrapper>
+            <Toaster />
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

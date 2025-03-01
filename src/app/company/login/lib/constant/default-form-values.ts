@@ -1,4 +1,4 @@
 export const DEFAULT_FORM_VALUES = {
-  login: '',
+  email: '',
   password: '',
 };
