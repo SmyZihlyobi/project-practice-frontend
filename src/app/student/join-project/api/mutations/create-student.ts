@@ -2,7 +2,7 @@ import { gql } from '@apollo/client';
 
 export const CREATE_STUDENT = gql`
   mutation createStudent(
-    $teamName: String!
+    $teamName: String
     $groupId: String!
     $year: Int!
     $lastName: String!

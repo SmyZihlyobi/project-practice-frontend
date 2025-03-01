@@ -1,4 +1,4 @@
-import { REGISTER_FORM_SCHEMA, RESUME_SIZE_LIMIT } from './../lib/constant';
+import { REGISTER_FORM_SCHEMA, RESUME_SIZE_LIMIT } from '../lib/constant';
 
 describe('REGISTER_FORM_SCHEMA', () => {
   const validData = {
