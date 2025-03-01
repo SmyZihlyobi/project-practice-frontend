@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { DELETE_STUDENT_MUTATION, DELETE_TEAM_MUTATION } from '../api/mutations';
 import { GET_TEAMS_QUERY } from '../api/queries';
 import { GET_TEAM_QUERY } from '../api/queries/get-team';
-import { GetTeamResponse, GetTeamsResponse, Team } from '../dto';
+import { DeleteStudentResponse, GetTeamResponse, GetTeamsResponse, Team } from '../dto';
 import { RESUME_API } from '../lib/constant';
 
 const api = useAxios;
@@ -66,6 +66,17 @@ export class TeamStore {
     }
   }
 
+  async deleteStudentResume(resumePdf?: string): Promise<void> {
+    try {
+      this.loading = true;
+      await api().delete(`${RESUME_API}/${resumePdf}`);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      this.loading = false;
+    }
+  }
+
   async deleteStudent(id: string): Promise<void> {
     try {
       this.loading = true;
@@ -73,12 +84,22 @@ export class TeamStore {
         team.students.some(student => student.id === id),
       );
 
-      await apolloClient.mutate({
+      const studentToDelete = teamWithStudent?.students.find(
+        student => student.id === id,
+      );
+
+      if (!studentToDelete) {
+        throw new Error('Студент не найден');
+      }
+
+      const deletedStudent: DeleteStudentResponse = await apolloClient.mutate({
         mutation: DELETE_STUDENT_MUTATION,
         variables: { id },
       });
 
-      await api().delete(`${RESUME_API}/${id}`);
+      if (deletedStudent.data?.deleteStudent?.resumePdf) {
+        await this.deleteStudentResume(deletedStudent.data.deleteStudent.resumePdf);
+      }
 
       if (teamWithStudent) {
         teamWithStudent.students = teamWithStudent.students.filter(

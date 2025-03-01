@@ -1,3 +1,5 @@
+import { FetchResult } from '@apollo/client';
+
 export interface Student {
   id: string;
   groupId?: string;
@@ -5,9 +7,16 @@ export interface Student {
   lastName?: string;
   patronymic?: string;
   telegram?: string;
+  resumePdf?: string;
   year: number;
   firstPriority?: number;
   secondPriority?: number;
   thirdPriority?: number;
   otherPriorities?: string;
 }
+
+interface DeleteStudent {
+  deleteStudent: Student;
+}
+
+export type DeleteStudentResponse = FetchResult<DeleteStudent>;
