@@ -85,8 +85,7 @@ export default function Page() {
   return (
     <div className="w-full md:w-1/2 mx-auto mt-5 mb-3 px-4">
       <Card className="p-4">
-        <h2 className="mb-2 text-xl">Смена пароля</h2>
-        <h2 className="mb-2">На вашу почту придет новый пароль</h2>
+        <h2 className="mb-2 text-xl">Вход для компаний</h2>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onFormSubmit)}
@@ -106,31 +105,53 @@ export default function Page() {
                   </FormItem>
                 )}
               />
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Пароль</FormLabel>
+                    <FormControl>
+                      <Input {...field} className="w-full" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
+
             <Button type="submit" disabled={isLoading} className="w-full md:w-auto">
-              Отправить
+              Войти
             </Button>
-            <div className="inline-flex">
-              <Link
-                href={{
-                  pathname: '/company/login',
-                }}
-                className="mt-4 w-1/2 flex justify-center"
-              >
-                Назад
-              </Link>
-              <Link
-                href={{
-                  pathname: '/',
-                }}
-                className="mt-4 w-1/2 flex justify-center"
-              >
-                На главную
-              </Link>
-            </div>
+            <Link
+              href={{
+                pathname: '/student/login',
+              }}
+              className="mt-12 w-1/4
+                    border border-bg-primary hover:border-primary rounded
+                   pl-2 pr-2 pt-2 pb-2"
+            >
+              Вход для студентов
+            </Link>
+            <Link
+              href={{
+                pathname: '/',
+              }}
+              className="mt-4 w-full flex justify-center"
+            >
+              На главную
+            </Link>
           </form>
         </Form>
       </Card>
+      <Link
+        href={{
+          pathname: '/company/reset-password',
+        }}
+        className="mt-4 w-1/2 flex justify-center"
+      >
+        Забыли пароль?
+      </Link>
     </div>
   );
 }
