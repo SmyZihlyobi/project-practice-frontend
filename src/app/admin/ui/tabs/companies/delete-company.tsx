@@ -3,21 +3,21 @@
 import { observer } from 'mobx-react-lite';
 import { useAdminStore } from '../../../store';
 import { Button } from '@/components/ui/button';
-import { DeleteTeamProps } from '@/app/admin/types';
+import { DeleteCompanyProps } from '../../../types';
 
-export const DeleteCompany = observer((props: DeleteTeamProps) => {
+export const DeleteCompany = observer((props: DeleteCompanyProps) => {
   const { id } = props;
-  const { teamStore } = useAdminStore;
-  const { undecidedTeamId } = teamStore;
+  const { companiesStore } = useAdminStore;
+  const { currentAdminId } = companiesStore;
 
   return (
     <Button
       variant="destructive"
-      onClick={() => teamStore.deleteTeam(id)}
+      onClick={() => companiesStore.deleteCompany(id)}
       className="w-full mt-6"
-      disabled={id === undecidedTeamId}
+      disabled={id === currentAdminId}
     >
-      Расформировать
+      Удалить
     </Button>
   );
 });

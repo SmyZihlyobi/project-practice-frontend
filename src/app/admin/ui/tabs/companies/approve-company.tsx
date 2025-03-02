@@ -1,19 +1,21 @@
 'use client';
 
 import { observer } from 'mobx-react-lite';
-import { DeleteButton } from '../../delete-button';
 import { useAdminStore } from '../../../store';
-import { DeleteStudentProps } from '@/app/admin/types';
+import { DeleteCompanyProps } from '../../../types';
+import { Button } from '@/components/ui/button';
 
-export const ApproveCompony = observer((props: DeleteStudentProps) => {
-  const { fio, id } = props;
-  const { teamStore } = useAdminStore;
+export const ApproveCompony = observer((props: DeleteCompanyProps) => {
+  const { id } = props;
+  const { companiesStore } = useAdminStore;
 
   return (
-    <DeleteButton
-      tooltip={`Удалить студента: ${fio} ?`}
-      onClick={() => teamStore.deleteStudent(id)}
-      className="w-6 h-6"
-    />
+    <Button
+      variant="positive"
+      onClick={() => companiesStore.approveCompany(id)}
+      className="w-full mt-6"
+    >
+      Одобрить
+    </Button>
   );
 });

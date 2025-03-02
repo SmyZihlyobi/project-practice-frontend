@@ -30,6 +30,7 @@ export const Company = observer(({ id }: { id: string }) => {
   }, [id, companiesStore, isExpanded]);
 
   const currentCompany = companiesStore.companies.find(company => company.id === id);
+  console.log(currentCompany);
   if (!currentCompany) {
     return null;
   }
@@ -67,12 +68,7 @@ export const Company = observer(({ id }: { id: string }) => {
         </Table>
         <div className="w-full flex gap-2 mt-4">
           <DeleteCompany id={currentCompany.id} />
-          {!currentCompany.studentCompany && (
-            <ApproveCompony
-              fio={currentCompany.representative || ''}
-              id={currentCompany.id}
-            />
-          )}
+          {!currentCompany.isApproved && <ApproveCompony id={currentCompany.id} />}
         </div>
       </AccordionContent>
     </AccordionItem>
