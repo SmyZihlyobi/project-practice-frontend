@@ -15,18 +15,24 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
-import { COMPANY_LOGIN_FORM_SCHEMA } from '@/app/company/login/lib/constant/company-login-form-schema';
+import { RESET_PASSWORD_FORM_SCHEMA } from '@/app/company/reset-password/lib/constant/reset-password-form-schema';
 import Link from 'next/link';
 import { Card } from '@/components/ui/card';
-import { DEFAULT_FORM_VALUES, LOCALSTORAGE_NAME } from '@/app/company/login/lib/constant';
+import {
+  DEFAULT_FORM_VALUES,
+  LOCALSTORAGE_NAME,
+} from '@/app/company/reset-password/lib/constant';
 import { useAxios } from '@/lib';
+import { JwtResponse } from './dto';
+import Cookies from 'js-cookie';
+import { JWT_COOKIE_NAME } from '@/lib/constant';
 
 export default function Page() {
   const [isLoading, setIsLoading] = useState(false);
   const api = useAxios();
 
-  const form = useForm<z.infer<typeof COMPANY_LOGIN_FORM_SCHEMA>>({
-    resolver: zodResolver(COMPANY_LOGIN_FORM_SCHEMA),
+  const form = useForm<z.infer<typeof RESET_PASSWORD_FORM_SCHEMA>>({
+    resolver: zodResolver(RESET_PASSWORD_FORM_SCHEMA),
     defaultValues: DEFAULT_FORM_VALUES,
   });
 
@@ -37,19 +43,20 @@ export default function Page() {
     }
   }, [form]);
 
-  /*Ps. я понимаю что логика сабмита говна, но я потом переделаю честно*/
   const onFormSubmit = async (
-    data: z.infer<typeof COMPANY_LOGIN_FORM_SCHEMA>,
+    data: z.infer<typeof RESET_PASSWORD_FORM_SCHEMA>,
   ): Promise<void> => {
     try {
       setIsLoading(true);
 
-      await api.post('/company/change-password', data);
+      const response = await api.post<JwtResponse>('/company/change-password', data);
 
+      Cookies.set(JWT_COOKIE_NAME, response.data.token);
+      console.log(response);
       localStorage.removeItem(LOCALSTORAGE_NAME);
       form.reset(DEFAULT_FORM_VALUES);
     } catch (error) {
-      console.error('Error during login:', error);
+      console.error('Error during change password:', error);
     } finally {
       setIsLoading(false);
     }

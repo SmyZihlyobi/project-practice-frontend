@@ -1,13 +1,13 @@
-import { USER_LOGIN_FORM_SCHEMA } from '../lib/constant';
+import { COMPANY_LOGIN_FORM_SCHEMA } from '../../company/login/lib/constant';
 
-describe('USER_LOGIN_FORM_SCHEMA', () => {
+describe('COMPANY_LOGIN_FORM_SCHEMA', () => {
   test('should validate correct login and password', () => {
     const validData = {
       login: 'testLogin',
       password: 'testPassword',
     };
 
-    const result = USER_LOGIN_FORM_SCHEMA.safeParse(validData);
+    const result = COMPANY_LOGIN_FORM_SCHEMA.safeParse(validData);
     expect(result.success).toBe(true);
   });
 
@@ -17,7 +17,7 @@ describe('USER_LOGIN_FORM_SCHEMA', () => {
       password: 'testPassword',
     };
 
-    const result = USER_LOGIN_FORM_SCHEMA.safeParse(invalidData);
+    const result = COMPANY_LOGIN_FORM_SCHEMA.safeParse(invalidData);
     expect(result.success).toBe(false);
     expect(result.error.errors).toEqual([
       {
@@ -33,7 +33,7 @@ describe('USER_LOGIN_FORM_SCHEMA', () => {
       password: '',
     };
 
-    const result = USER_LOGIN_FORM_SCHEMA.safeParse(invalidData);
+    const result = COMPANY_LOGIN_FORM_SCHEMA.safeParse(invalidData);
     expect(result.success).toBe(false);
     expect(result.error.errors).toEqual([
       {
@@ -50,7 +50,7 @@ describe('USER_LOGIN_FORM_SCHEMA', () => {
       password: 'testPassword',
     };
 
-    const result = USER_LOGIN_FORM_SCHEMA.safeParse(invalidData);
+    const result = COMPANY_LOGIN_FORM_SCHEMA.safeParse(invalidData);
     expect(result.success).toBe(false);
     expect(result.error.errors).toEqual([
       {
@@ -67,7 +67,7 @@ describe('USER_LOGIN_FORM_SCHEMA', () => {
       password: longPassword,
     };
 
-    const result = USER_LOGIN_FORM_SCHEMA.safeParse(invalidData);
+    const result = COMPANY_LOGIN_FORM_SCHEMA.safeParse(invalidData);
     expect(result.success).toBe(false);
     expect(result.error.errors).toEqual([
       {
