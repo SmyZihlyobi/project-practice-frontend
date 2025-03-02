@@ -6,6 +6,7 @@ export interface Company {
   email?: string;
   representative?: string;
   studentCompany?: string;
+  contacts?: string;
   isApproved?: boolean;
 }
 

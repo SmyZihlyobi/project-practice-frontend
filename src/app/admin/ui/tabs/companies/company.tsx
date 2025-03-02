@@ -53,15 +53,15 @@ export const Company = observer(({ id }: { id: string }) => {
           <TableHeader>
             <TableRow>
               <TableHead className="w-1/3">Название</TableHead>
-              <TableHead className="w-1/3">Email</TableHead>
+              <TableHead className="w-1/3">Контакты</TableHead>
               <TableHead className="w-1/3">Представитель</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             <TableRow>
               <TableCell>{currentCompany.name}</TableCell>
-              <TableCell>{currentCompany.email || 'Не указан'}</TableCell>
-              <TableCell>{currentCompany.representative || 'Не указан'}</TableCell>
+              <TableCell>{currentCompany.contacts}</TableCell>
+              <TableCell>{currentCompany.representative}</TableCell>
             </TableRow>
           </TableBody>
         </Table>
