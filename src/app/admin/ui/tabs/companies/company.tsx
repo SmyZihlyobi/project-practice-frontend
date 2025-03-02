@@ -30,7 +30,6 @@ export const Company = observer(({ id }: { id: string }) => {
   }, [id, companiesStore, isExpanded]);
 
   const currentCompany = companiesStore.companies.find(company => company.id === id);
-  console.log(currentCompany);
   if (!currentCompany) {
     return null;
   }
