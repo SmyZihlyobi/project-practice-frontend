@@ -1,0 +1,1 @@
+export const MIGRATION_LOGIN_PAGE_DELAY = 1000;

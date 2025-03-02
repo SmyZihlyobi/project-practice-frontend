@@ -76,7 +76,6 @@ class TeamStore {
   }
 
   findByName(name: string): void {
-    console.log(name);
     this.currentTeams = this.teams.filter(team => team.name.startsWith(name));
   }
 

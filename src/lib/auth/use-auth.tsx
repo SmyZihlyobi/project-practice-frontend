@@ -1,35 +1,17 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import {
+  createContext,
+  useEffect,
+  useState,
+  ReactNode,
+  useMemo,
+  useContext,
+} from 'react';
 import { jwtDecode } from 'jwt-decode';
 import Cookies from 'js-cookie';
 import { JWT_COOKIE_NAME } from '../constant';
-
-interface User {
-  id: number;
-  email: string;
-  name?: string;
-  role?: string[];
-  is_student_company?: boolean;
-}
-
-interface JwtPayload {
-  sub: string;
-  iss: string;
-  roles: string[];
-  name: string;
-  is_student_company: boolean;
-  id: number;
-  email: string;
-  iat: number;
-  exp: number;
-}
-
-interface AuthContextType {
-  user: User | null;
-  isLoading: boolean;
-  isAuthenticated: boolean;
-}
+import { AuthContextType, JwtPayload, User } from './types';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -64,17 +46,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(false);
   }, []);
 
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        isLoading,
-        isAuthenticated: !!user,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+  const value = useMemo(
+    () => ({
+      user,
+      isLoading,
+      isAuthenticated: !!user,
+    }),
+    [user, isLoading],
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {

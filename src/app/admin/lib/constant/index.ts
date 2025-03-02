@@ -1,1 +1,1 @@
-export { RESUME_API } from './urls';
+export { RESUME_API, APPROVE_API } from './urls';

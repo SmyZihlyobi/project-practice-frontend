@@ -1,64 +1,38 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { ReactNode, useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
+import { LOGIN_PATH } from '../constant';
 import { useAuth } from './use-auth';
-
-interface AuthCheckProps {
-  children: ReactNode;
-  fallback?: ReactNode;
-  requiredRole?: string | string[];
-}
+import { AuthCheckProps } from './types';
 
 export function AuthCheck({ children, fallback, requiredRole }: AuthCheckProps) {
   const { user, isLoading, isAuthenticated } = useAuth();
   const router = useRouter();
 
+  const hasRequiredRole = useCallback(() => {
+    if (!requiredRole || !user?.role) return true;
+
+    const userRoles = user.role;
+    return Array.isArray(requiredRole)
+      ? requiredRole.some(role => userRoles.includes(role))
+      : userRoles.includes(requiredRole);
+  }, [requiredRole, user]);
+
   useEffect(() => {
-    if (!requiredRole) {
-      return;
-    }
-
     if (!isLoading && !isAuthenticated) {
-      router.push(`/companies/login`);
-      return;
+      router.push(LOGIN_PATH);
+    } else if (!isLoading && isAuthenticated && !hasRequiredRole()) {
+      router.push('/');
     }
-
-    if (!isLoading && isAuthenticated && user?.role) {
-      const userRoles = user.role;
-
-      const hasRequiredRole = Array.isArray(requiredRole)
-        ? requiredRole.some(role => userRoles.includes(role))
-        : userRoles.includes(requiredRole);
-
-      if (!hasRequiredRole) {
-        router.push('/');
-      }
-    }
-  }, [isLoading, isAuthenticated, router, requiredRole, user]);
+  }, [isLoading, isAuthenticated, router, hasRequiredRole]);
 
   if (isLoading) {
     return fallback ? <>{fallback}</> : <div>Загрузка...</div>;
   }
 
-  if (!requiredRole) {
-    return <>{children}</>;
-  }
-
-  if (!isAuthenticated) {
+  if (!isAuthenticated || !hasRequiredRole()) {
     return null;
-  }
-
-  if (user?.role) {
-    const userRoles = user.role;
-
-    const hasRequiredRole = Array.isArray(requiredRole)
-      ? requiredRole.some(role => userRoles.includes(role))
-      : userRoles.includes(requiredRole);
-
-    if (!hasRequiredRole) {
-      return null;
-    }
   }
 
   return <>{children}</>;
