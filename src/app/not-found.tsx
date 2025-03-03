@@ -13,9 +13,7 @@ const NotFound: React.FC = () => {
         href={{
           pathname: '/',
         }}
-        className="bg-primary hover:bg-transparent
-                text-white font-semibold hover:text-primary py-2
-                px-4 border border-bg-primary hover:border-primary rounded
+        className="bg-primary text-primary-foreground shadow hover:bg-primary/90 rounded
                 pt-4 pb-4 pl-24 pr-24"
       >
         На главную
