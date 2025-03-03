@@ -55,14 +55,6 @@ export default function Header() {
           >
             Регистрация на проект
           </Link>
-          <Link
-            href={{
-              pathname: '/company/registration-project',
-            }}
-            className="text-sm/6  font-semibold"
-          >
-            Регистрация проекта
-          </Link>
         </PopoverGroup>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end mr-12">
           <Link

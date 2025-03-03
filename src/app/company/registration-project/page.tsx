@@ -67,7 +67,7 @@ export default function Page() {
   return (
     <div className="w-full md:w-1/2 mx-auto mt-5 mb-3 px-4">
       <Card className="p-4">
-        <h2 className="mb-2 text-xl">Регистрация проекта</h2>
+        <h2 className="mb-2 text-xl">Заявка на регистрацию компании</h2>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onFormSubmit)}

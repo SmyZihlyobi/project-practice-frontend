@@ -116,7 +116,7 @@ export default function Page() {
   };
 
   return (
-    <div className="w-full md:w-1/4 mx-auto mt-5 mb-3 px-4">
+    <div className="w-full md:w-1/2 mx-auto mt-5 mb-3 px-4">
       <Card className="p-4">
         <Tabs
           defaultValue="student"
@@ -218,6 +218,14 @@ export default function Page() {
                 <Button type="submit" disabled={isLoading} className="w-full md:w-auto">
                   Войти
                 </Button>
+                <Link
+                  href={{
+                    pathname: '/company/registration-project',
+                  }}
+                  className="mt-4 w-full flex justify-center"
+                >
+                  Регистрация
+                </Link>
                 <Link
                   href={{
                     pathname: '/company/reset-password',

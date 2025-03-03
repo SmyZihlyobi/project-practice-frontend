@@ -94,7 +94,7 @@ export default function Page() {
             <div className="inline-flex">
               <Link
                 href={{
-                  pathname: '/company/login',
+                  pathname: '/login',
                 }}
                 className="mt-4 w-1/2 flex justify-center"
               >
