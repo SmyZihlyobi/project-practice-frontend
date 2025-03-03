@@ -1,8 +1,8 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import Page from './../page';
-import { LOCALSTORAGE_NAME } from '../lib/constant';
+import Page from '../../company/login/page';
+import { LOCALSTORAGE_NAME } from '../../company/login/lib/constant';
 import '@testing-library/jest-dom';
 import { beforeEach, describe, it } from 'node:test';
 

@@ -59,7 +59,7 @@ export default function Header() {
         <div className="hidden lg:flex lg:flex-1 lg:justify-end mr-12">
           <Link
             href={{
-              pathname: '/student/login',
+              pathname: '/login',
             }}
             className="text-sm/6 font-semibold"
           >
