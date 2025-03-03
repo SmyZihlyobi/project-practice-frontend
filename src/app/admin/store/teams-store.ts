@@ -2,7 +2,12 @@ import { apolloClient, useAxios } from '@/lib';
 import { isApolloError } from '@apollo/client';
 import { makeAutoObservable } from 'mobx';
 import { toast } from 'sonner';
-import { DELETE_STUDENT_MUTATION, DELETE_TEAM_MUTATION } from '../api/mutations';
+import {
+  DELETE_ALL_STUDENTS_MUTATION,
+  DELETE_ALL_TEAMS_MUTATION,
+  DELETE_STUDENT_MUTATION,
+  DELETE_TEAM_MUTATION,
+} from '../api/mutations';
 import { GET_TEAMS_QUERY } from '../api/queries';
 import { GET_TEAM_QUERY } from '../api/queries/get-team';
 import { DeleteStudentResponse, GetTeamResponse, GetTeamsResponse, Team } from '../dto';
@@ -17,6 +22,17 @@ export class TeamStore {
 
   constructor() {
     makeAutoObservable(this);
+  }
+
+  private async deleteStudentResume(resumePdf?: string): Promise<void> {
+    try {
+      this.loading = true;
+      await api().delete(`${RESUME_API}/${resumePdf}`);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      this.loading = false;
+    }
   }
 
   async getTeams(): Promise<void> {
@@ -66,12 +82,38 @@ export class TeamStore {
     }
   }
 
-  async deleteStudentResume(resumePdf?: string): Promise<void> {
+  async deleteTeam(id: string) {
     try {
       this.loading = true;
-      await api().delete(`${RESUME_API}/${resumePdf}`);
+
+      await apolloClient.mutate({
+        mutation: DELETE_TEAM_MUTATION,
+        variables: { id },
+      });
+
+      await this.getTeam(this.undecidedTeamId);
+
+      this.teams = this.teams.filter(team => team.id !== id);
+
+      toast.success('Команда успешно расформирована');
     } catch (error) {
-      console.error(error);
+      console.error('ERROR while delete student', error);
+      if (error instanceof Error && isApolloError(error)) {
+        if (
+          error.graphQLErrors.some(
+            err =>
+              err.extensions?.code === 'FORBIDDEN' ||
+              err.extensions?.code === 'UNAUTHORIZED' ||
+              err.message.includes('403') ||
+              err.message.includes('Unauthorized'),
+          ) ||
+          error.message.includes('Unauthorized')
+        ) {
+          toast.error('У вас нет прав для удаления этой команды');
+        } else {
+          toast.error('Произошла ошибка при удалении команды');
+        }
+      }
     } finally {
       this.loading = false;
     }
@@ -131,22 +173,16 @@ export class TeamStore {
     }
   }
 
-  async deleteTeam(id: string) {
+  async deleteAllTeams(): Promise<void> {
     try {
       this.loading = true;
-
       await apolloClient.mutate({
-        mutation: DELETE_TEAM_MUTATION,
-        variables: { id },
+        mutation: DELETE_ALL_TEAMS_MUTATION,
       });
-
-      await this.getTeam(this.undecidedTeamId);
-
-      this.teams = this.teams.filter(team => team.id !== id);
-
-      toast.success('Команда успешно расформирована');
+      await this.getTeams();
+      toast.success('Все команды успешно удалены');
     } catch (error) {
-      console.error('ERROR while delete student', error);
+      console.error('ERROR while delete all teams', error);
       if (error instanceof Error && isApolloError(error)) {
         if (
           error.graphQLErrors.some(
@@ -158,11 +194,60 @@ export class TeamStore {
           ) ||
           error.message.includes('Unauthorized')
         ) {
-          toast.error('У вас нет прав для удаления этой команды');
+          toast.error('У вас нет прав для удаления команд');
         } else {
-          toast.error('Произошла ошибка при удалении команды');
+          toast.error('Произошла ошибка при удалении команд');
         }
       }
+    } finally {
+      this.loading = false;
+    }
+  }
+
+  async deleteAllStudents() {
+    try {
+      this.loading = true;
+
+      await apolloClient.mutate({
+        mutation: DELETE_ALL_STUDENTS_MUTATION,
+      });
+
+      await this.deleteAllResume();
+
+      await this.getTeam(this.undecidedTeamId);
+
+      toast.success('Все студенты успешно удалены');
+    } catch (error) {
+      console.error('ERROR while delete all students', error);
+      if (error instanceof Error && isApolloError(error)) {
+        if (
+          error.graphQLErrors.some(
+            err =>
+              err.extensions?.code === 'FORBIDDEN' ||
+              err.extensions?.code === 'UNAUTHORIZED' ||
+              err.message.includes('403') ||
+              err.message.includes('Unauthorized'),
+          ) ||
+          error.message.includes('Unauthorized')
+        ) {
+          toast.error('У вас нет прав для удаления студентов');
+        } else {
+          toast.error('Произошла ошибка при удалении студентов');
+        }
+      }
+    } finally {
+      this.loading = false;
+    }
+  }
+
+  async deleteAllResume() {
+    try {
+      this.loading = true;
+      await api().delete(`${RESUME_API}/clear-bucket`);
+      toast.success('Все резюме успешно удалены');
+    } catch (error) {
+      console.error('ERROR while delete all resume', error);
+      toast.error('Произошла ошибка при удалении резюме');
     } finally {
       this.loading = false;
     }

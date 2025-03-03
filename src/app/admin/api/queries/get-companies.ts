@@ -5,10 +5,12 @@ export const GET_COMPANIES_QUERY = gql`
     unapprovedCompanies {
       id
       name
+      studentCompany
     }
     companies {
       id
       name
+      studentCompany
     }
   }
 `;

@@ -26,7 +26,11 @@ export function debounce<T extends (...args: any[]) => void>(
 }
 
 export const loginPageMigration = (): void => {
-  if (typeof window !== 'undefined') {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  if (window.location.href !== LOGIN_PATH) {
     toast.error('У вас недостаточно прав, вы будете перенаправлены на страницу входа');
 
     setTimeout(() => {
