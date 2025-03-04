@@ -9,6 +9,10 @@ const REGISTRATION_PROJECT_FORM_CONFIG = {
     .string()
     .max(255, { message: 'Имя представителя не может превышать 256 символов' })
     .refine(val => val.trim() !== '', { message: 'Необходимо заполнить' }),
+  contacts: z
+    .string()
+    .max(255, { message: 'Длина контактов должны быть меньше 256 символов' })
+    .refine(val => val.trim() !== '', { message: 'Необходимо заполнить' }),
   email: z
     .string()
     .email({ message: 'неккоректный e-mail' })

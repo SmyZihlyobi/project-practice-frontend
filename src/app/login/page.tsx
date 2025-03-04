@@ -116,17 +116,17 @@ export default function Page() {
   };
 
   return (
-    <div className="w-full md:w-1/2 mx-auto mt-5 mb-3 px-4">
+    <div className="w-full md:w-2/3 lg:w-1/3 mx-auto mt-5 mb-3 px-4">
       <Card className="p-4">
         <Tabs
           defaultValue="student"
           className="flex flex-col items-center justify-center"
         >
-          <TabsList className="w-full">
-            <TabsTrigger value="student" className="w-1/2">
+          <TabsList className="w-full ">
+            <TabsTrigger value="student" className="w-1/2 text-base">
               Студент
             </TabsTrigger>
-            <TabsTrigger value="company" className="w-1/2">
+            <TabsTrigger value="company" className="w-1/2 text-base">
               Компания
             </TabsTrigger>
           </TabsList>
@@ -158,7 +158,7 @@ export default function Page() {
                       <FormItem>
                         <FormLabel>Пароль</FormLabel>
                         <FormControl>
-                          <Input {...field} className="w-full" />
+                          <Input {...field} type="password" className="w-full" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -168,14 +168,6 @@ export default function Page() {
                 <Button type="submit" disabled={isLoading} className="w-full md:w-auto">
                   Войти
                 </Button>
-                <Link
-                  href={{
-                    pathname: '/',
-                  }}
-                  className="mt-4 w-full flex justify-center"
-                >
-                  На главную
-                </Link>
               </form>
             </Form>
           </TabsContent>
@@ -233,14 +225,6 @@ export default function Page() {
                   className="mt-4 w-full flex justify-center"
                 >
                   Забыли пароль?
-                </Link>
-                <Link
-                  href={{
-                    pathname: '/',
-                  }}
-                  className="mt-4 w-full flex justify-center"
-                >
-                  На главную
                 </Link>
               </form>
             </Form>

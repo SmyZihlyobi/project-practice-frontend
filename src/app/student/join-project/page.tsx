@@ -183,7 +183,7 @@ export default function Page() {
   };
 
   return (
-    <div className="w-full md:w-2/3 lg:w-1/2 mx-auto mt-5 mb-3 px-4">
+    <div className="w-full md:w-2/3 lg:w-1/3 mx-auto mt-5 mb-3 px-4">
       <Card className="p-4">
         <h2 className="text-2xl font-bold mb-4 text-center">Регистрация на проект</h2>
         <Form {...form}>
