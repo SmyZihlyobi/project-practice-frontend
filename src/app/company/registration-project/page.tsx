@@ -144,11 +144,11 @@ export default function Page() {
 
             <Link
               href={{
-                pathname: '/',
+                pathname: '/login',
               }}
               className="mt-4 w-full flex justify-center"
             >
-              На главную
+              Назад
             </Link>
           </form>
         </Form>

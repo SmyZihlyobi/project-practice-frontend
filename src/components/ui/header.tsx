@@ -99,7 +99,7 @@ export default function Header() {
       <div className={`lg:hidden ${isMenuOpen ? 'block' : 'hidden'}`}>
         <div className="fixed inset-0 z-50" onClick={() => setIsMenuOpen(false)} />
         <div
-          className={`fixed inset-y-0 right-0 z-50 w-full ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-white text-gray-900'} overflow-y-auto px-6 py-6 sm:max-w-sm`}
+          className={`fixed inset-y-0 right-0 z-50 w-full ${theme === 'dark' ? 'bg-gray-900 text-white border-l-2 border-black' : 'bg-white border-l-2 border-gray text-gray-900'} overflow-y-auto px-6 py-6 sm:max-w-sm`}
         >
           <div className="flex items-center justify-between">
             <Link href="/" className="-m-1.5 p-1.5 font-bold text-lg">

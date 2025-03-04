@@ -100,14 +100,6 @@ export default function Page() {
               >
                 Назад
               </Link>
-              <Link
-                href={{
-                  pathname: '/',
-                }}
-                className="mt-4 w-1/2 flex justify-center"
-              >
-                На главную
-              </Link>
             </div>
           </form>
         </Form>
