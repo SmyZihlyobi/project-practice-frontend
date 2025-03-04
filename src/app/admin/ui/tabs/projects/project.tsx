@@ -17,7 +17,7 @@ import { observer } from 'mobx-react-lite';
 import { useEffect, useState } from 'react';
 import { useAdminStore } from '../../../store';
 import { DeleteProject } from './delete-project';
-import { ProjectDescription } from '@/components/ui/project-description';
+import { Markdown } from '@/components/ui/markdown';
 import { PRESENTATION_API, TECHNICAL_SPECIFICATION_API } from '../../../lib/constant';
 
 export const Project = observer(({ id }: { id: string }) => {
@@ -92,7 +92,7 @@ export const Project = observer(({ id }: { id: string }) => {
             </TableRow>
           </TableBody>
         </Table>
-        <ProjectDescription description={currentProject.description || ''} />
+        <Markdown text={currentProject.description || ''} />
         <div className="w-full flex gap-2 mt-4">
           <DeleteProject id={currentProject.id} />
         </div>

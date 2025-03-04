@@ -1,13 +1,20 @@
 import ReactMarkdown from 'react-markdown';
+import cn from 'classnames';
 
-export interface ProjectDescriptionProps {
-  description: string;
+export interface MarkdownProps extends React.HTMLAttributes<HTMLDivElement> {
+  text: string;
 }
-export const ProjectDescription = (props: ProjectDescriptionProps) => {
-  const { description } = props;
+export const Markdown = (props: MarkdownProps) => {
+  const { text, className } = props;
 
   return (
-    <div className="project-description border border-dashed p-3 rounded-md">
+    <div
+      className={cn([
+        'project-description border border-dashed p-3 rounded-md',
+        className,
+      ])}
+      {...props}
+    >
       <ReactMarkdown
         components={{
           h1: ({ ...props }) => <h1 className="text-3xl font-bold mb-4" {...props} />,
@@ -44,7 +51,7 @@ export const ProjectDescription = (props: ProjectDescriptionProps) => {
           hr: ({ ...props }) => <hr className="my-4 border-t border-muted" {...props} />,
         }}
       >
-        {description}
+        {text}
       </ReactMarkdown>
     </div>
   );
