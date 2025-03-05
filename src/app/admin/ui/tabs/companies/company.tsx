@@ -24,7 +24,7 @@ export const Company = observer(({ id }: { id: string }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
-    if (!isExpanded) {
+    if (isExpanded) {
       companiesStore.getCompany(id);
     }
   }, [id, companiesStore, isExpanded]);
@@ -38,7 +38,7 @@ export const Company = observer(({ id }: { id: string }) => {
     <AccordionItem
       key={currentCompany.id}
       value={currentCompany.id}
-      onClick={() => setIsExpanded(!isExpanded)}
+      onClick={() => setIsExpanded(true)}
     >
       <AccordionTrigger>
         <div className="w-full flex justify-between mr-4">

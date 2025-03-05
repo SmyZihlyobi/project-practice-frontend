@@ -3,7 +3,7 @@ import { Company, GetCompaniesResponse, GetCompanyResponse } from '../dto';
 import { apolloClient, useAxios } from '@/lib';
 import { GET_COMPANIES_QUERY, GET_COMPANY_QUERY } from '../api/queries';
 import { toast } from 'sonner';
-import { DELETE_COMPANY_MUTATION } from '../api/mutations';
+import { DELETE_ALL_COMPANIES_MUTATION, DELETE_COMPANY_MUTATION } from '../api/mutations';
 import { isAxiosError } from 'axios';
 import { isApolloError } from '@apollo/client';
 import { APPROVE_API } from '../lib/constant';
@@ -136,6 +136,41 @@ export class CompaniesStore {
       }
 
       toast.error('Ошибка при получении компании, перезагрузите страницу');
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  async deleteAllCompanies() {
+    try {
+      this.isLoading = true;
+
+      await apolloClient.mutate({
+        mutation: DELETE_ALL_COMPANIES_MUTATION,
+      });
+
+      this.companies = this.companies.filter(
+        company => company.id === this.currentAdminId,
+      );
+      toast.success('Компания успешно удалена');
+    } catch (error) {
+      console.error('ERROR while deleting companies', error);
+      if (error instanceof Error && isApolloError(error)) {
+        if (
+          error.graphQLErrors.some(
+            err =>
+              err.extensions?.code === 'FORBIDDEN' ||
+              err.extensions?.code === 'UNAUTHORIZED' ||
+              err.message.includes('403') ||
+              err.message.includes('Unauthorized'),
+          ) ||
+          error.message.includes('Unauthorized')
+        ) {
+          toast.error('У вас нет прав для удаления компаний');
+        } else {
+          toast.error('Произошла ошибка при удалении компаний');
+        }
+      }
     } finally {
       this.isLoading = false;
     }

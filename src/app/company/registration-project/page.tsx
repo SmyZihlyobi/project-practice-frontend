@@ -65,7 +65,7 @@ export default function Page() {
   };
 
   return (
-    <div className="w-full md:w-1/2 mx-auto mt-5 mb-3 px-4">
+    <div className="w-full md:w-2/3 lg:w-1/3 mx-auto mt-5 mb-3 px-4">
       <Card className="p-4">
         <h2 className="mb-2 text-xl">Заявка на регистрацию компании</h2>
         <Form {...form}>
@@ -76,10 +76,23 @@ export default function Page() {
             <div className="space-y-4">
               <FormField
                 control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>e-mail</FormLabel>
+                    <FormControl>
+                      <Input {...field} className="w-full" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Название компании/ИП</FormLabel>
+                    <FormLabel>Название компании</FormLabel>
                     <FormControl>
                       <Input {...field} className="w-full" />
                     </FormControl>
@@ -102,10 +115,10 @@ export default function Page() {
               />
               <FormField
                 control={form.control}
-                name="email"
+                name="contacts"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Контакты (e-mail)</FormLabel>
+                    <FormLabel>Контакты (tg, vk, gmail)</FormLabel>
                     <FormControl>
                       <Input {...field} className="w-full" />
                     </FormControl>
@@ -115,7 +128,7 @@ export default function Page() {
               />
               <FormField
                 control={form.control}
-                name="student_project_checkbox"
+                name="student_project"
                 render={({}) => (
                   <FormItem>
                     <Checkbox></Checkbox>
@@ -131,11 +144,11 @@ export default function Page() {
 
             <Link
               href={{
-                pathname: '/',
+                pathname: '/login',
               }}
               className="mt-4 w-full flex justify-center"
             >
-              На главную
+              Назад
             </Link>
           </form>
         </Form>
