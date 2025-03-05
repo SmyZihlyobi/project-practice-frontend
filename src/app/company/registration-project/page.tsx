@@ -128,7 +128,7 @@ export default function Page() {
               />
               <FormField
                 control={form.control}
-                name="student_project_checkbox"
+                name="student_project"
                 render={({}) => (
                   <FormItem>
                     <Checkbox></Checkbox>
