@@ -28,6 +28,10 @@ COPY . .
 # Отключаем телеметрию Next.js
 ENV NEXT_TELEMETRY_DISABLED=1
 
+# Временно добавил создание переменной окружения через аргумент запуска
+ARG NEXT_PUBLIC_BACKEND_URL
+ENV NEXT_PUBLIC_BACKEND_URL=$NEXT_PUBLIC_BACKEND_URL
+
 # Собираем приложение
 RUN \
   if [ -f yarn.lock ]; then yarn run build; \

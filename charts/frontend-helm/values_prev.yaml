@@ -1,0 +1,97 @@
+image:
+  repository: project-practice-frontend/nextjs-app  # Update with your registry
+  tag: v1.0.0  # Must match build-time BACKEND_URL
+  pullPolicy: IfNotPresent
+
+replicaCount: 2
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  className: nginx
+  hosts:
+    - host: ivanmalks.online
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: nextjs-tls
+
+resources:
+  limits:
+    cpu: "1"
+    memory: "512Mi"
+  requests:
+    cpu: "100m"
+    memory: "128Mi"
+
+nginxConfig: |
+  events {
+    worker_connections 1024;
+  }
+
+
+  http {
+      include       /etc/nginx/mime.types;
+      default_type  application/octet-stream;
+
+      gzip on;
+      gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
+      gzip_proxied any;
+      gzip_vary on;
+      gzip_comp_level 6;
+      gzip_buffers 16 8k;
+      gzip_http_version 1.1;
+
+      server {
+          listen 80;
+          http2 on;
+
+          server_name _;
+          
+          root /usr/share/nginx/html;
+
+          index index.html;
+
+          location /_next/static {
+              alias /usr/share/nginx/html/_next/static;
+              expires 1y;
+              add_header Cache-Control "public, immutable";
+          }
+
+          location /static {
+              alias /usr/share/nginx/html/static;
+              expires 1y;
+              add_header Cache-Control "public, immutable";
+          }
+
+          location / {
+              try_files $uri $uri.html $uri/ =404;
+          }
+          
+          error_page 403 404 /404.html;
+          location = /404.html {
+              internal;
+          }
+          error_page 500 502 503 504 /50x.html;
+          location = /50x.html {
+              root /usr/share/nginx/html;
+          }
+
+          location ~ /\.(?!well-known).* {
+              deny all;
+          }
+
+          location ~* \.(log|env|yml|yaml)$ {
+              deny all;
+          }
+
+          location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+              expires 30d;
+              add_header Cache-Control "public, no-transform";
+          }
+      }
+  }
