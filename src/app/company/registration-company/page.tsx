@@ -22,10 +22,12 @@ import Link from 'next/link';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { REGISTRATION_COMPANY_FORM_SCHEMA } from '@/app/company/registration-company/lib/constant/registration-company-form-schema';
+import { Recaptcha } from '@/components/ui/recaptсha';
 
 export default function Page() {
   const [isLoading, setIsLoading] = useState(false);
-
+  const [isCompanyRecaptchaConfirmed, setIsCompanyRecaptchaConfirmed] =
+    useState<boolean>(false);
   const form = useForm<z.infer<typeof REGISTRATION_COMPANY_FORM_SCHEMA>>({
     resolver: zodResolver(REGISTRATION_COMPANY_FORM_SCHEMA),
     defaultValues: DEFAULT_FORM_VALUES,
@@ -138,8 +140,15 @@ export default function Page() {
                 )}
               />
             </div>
-            <Button type="submit" disabled={isLoading} className="w-full md:w-auto">
-              Добавить
+            <Recaptcha
+              onChange={isVerified => setIsCompanyRecaptchaConfirmed(isVerified)}
+            />
+            <Button
+              type="submit"
+              disabled={isLoading || !isCompanyRecaptchaConfirmed}
+              className="w-full md:w-auto"
+            >
+              Зарегистрировать
             </Button>
 
             <Link

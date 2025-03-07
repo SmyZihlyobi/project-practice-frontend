@@ -7,6 +7,7 @@ import { ThemeProvider } from '@/components/ui/theme-provider';
 import Header from '@/components/ui/header';
 import { AuthProvider } from '@/lib/auth/use-auth';
 import { ReactNode } from 'react';
+import { ReCaptchaProvider } from 'next-recaptcha-v3';
 
 const firaCode = Fira_Code({
   variable: '--font-fira-code-sans',
@@ -35,7 +36,9 @@ export default function RootLayout({
         >
           <AuthProvider>
             <Header />
-            <ApolloWrapper>{children}</ApolloWrapper>
+            <ApolloWrapper>
+              <ReCaptchaProvider>{children}</ReCaptchaProvider>
+            </ApolloWrapper>
             <Toaster />
           </AuthProvider>
         </ThemeProvider>

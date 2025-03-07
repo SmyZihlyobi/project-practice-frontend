@@ -26,9 +26,12 @@ import { useAxios } from '@/lib';
 import { JwtResponse } from './dto';
 import Cookies from 'js-cookie';
 import { JWT_COOKIE_NAME } from '@/lib/constant';
+import { Recaptcha } from '@/components/ui/recaptсha';
 
 export default function Page() {
   const [isLoading, setIsLoading] = useState(false);
+  const [isRecaptchaConfirmed, setIsRecaptchaConfirmed] = useState<boolean>(false);
+
   const api = useAxios();
 
   const form = useForm<z.infer<typeof RESET_PASSWORD_FORM_SCHEMA>>({
@@ -88,7 +91,12 @@ export default function Page() {
                 )}
               />
             </div>
-            <Button type="submit" disabled={isLoading} className="w-full md:w-auto">
+            <Recaptcha onChange={isVerified => setIsRecaptchaConfirmed(isVerified)} />
+            <Button
+              type="submit"
+              disabled={isLoading || !isRecaptchaConfirmed}
+              className="w-full md:w-auto"
+            >
               Отправить
             </Button>
             <div className="inline-flex">
