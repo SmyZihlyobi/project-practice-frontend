@@ -23,13 +23,18 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Set up Kubernetes context
-        env:
-          KUBECONFIG_STAGING: ${{ secrets.KUBECONFIG_STAGING }}
-        run: |
-          mkdir -p ~/.kube
-          echo "$KUBECONFIG_STAGING" | base64 -d > ~/.kube/config
-          kubectl config use-context staging
+      - name: Create KinD Cluster
+        uses: helm/kind-action@v1
+        with:
+          version: v0.20.0
+          config: |
+            kind: Cluster
+            apiVersion: kind.x-k8s.io/v1alpha4
+            nodes:
+            - role: control-plane
+              extraPortMappings:
+              - containerPort: 80
+                hostPort: 8080
 
       - name: Verify cluster access
         run: kubectl cluster-info
@@ -43,16 +48,16 @@ jobs:
         run: |
           helm lint $HELM_CHART_PATH \
             --strict \
-            --set image.tag=test \
-            --set ingress.enabled=false
+            --set image.tag=test
+#            --set ingress.enabled=false
 
       - name: Dry-run Installation
         run: |
           helm install frontend-test $HELM_CHART_PATH \
             --dry-run \
             --namespace $CLUSTER_NAMESPACE \
-            --set image.tag=test \
-            --set service.type=ClusterIP
+            --set image.tag=test
+#            --set service.type=ClusterIP
 
   deploy-staging:
     needs: lint-test
@@ -62,30 +67,22 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup Kubernetes Tools
-        uses: imranismail/setup-k8s@v1
-        with:
-          helm: 3.14.0
-          kubectl: 1.29.0
-
-      - name: Configure K8s Context
-        uses: azure/k8s-set-context@v3
-        with:
-          method: kubeconfig
-          kubeconfig: ${{ secrets.STAGING_KUBECONFIG }}
+      - name: Create KinD Cluster
+        uses: helm/kind-action@v1
 
       - name: Deploy to Staging
         run: |
           helm upgrade --install frontend $HELM_CHART_PATH \
             --namespace $CLUSTER_NAMESPACE \
             --set image.tag=${{ github.sha }} \
-            --set ingress.enabled=false \
             --set service.type=NodePort
+#            --set ingress.enabled=false \
 
       - name: Post-deployment Test
         run: |
           kubectl rollout status deployment/frontend -n $CLUSTER_NAMESPACE
-          kubectl get pods -n $CLUSTER_NAMESPACE -l app.kubernetes.io/instance=frontend
+          kubectl get pods -n $CLUSTER_NAMESPACE
+#          kubectl get pods -n $CLUSTER_NAMESPACE -l app.kubernetes.io/instance=frontend
 
 #  deploy-prod:
 #    needs: deploy-staging
