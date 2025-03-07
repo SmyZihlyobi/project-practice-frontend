@@ -10,6 +10,13 @@ service:
   port: 80
   nodePort: 30080
 
+readinessProbe:
+  httpGet:
+    path: /health
+    port: 80
+  initialDelaySeconds: 5
+  periodSeconds: 5
+
 ingress:
   enabled: false
 
