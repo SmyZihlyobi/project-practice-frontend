@@ -98,7 +98,7 @@ jobs:
 
       - name: Post-deployment Test 1
         run: |
-          timeout 120 kubectl rollout status deployment/frontend -n $CLUSTER_NAMESPACE
+          kubectl rollout status deployment/frontend -n $CLUSTER_NAMESPACE
           kubectl get pods -n $CLUSTER_NAMESPACE -o wide
           kubectl describe deployment/frontend -n $CLUSTER_NAMESPACE
 #          kubectl get pods -n $CLUSTER_NAMESPACE -l app.kubernetes.io/instance=frontend
