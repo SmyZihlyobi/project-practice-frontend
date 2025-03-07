@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const REGISTRATION_PROJECT_FORM_CONFIG = {
+const REGISTRATION_COMPANY_FORM_CONFIG = {
   name: z
     .string()
     .max(255, { message: 'Название компании не может превышать 256 символов' })
@@ -21,9 +21,9 @@ const REGISTRATION_PROJECT_FORM_CONFIG = {
     .max(255, { message: 'Почта не может превышать 256 символов' })
     .refine(val => val.trim() !== '', { message: 'Необходимо заполнить' }),
 
-  student_project: z.boolean().optional(),
+  studentProject: z.boolean().optional(),
 };
 
-export const REGISTRATION_PROJECT_FORM_SCHEMA = z.object(
-  REGISTRATION_PROJECT_FORM_CONFIG,
+export const REGISTRATION_COMPANY_FORM_SCHEMA = z.object(
+  REGISTRATION_COMPANY_FORM_CONFIG,
 );
