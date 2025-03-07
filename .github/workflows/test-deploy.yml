@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [ "kubernetis" ]
 
+permissions:
+  contents: read
+  actions: read
+  packages: read
+
 env:
   HELM_CHART_PATH: ./charts/frontend-helm
   CLUSTER_NAMESPACE: frontend-prod
@@ -17,6 +22,17 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+
+      - name: Set up Kubernetes context
+        env:
+          KUBECONFIG_STAGING: ${{ secrets.KUBECONFIG_STAGING }}
+        run: |
+          mkdir -p ~/.kube
+          echo "$KUBECONFIG_STAGING" | base64 -d > ~/.kube/config
+          kubectl config use-context staging-context
+
+      - name: Verify cluster access
+        run: kubectl cluster-info
 
       - name: Set up Helm
         uses: azure/setup-helm@v3
