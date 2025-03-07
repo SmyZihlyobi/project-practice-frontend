@@ -111,8 +111,11 @@ jobs:
         run: |
           helm upgrade --install frontend $HELM_CHART_PATH \
             --namespace $CLUSTER_NAMESPACE \
+            --set image.repository=${{ env.REGISTRY }} \
             --set image.tag=${{ github.sha }} \
-            --set service.type=NodePort
+            --set imagePullSecrets[0].name=ghcr-secret \
+            --set service.type=NodePort \
+            --wait --timeout 5m
 #            --set ingress.enabled=false \
 
       - name: Post-deployment Test 2
