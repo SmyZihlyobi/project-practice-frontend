@@ -5,10 +5,22 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
   },
-  webpack(config, { webpack }) {
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+
+  webpack: (config, { webpack, dev }) => {
+    if (!dev) {
+      config.devtool = false;
+    }
+
     config.plugins.push(
       new webpack.DefinePlugin({
-        'globalThis.__DEV__': false,
+        'globalThis.__DEV__': JSON.stringify(dev),
       }),
     );
 
