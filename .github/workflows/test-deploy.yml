@@ -12,7 +12,6 @@ permissions:
   packages: read
 
 env:
-  KIND_CONFIG: .github/kind-config.yaml
   HELM_CHART_PATH: ./charts/frontend-helm
   CLUSTER_NAMESPACE: frontend-prod
   REGISTRY: ghcr.io/${{ github.repository }}
@@ -27,8 +26,8 @@ jobs:
       - name: Create KinD Cluster
         uses: helm/kind-action@v1
         with:
-          version: v0.24.0
-          config: $KIND_CONFIG
+          version: 'v0.24.0'
+          config: '.github/kind-config.yaml'
 
       - name: Verify cluster access
         run: kubectl cluster-info
