@@ -16,18 +16,18 @@ import { Button } from '@/components/ui/button';
 import {
   DEFAULT_FORM_VALUES,
   LOCALSTORAGE_NAME,
-} from '../registration-project/lib/constant';
+} from '../registration-company/lib/constant';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { REGISTRATION_PROJECT_FORM_SCHEMA } from '@/app/company/registration-project/lib/constant/registration-project-form-schema';
+import { REGISTRATION_COMPANY_FORM_SCHEMA } from '@/app/company/registration-company/lib/constant/registration-company-form-schema';
 
 export default function Page() {
   const [isLoading, setIsLoading] = useState(false);
 
-  const form = useForm<z.infer<typeof REGISTRATION_PROJECT_FORM_SCHEMA>>({
-    resolver: zodResolver(REGISTRATION_PROJECT_FORM_SCHEMA),
+  const form = useForm<z.infer<typeof REGISTRATION_COMPANY_FORM_SCHEMA>>({
+    resolver: zodResolver(REGISTRATION_COMPANY_FORM_SCHEMA),
     defaultValues: DEFAULT_FORM_VALUES,
   });
 
@@ -48,7 +48,7 @@ export default function Page() {
   }, [form]);
 
   const onFormSubmit = async (
-    data: z.infer<typeof REGISTRATION_PROJECT_FORM_SCHEMA>,
+    data: z.infer<typeof REGISTRATION_COMPANY_FORM_SCHEMA>,
   ): Promise<void> => {
     try {
       setIsLoading(true);
@@ -128,7 +128,7 @@ export default function Page() {
               />
               <FormField
                 control={form.control}
-                name="student_project"
+                name="studentProject"
                 render={({}) => (
                   <FormItem>
                     <Checkbox></Checkbox>
