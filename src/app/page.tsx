@@ -78,7 +78,7 @@ export default function Page() {
           </CardContent>
           <CardFooter className="flex justify-center">
             <Button asChild>
-              <a href="/company/register-company" className="w-full text-center">
+              <a href="/company/registration-company" className="w-full text-center">
                 Зарегистрировать компанию
               </a>
             </Button>
