@@ -37,14 +37,6 @@ export default function Header() {
 
         {/* Desktop Navigation */}
         <PopoverGroup className="hidden lg:flex lg:gap-x-12">
-          <Link
-            href={{
-              pathname: '/info',
-            }}
-            className="text-sm/6 font-semibold"
-          >
-            Информация
-          </Link>
           <Link href="#" className="text-sm/6 font-semibold">
             Проекты
           </Link>
@@ -131,13 +123,6 @@ export default function Header() {
           <div className="mt-6">
             <div className="">
               <div className="space-y-2 py-6">
-                <Link
-                  href="/info"
-                  className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold hover:bg-gray-50"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Информация
-                </Link>
                 <Link
                   href="#"
                   className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold hover:bg-gray-50"
