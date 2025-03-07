@@ -66,6 +66,9 @@ jobs:
       - name: Verify cluster access
         run: kubectl cluster-info
 
+      - name: Create Namespace
+        run: kubectl create namespace $CLUSTER_NAMESPACE
+
       - name: Set up Helm
         uses: azure/setup-helm@v3
         with:
