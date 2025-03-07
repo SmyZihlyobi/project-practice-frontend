@@ -59,7 +59,7 @@ export default function Header() {
         </PopoverGroup>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end mr-12">
           <Link href="/login" className="text-sm/6 font-semibold">
-            Log in <span aria-hidden="true">&rarr;</span>
+            Войти <span aria-hidden="true">&rarr;</span>
           </Link>
         </div>
 
@@ -149,10 +149,10 @@ export default function Header() {
                     <Button className="primary">Тема</Button>
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem onClick={() => setTheme('light')}>
-                        Light
+                        Светлая
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => setTheme('dark')}>
-                        Dark
+                        Тёмная
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenuTrigger>
@@ -165,7 +165,7 @@ export default function Header() {
                   className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold hover:bg-gray-50"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  Log in
+                  Войти
                 </Link>
               </div>
             </div>
