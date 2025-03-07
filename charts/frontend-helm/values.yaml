@@ -3,7 +3,7 @@ image:
   tag: latest
   pullPolicy: IfNotPresent
   pullSecrets: 
-    -name: ghcr-secret
+    - name: ghcr-secret
 
 replicaCount: 2
 
