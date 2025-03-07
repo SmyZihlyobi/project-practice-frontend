@@ -9,7 +9,7 @@ on:
 permissions:
   contents: read
   actions: read
-  packages: read
+  packages: write
 
 env:
   HELM_CHART_PATH: ./charts/frontend-helm
