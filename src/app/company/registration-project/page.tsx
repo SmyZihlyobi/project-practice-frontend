@@ -22,9 +22,11 @@ import Link from 'next/link';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { REGISTRATION_PROJECT_FORM_SCHEMA } from '@/app/company/registration-project/lib/constant/registration-project-form-schema';
+import { Recaptcha } from '@/components/ui/recaptсha';
 
 export default function Page() {
   const [isLoading, setIsLoading] = useState(false);
+  const [isRecaptchaConfirmed, setIsRecaptchaConfirmed] = useState<boolean>(false);
 
   const form = useForm<z.infer<typeof REGISTRATION_PROJECT_FORM_SCHEMA>>({
     resolver: zodResolver(REGISTRATION_PROJECT_FORM_SCHEMA),
@@ -138,10 +140,14 @@ export default function Page() {
                 )}
               />
             </div>
-            <Button type="submit" disabled={isLoading} className="w-full md:w-auto">
+            <Recaptcha onChange={isVerified => setIsRecaptchaConfirmed(isVerified)} />
+            <Button
+              type="submit"
+              disabled={isLoading || !isRecaptchaConfirmed}
+              className="w-full md:w-auto"
+            >
               Добавить
             </Button>
-
             <Link
               href={{
                 pathname: '/login',

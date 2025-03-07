@@ -25,16 +25,20 @@ import { JwtResponse } from './dto';
 import Cookies from 'js-cookie';
 import { JWT_COOKIE_NAME } from '@/lib/constant';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-
 import {
   DEFAULT_FORM_VALUES_STUDENT,
   LOCALSTORAGE_NAME_STUDENT,
 } from './lib/constant_student';
 import { STUDENT_LOGIN_FORM_SCHEMA } from '@/app/login/lib/constant_student/student-login-form-schema';
+import { Recaptcha } from '@/components/ui/recaptсha';
 
 export default function Page() {
   const api = useAxios();
   const [isLoading, setIsLoading] = useState(false);
+  const [isCompanyRecaptchaConfirmed, setIsCompanyRecaptchaConfirmed] =
+    useState<boolean>(false);
+  const [isStudentRecaptchaConfirmed, setIsStudentRecaptchaConfirmed] =
+    useState<boolean>(false);
 
   const form_company = useForm<z.infer<typeof COMPANY_LOGIN_FORM_SCHEMA>>({
     resolver: zodResolver(COMPANY_LOGIN_FORM_SCHEMA),
@@ -165,7 +169,14 @@ export default function Page() {
                     )}
                   />
                 </div>
-                <Button type="submit" disabled={isLoading} className="w-full md:w-auto">
+                <Recaptcha
+                  onChange={isVerified => setIsStudentRecaptchaConfirmed(isVerified)}
+                />
+                <Button
+                  type="submit"
+                  disabled={isLoading || !isStudentRecaptchaConfirmed}
+                  className="w-full md:w-auto"
+                >
                   Войти
                 </Button>
               </form>
@@ -206,8 +217,14 @@ export default function Page() {
                     )}
                   />
                 </div>
-
-                <Button type="submit" disabled={isLoading} className="w-full md:w-auto">
+                <Recaptcha
+                  onChange={isVerified => setIsCompanyRecaptchaConfirmed(isVerified)}
+                />
+                <Button
+                  type="submit"
+                  disabled={isLoading || !isCompanyRecaptchaConfirmed}
+                  className="w-full md:w-auto"
+                >
                   Войти
                 </Button>
                 <Link
