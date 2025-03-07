@@ -229,7 +229,7 @@ export default function Page() {
                 </Button>
                 <Link
                   href={{
-                    pathname: '/company/registration-project',
+                    pathname: '/company/registration-company',
                   }}
                   className="mt-4 w-full flex justify-center"
                 >
