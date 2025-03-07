@@ -14,7 +14,7 @@ permissions:
 env:
   HELM_CHART_PATH: ./charts/frontend-helm
   CLUSTER_NAMESPACE: frontend-prod
-  REGISTRY: ghcr.io/${{ github.repository }}
+  REGISTRY: ghcr.io/smyzihlyobi/project-practice-frontend
 
 jobs:
   lint-test:
