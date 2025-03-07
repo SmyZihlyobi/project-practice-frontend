@@ -2,6 +2,7 @@ image:
   repository: ghcr.io/SmyZihlyobi/project-practice-frontend
   tag: latest
   pullPolicy: IfNotPresent
+  pullSecrets: ghcr-secret
 
 replicaCount: 2
 
