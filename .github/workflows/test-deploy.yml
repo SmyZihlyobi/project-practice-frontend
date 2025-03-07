@@ -63,6 +63,14 @@ jobs:
       - name: Create KinD Cluster
         uses: helm/kind-action@v1
 
+      - name: Verify cluster access
+        run: kubectl cluster-info
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: 'v3.14.0'
+
       - name: Deploy to Staging
         run: |
           helm upgrade --install frontend $HELM_CHART_PATH \
