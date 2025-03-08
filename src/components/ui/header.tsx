@@ -2,17 +2,11 @@
 
 import { PopoverGroup } from '@headlessui/react';
 import Link from 'next/link';
-import { ModeToggle } from '@/components/ui/modeToggle';
 import * as React from 'react';
 import { useState } from 'react';
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { useTheme } from 'next-themes';
+import { Moon, Sun } from 'lucide-react';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -22,7 +16,7 @@ export default function Header() {
     <header className="border-b border-gray-200">
       <nav
         aria-label="Global"
-        className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8"
+        className="mx-auto flex  items-center justify-between p-6 lg:px-8 max-w-screen-2xl"
       >
         <div className="flex lg:flex-1">
           <Link
@@ -59,8 +53,18 @@ export default function Header() {
         </PopoverGroup>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end mr-12">
           <Link href="/login" className="text-sm/6 font-semibold">
-            Войти <span aria-hidden="true">&rarr;</span>
+            Вход <span aria-hidden="true">&rarr;</span>
           </Link>
+        </div>
+
+        <div className="hidden lg:block right-6 top-5">
+          <Button
+            onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+            variant="ghost"
+            className="block px-3 py-3 h-auto opacity-100 text-inherit"
+          >
+            {theme === 'light' ? <Sun /> : <Moon />}
+          </Button>
         </div>
 
         {/* Mobile Menu Button */}
@@ -91,9 +95,9 @@ export default function Header() {
       <div className={`lg:hidden ${isMenuOpen ? 'block' : 'hidden'}`}>
         <div className="fixed inset-0 z-50" onClick={() => setIsMenuOpen(false)} />
         <div
-          className={`fixed inset-y-0 right-0 z-50 w-full ${theme === 'dark' ? 'bg-gray-900 text-white border-l-2 border-black' : 'bg-white border-l-2 border-gray text-gray-900'} overflow-y-auto px-6 py-6 sm:max-w-sm`}
+          className={`fixed inset-y-0 right-0 z-50 w-full bg-card overflow-y-auto  sm:max-w-sm`}
         >
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between px-6 py-6">
             <Link href="/" className="-m-1.5 p-1.5 font-bold text-lg">
               IKNT PROJECTS
             </Link>
@@ -122,60 +126,50 @@ export default function Header() {
 
           <div className="mt-6">
             <div className="">
-              <div className="space-y-2 py-6">
+              <div className="flex flex-col gap-0">
                 <Link
                   href="#"
-                  className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold hover:bg-gray-50"
+                  className=" block  px-3 py-3 text-base font-semibold  hover:bg-gray-50 w-full text-center md:text-left border-2"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Проекты
                 </Link>
                 <Link
                   href="/student/teams"
-                  className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold hover:bg-gray-50"
+                  className=" block  px-3 py-3 text-base font-semibold hover:bg-gray-50 w-full text-center md:text-left border-b-2 "
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Команды
                 </Link>
                 <Link
                   href="/student/join-project"
-                  className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold hover:bg-gray-50"
+                  className=" block  px-3 py-3 text-base font-semibold hover:bg-gray-50 w-full text-center md:text-left border-b-2 "
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Регистрация на проект
                 </Link>
-                <DropdownMenu>
-                  <DropdownMenuTrigger>
-                    <Button className="primary">Тема</Button>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => setTheme('light')}>
-                        Светлая
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setTheme('dark')}>
-                        Тёмная
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenuTrigger>
-                </DropdownMenu>
-              </div>
 
-              <div className="py-6">
-                <Link
-                  href="/login"
-                  className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold hover:bg-gray-50"
-                  onClick={() => setIsMenuOpen(false)}
+                <div>
+                  <Link
+                    href="/login"
+                    className=" px-3 py-3  block rounded-lg  text-center font-semibold hover:bg-gray-50 md:text-left  border-b-2"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Вход
+                  </Link>
+                </div>
+
+                <Button
+                  onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+                  variant="ghost"
+                  className="w-full block border-b-2 px-3 py-3 h-auto opacity-100 md:text-left text-inherit"
                 >
-                  Войти
-                </Link>
+                  {theme === 'light' ? 'Тёмная тема' : 'Светлая тема'}
+                </Button>
               </div>
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Desktop Mode Toggle */}
-      <div className="hidden lg:block absolute right-6 top-5">
-        <ModeToggle />
       </div>
     </header>
   );

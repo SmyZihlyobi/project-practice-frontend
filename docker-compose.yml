@@ -2,7 +2,10 @@ version: '3.8'
 
 services:
   web:
-    build: .
+    build: 
+      context: .
+      args:
+        DOCKER_BUILDKIT: 1
     environment:
       - NEXT_PUBLIC_BACKEND_URL=${NEXT_PUBLIC_BACKEND_URL}
     ports:
