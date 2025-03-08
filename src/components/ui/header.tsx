@@ -134,28 +134,28 @@ export default function Header() {
                 <div className="flex flex-col gap-0">
                   <Link
                     href="#"
-                    className="block px-3 py-3 text-base font-semibold hover:bg-gray-50 w-full text-center md:text-left border-t-2 border-b-2"
+                    className="block px-3 py-3 text-base font-semibold w-full text-center md:text-left border-t-2 border-b-2"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Проекты
                   </Link>
                   <Link
                     href="/student/teams"
-                    className="block px-3 py-3 text-base font-semibold hover:bg-gray-50 w-full text-center md:text-left border-b-2"
+                    className="block px-3 py-3 text-base font-semibold w-full text-center md:text-left border-b-2"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Команды
                   </Link>
                   <Link
                     href="/student/join-project"
-                    className="block px-3 py-3 text-base font-semibold hover:bg-gray-50 w-full text-center md:text-left border-b-2"
+                    className="block px-3 py-3 text-base font-semibold  w-full text-center md:text-left border-b-2"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Регистрация на проект
                   </Link>
                   <Link
                     href="/company/create-project"
-                    className="block px-3 py-3 text-base font-semibold hover:bg-gray-50 w-full text-center md:text-left border-b-2"
+                    className="block px-3 py-3 text-base font-semibold w-full text-center md:text-left border-b-2"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Создать проект
@@ -163,7 +163,7 @@ export default function Header() {
                   <div>
                     <Link
                       href="/login"
-                      className="px-3 py-3 block rounded-lg text-center font-semibold hover:bg-gray-50 md:text-left border-b-2"
+                      className="px-3 py-3 block rounded-lg text-center font-semibold md:text-left border-b-2"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       Вход
