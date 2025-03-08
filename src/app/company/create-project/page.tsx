@@ -168,7 +168,7 @@ export default function CreateProjectPage() {
         data: { createProject: newProject },
       } = response;
 
-      if (!newProject.id && typeof newProject.id === 'string') {
+      if (!!newProject.id && typeof newProject.id === 'string') {
         await uploadPresentation(newProject.id, presentation);
         await uploadTechnicalSpecification(newProject.id, technicalSpecifications);
       }
@@ -309,7 +309,7 @@ export default function CreateProjectPage() {
                         ref={presentationInputRef}
                       />
                     </FormControl>
-                    <FormDescription>Максимальный размер файла: 5 МБ</FormDescription>
+                    <FormDescription>Максимальный размер файла: 10 МБ</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -335,7 +335,7 @@ export default function CreateProjectPage() {
                         ref={technicalSpecificationsInputRef}
                       />
                     </FormControl>
-                    <FormDescription>Максимальный размер файла: 5 МБ</FormDescription>
+                    <FormDescription>Максимальный размер файла: 10 МБ</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
