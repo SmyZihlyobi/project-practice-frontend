@@ -166,7 +166,7 @@ export default function Page() {
                       Владимир - покоритель кубернетиса
                     </a>
                     <a
-                      href="https://t.me/Aero56"
+                      href="https://t.me/astrozzzz"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-blue-500 hover:underline block"
