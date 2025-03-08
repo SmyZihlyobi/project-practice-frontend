@@ -15,7 +15,13 @@ export const ExportButton = () => {
       const a = document.createElement('a');
       a.href = url;
 
-      a.download = 'students_export.xlsx';
+      const currentDate = new Date();
+      const day = String(currentDate.getDate()).padStart(2, '0');
+      const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+      const year = currentDate.getFullYear();
+      const fileName = `students_export_${day}_${month}_${year}.xlsx`;
+
+      a.download = fileName;
 
       document.body.appendChild(a);
       a.click();
