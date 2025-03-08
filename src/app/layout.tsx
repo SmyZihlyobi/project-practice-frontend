@@ -24,6 +24,9 @@ export const metadata: Metadata = {
     'ПГНИУ',
     'управление проектами',
     'студенческие команды',
+    'икнт',
+    'пгниу',
+    'проекты',
   ],
   openGraph: {
     title: 'Проектная практика ИКНТ',
@@ -54,6 +57,9 @@ export const metadata: Metadata = {
     apple: '/apple-icon.png',
   },
   manifest: '/site.webmanifest',
+  other: {
+    'yandex-verification': `${process.env.NEXT_PUBLIC_YANDEX_VERIFICATION}`,
+  },
 };
 
 export default function RootLayout({
@@ -68,10 +74,6 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="icon" href="/favicon.png" type="image/png" />
         <link rel="icon" href="/favicon.ico" type="image/x-icon" />
-        <meta
-          name="yandex-verification"
-          content={`${process.env.NEXT_PUBLIC_YANDEX_VERIFICATION}`}
-        />
       </Head>
       <body className={`${firaCode.variable} antialiased`}>
         <ThemeProvider
