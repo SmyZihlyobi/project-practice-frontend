@@ -52,10 +52,11 @@ export default function Page() {
     try {
       setIsLoading(true);
 
-      const response = await api.post<JwtResponse>('/company/change-password', data);
+      const response = await api.post<JwtResponse>(
+        `/company/change-password?email=${data.email}`,
+      );
 
       Cookies.set(JWT_COOKIE_NAME, response.data.token);
-      console.log(response);
       localStorage.removeItem(LOCALSTORAGE_NAME);
       form.reset(DEFAULT_FORM_VALUES);
     } catch (error) {
