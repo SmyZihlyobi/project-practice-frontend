@@ -64,7 +64,7 @@ export const Project = observer(({ id }: { id: string }) => {
               <TableCell>
                 {currentProject.presentation ? (
                   <a
-                    href={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${PRESENTATION_API}/${currentProject.presentation}`}
+                    href={`${process.env.NEXT_PUBLIC_BACKEND_URL}${PRESENTATION_API}/${currentProject.presentation}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -78,7 +78,7 @@ export const Project = observer(({ id }: { id: string }) => {
               <TableCell>
                 {currentProject.technicalSpecifications ? (
                   <a
-                    href={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${TECHNICAL_SPECIFICATION_API}/${currentProject.technicalSpecifications}`}
+                    href={`${process.env.NEXT_PUBLIC_BACKEND_URL}${TECHNICAL_SPECIFICATION_API}/${currentProject.technicalSpecifications}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
