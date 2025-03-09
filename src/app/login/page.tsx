@@ -15,9 +15,9 @@ import { Button } from '@/components/ui/button';
 import {
   DEFAULT_FORM_VALUES_COMPANY,
   LOCALSTORAGE_NAME_COMPANY,
-} from './lib/constant_company';
+  COMPANY_LOGIN_FORM_SCHEMA,
+} from './lib/constant/company';
 import { useEffect, useState } from 'react';
-import { COMPANY_LOGIN_FORM_SCHEMA } from '@/app/login/lib/constant_company/company-login-form-schema';
 import Link from 'next/link';
 import { Card } from '@/components/ui/card';
 import { useAxios } from '@/lib';
@@ -28,8 +28,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   DEFAULT_FORM_VALUES_STUDENT,
   LOCALSTORAGE_NAME_STUDENT,
-} from './lib/constant_student';
-import { STUDENT_LOGIN_FORM_SCHEMA } from '@/app/login/lib/constant_student/student-login-form-schema';
+  STUDENT_LOGIN_FORM_SCHEMA,
+} from './lib/constant/student';
 import { Recaptcha } from '@/components/ui/recaptсha';
 
 export default function Page() {
