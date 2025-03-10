@@ -13,7 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Skeleton } from '@/components/ui/skeleton'; // Импортируем Skeleton
+import { Skeleton } from '@/components/ui/skeleton';
 import { StudentsProps } from '../types';
 import { observer } from 'mobx-react-lite';
 import { useEffect, useState } from 'react';
