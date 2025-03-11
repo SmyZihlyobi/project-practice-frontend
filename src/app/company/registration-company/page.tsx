@@ -64,7 +64,7 @@ export default function Page() {
       // to-do обработать ошибки
     } finally {
       setIsLoading(false);
-      toast.success('Заявка отправлена');
+      toast.success('Заявка отправлена. Дождитесь одобрения администратора');
     }
   };
 

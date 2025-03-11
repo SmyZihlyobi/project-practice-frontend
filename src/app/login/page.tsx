@@ -67,6 +67,7 @@ export default function Page() {
   ): Promise<void> => {
     try {
       setIsLoading(true);
+      toast.success('Вы успешно вошли как компания');
 
       const response = await api.post<JwtResponse>('/company/login', data);
 
@@ -74,11 +75,14 @@ export default function Page() {
       console.log(response);
       localStorage.removeItem(LOCALSTORAGE_NAME_COMPANY);
       formCompany.reset(DEFAULT_FORM_VALUES_COMPANY);
+
+      setTimeout(() => {
+        window.location.href = '/company/create-project';
+      }, 500);
     } catch (error) {
       console.error('Error during login:', error);
     } finally {
       setIsLoading(false);
-      toast.success('Вы успешно вошли как компания');
     }
   };
 
@@ -109,16 +113,22 @@ export default function Page() {
   ): Promise<void> => {
     try {
       setIsLoading(true);
+      toast.success('Вы успешно вошли как студент');
+
       // to-do переписать на запрос под бек
       console.log(data);
       localStorage.removeItem(LOCALSTORAGE_NAME_STUDENT);
       formStudent.reset(DEFAULT_FORM_VALUES_STUDENT);
+
+      // TODO , оно пока что будет кидать в личный кабинет ибо нет данных с онлайн псу
+      setTimeout(() => {
+        window.location.href = '/student/join-project';
+      }, 500);
     } catch (error) {
       console.error(error);
       // to-do обработать ошибки
     } finally {
       setIsLoading(false);
-      toast.success('Вы успешно вошли как студент');
     }
   };
 

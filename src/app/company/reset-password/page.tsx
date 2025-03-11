@@ -27,6 +27,7 @@ import { JwtResponse } from './dto';
 import Cookies from 'js-cookie';
 import { JWT_COOKIE_NAME } from '@/lib/constant';
 import { Recaptcha } from '@/components/ui/recaptсha';
+import { toast } from 'sonner';
 
 export default function Page() {
   const [isLoading, setIsLoading] = useState(false);
@@ -51,6 +52,7 @@ export default function Page() {
   ): Promise<void> => {
     try {
       setIsLoading(true);
+      toast.success('На указанную почту прийдет новый пароль');
 
       const response = await api.post<JwtResponse>(
         `/company/change-password?email=${data.email}`,
