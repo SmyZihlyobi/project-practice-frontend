@@ -66,7 +66,6 @@ export default function Page() {
     }
   };
 
-  /* еще логика*/
   return (
     <div className="w-full md:w-1/2 mx-auto mt-5 mb-3 px-4">
       <Card className="p-4">

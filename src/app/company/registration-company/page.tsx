@@ -8,6 +8,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { toast } from 'sonner';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -63,6 +64,7 @@ export default function Page() {
       // to-do обработать ошибки
     } finally {
       setIsLoading(false);
+      toast.success('Заявка отправлена');
     }
   };
 

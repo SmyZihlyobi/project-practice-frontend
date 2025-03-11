@@ -31,6 +31,7 @@ import {
   STUDENT_LOGIN_FORM_SCHEMA,
 } from './lib/constant/student';
 import { Recaptcha } from '@/components/ui/recaptсha';
+import { toast } from 'sonner';
 
 export default function Page() {
   const api = useAxios();
@@ -40,7 +41,7 @@ export default function Page() {
   const [isStudentRecaptchaConfirmed, setIsStudentRecaptchaConfirmed] =
     useState<boolean>(false);
 
-  const form_company = useForm<z.infer<typeof COMPANY_LOGIN_FORM_SCHEMA>>({
+  const formCompany = useForm<z.infer<typeof COMPANY_LOGIN_FORM_SCHEMA>>({
     resolver: zodResolver(COMPANY_LOGIN_FORM_SCHEMA),
     defaultValues: DEFAULT_FORM_VALUES_COMPANY,
   });
@@ -48,18 +49,18 @@ export default function Page() {
   useEffect(() => {
     const savedData = localStorage.getItem(LOCALSTORAGE_NAME_COMPANY);
     if (savedData) {
-      form_company.reset(JSON.parse(savedData));
+      formCompany.reset(JSON.parse(savedData));
     }
-  }, [form_company]);
+  }, [formCompany]);
 
   useEffect(() => {
-    const subscription = form_company.watch(value => {
+    const subscription = formCompany.watch(value => {
       const { ...rest } = value;
       localStorage.setItem(LOCALSTORAGE_NAME_COMPANY, JSON.stringify(rest));
     });
 
     return () => subscription.unsubscribe();
-  }, [form_company]);
+  }, [formCompany]);
 
   const onFormSubmitCOM = async (
     data: z.infer<typeof COMPANY_LOGIN_FORM_SCHEMA>,
@@ -72,16 +73,17 @@ export default function Page() {
       Cookies.set(JWT_COOKIE_NAME, response.data.token);
       console.log(response);
       localStorage.removeItem(LOCALSTORAGE_NAME_COMPANY);
-      form_company.reset(DEFAULT_FORM_VALUES_COMPANY);
+      formCompany.reset(DEFAULT_FORM_VALUES_COMPANY);
     } catch (error) {
       console.error('Error during login:', error);
     } finally {
       setIsLoading(false);
+      toast.success('Вы успешно вошли как компания');
     }
   };
 
   //student
-  const form_student = useForm<z.infer<typeof STUDENT_LOGIN_FORM_SCHEMA>>({
+  const formStudent = useForm<z.infer<typeof STUDENT_LOGIN_FORM_SCHEMA>>({
     resolver: zodResolver(STUDENT_LOGIN_FORM_SCHEMA),
     defaultValues: DEFAULT_FORM_VALUES_STUDENT,
   });
@@ -89,18 +91,18 @@ export default function Page() {
   useEffect(() => {
     const savedData = localStorage.getItem(LOCALSTORAGE_NAME_STUDENT);
     if (savedData) {
-      form_student.reset(JSON.parse(savedData));
+      formStudent.reset(JSON.parse(savedData));
     }
-  }, [form_student]);
+  }, [formStudent]);
 
   useEffect(() => {
-    const subscription = form_student.watch(value => {
+    const subscription = formStudent.watch(value => {
       const { ...rest } = value;
       localStorage.setItem(LOCALSTORAGE_NAME_STUDENT, JSON.stringify(rest));
     });
 
     return () => subscription.unsubscribe();
-  }, [form_student]);
+  }, [formStudent]);
 
   const onFormSubmitST = async (
     data: z.infer<typeof STUDENT_LOGIN_FORM_SCHEMA>,
@@ -110,12 +112,13 @@ export default function Page() {
       // to-do переписать на запрос под бек
       console.log(data);
       localStorage.removeItem(LOCALSTORAGE_NAME_STUDENT);
-      form_student.reset(DEFAULT_FORM_VALUES_STUDENT);
+      formStudent.reset(DEFAULT_FORM_VALUES_STUDENT);
     } catch (error) {
       console.error(error);
       // to-do обработать ошибки
     } finally {
       setIsLoading(false);
+      toast.success('Вы успешно вошли как студент');
     }
   };
 
@@ -136,14 +139,14 @@ export default function Page() {
           </TabsList>
           <TabsContent value="student">
             <h2 className="mb-2 text-xl">Вход</h2>
-            <Form {...form_student}>
+            <Form {...formStudent}>
               <form
-                onSubmit={form_student.handleSubmit(onFormSubmitST)}
+                onSubmit={formStudent.handleSubmit(onFormSubmitST)}
                 className="flex flex-col gap-4 w-full"
               >
                 <div className="space-y-4">
                   <FormField
-                    control={form_student.control}
+                    control={formStudent.control}
                     name="login"
                     render={({ field }) => (
                       <FormItem>
@@ -156,7 +159,7 @@ export default function Page() {
                     )}
                   />
                   <FormField
-                    control={form_student.control}
+                    control={formStudent.control}
                     name="password"
                     render={({ field }) => (
                       <FormItem>
@@ -184,14 +187,14 @@ export default function Page() {
           </TabsContent>
           <TabsContent value="company">
             <h2 className="mb-2 text-xl">Вход для компаний</h2>
-            <Form {...form_company}>
+            <Form {...formCompany}>
               <form
-                onSubmit={form_company.handleSubmit(onFormSubmitCOM)}
+                onSubmit={formCompany.handleSubmit(onFormSubmitCOM)}
                 className="flex flex-col gap-4 w-full"
               >
                 <div className="space-y-4">
                   <FormField
-                    control={form_company.control}
+                    control={formCompany.control}
                     name="email"
                     render={({ field }) => (
                       <FormItem>
@@ -204,7 +207,7 @@ export default function Page() {
                     )}
                   />
                   <FormField
-                    control={form_company.control}
+                    control={formCompany.control}
                     name="password"
                     render={({ field }) => (
                       <FormItem>
@@ -220,6 +223,7 @@ export default function Page() {
                 <Recaptcha
                   onChange={isVerified => setIsCompanyRecaptchaConfirmed(isVerified)}
                 />
+
                 <Button
                   type="submit"
                   disabled={isLoading || !isCompanyRecaptchaConfirmed}
