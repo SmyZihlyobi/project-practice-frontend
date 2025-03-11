@@ -27,6 +27,7 @@ import { JwtResponse } from './dto';
 import Cookies from 'js-cookie';
 import { JWT_COOKIE_NAME } from '@/lib/constant';
 import { Recaptcha } from '@/components/ui/recaptсha';
+import { toast } from 'sonner';
 
 export default function Page() {
   const [isLoading, setIsLoading] = useState(false);
@@ -51,11 +52,13 @@ export default function Page() {
   ): Promise<void> => {
     try {
       setIsLoading(true);
+      toast.success('На указанную почту прийдет новый пароль');
 
-      const response = await api.post<JwtResponse>('/company/change-password', data);
+      const response = await api.post<JwtResponse>(
+        `/company/change-password?email=${data.email}`,
+      );
 
       Cookies.set(JWT_COOKIE_NAME, response.data.token);
-      console.log(response);
       localStorage.removeItem(LOCALSTORAGE_NAME);
       form.reset(DEFAULT_FORM_VALUES);
     } catch (error) {
@@ -65,7 +68,6 @@ export default function Page() {
     }
   };
 
-  /* еще логика*/
   return (
     <div className="w-full md:w-1/2 mx-auto mt-5 mb-3 px-4">
       <Card className="p-4">

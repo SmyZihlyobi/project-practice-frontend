@@ -15,9 +15,9 @@ import { Button } from '@/components/ui/button';
 import {
   DEFAULT_FORM_VALUES_COMPANY,
   LOCALSTORAGE_NAME_COMPANY,
-} from './lib/constant_company';
+  COMPANY_LOGIN_FORM_SCHEMA,
+} from './lib/constant/company';
 import { useEffect, useState } from 'react';
-import { COMPANY_LOGIN_FORM_SCHEMA } from '@/app/login/lib/constant_company/company-login-form-schema';
 import Link from 'next/link';
 import { Card } from '@/components/ui/card';
 import { useAxios } from '@/lib';
@@ -28,9 +28,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   DEFAULT_FORM_VALUES_STUDENT,
   LOCALSTORAGE_NAME_STUDENT,
-} from './lib/constant_student';
-import { STUDENT_LOGIN_FORM_SCHEMA } from '@/app/login/lib/constant_student/student-login-form-schema';
+  STUDENT_LOGIN_FORM_SCHEMA,
+} from './lib/constant/student';
 import { Recaptcha } from '@/components/ui/recaptсha';
+import { toast } from 'sonner';
 
 export default function Page() {
   const api = useAxios();
@@ -40,7 +41,7 @@ export default function Page() {
   const [isStudentRecaptchaConfirmed, setIsStudentRecaptchaConfirmed] =
     useState<boolean>(false);
 
-  const form_company = useForm<z.infer<typeof COMPANY_LOGIN_FORM_SCHEMA>>({
+  const formCompany = useForm<z.infer<typeof COMPANY_LOGIN_FORM_SCHEMA>>({
     resolver: zodResolver(COMPANY_LOGIN_FORM_SCHEMA),
     defaultValues: DEFAULT_FORM_VALUES_COMPANY,
   });
@@ -48,31 +49,36 @@ export default function Page() {
   useEffect(() => {
     const savedData = localStorage.getItem(LOCALSTORAGE_NAME_COMPANY);
     if (savedData) {
-      form_company.reset(JSON.parse(savedData));
+      formCompany.reset(JSON.parse(savedData));
     }
-  }, [form_company]);
+  }, [formCompany]);
 
   useEffect(() => {
-    const subscription = form_company.watch(value => {
+    const subscription = formCompany.watch(value => {
       const { ...rest } = value;
       localStorage.setItem(LOCALSTORAGE_NAME_COMPANY, JSON.stringify(rest));
     });
 
     return () => subscription.unsubscribe();
-  }, [form_company]);
+  }, [formCompany]);
 
   const onFormSubmitCOM = async (
     data: z.infer<typeof COMPANY_LOGIN_FORM_SCHEMA>,
   ): Promise<void> => {
     try {
       setIsLoading(true);
+      toast.success('Вы успешно вошли как компания');
 
       const response = await api.post<JwtResponse>('/company/login', data);
 
       Cookies.set(JWT_COOKIE_NAME, response.data.token);
       console.log(response);
       localStorage.removeItem(LOCALSTORAGE_NAME_COMPANY);
-      form_company.reset(DEFAULT_FORM_VALUES_COMPANY);
+      formCompany.reset(DEFAULT_FORM_VALUES_COMPANY);
+
+      setTimeout(() => {
+        window.location.href = '/company/create-project';
+      }, 500);
     } catch (error) {
       console.error('Error during login:', error);
     } finally {
@@ -81,7 +87,7 @@ export default function Page() {
   };
 
   //student
-  const form_student = useForm<z.infer<typeof STUDENT_LOGIN_FORM_SCHEMA>>({
+  const formStudent = useForm<z.infer<typeof STUDENT_LOGIN_FORM_SCHEMA>>({
     resolver: zodResolver(STUDENT_LOGIN_FORM_SCHEMA),
     defaultValues: DEFAULT_FORM_VALUES_STUDENT,
   });
@@ -89,28 +95,35 @@ export default function Page() {
   useEffect(() => {
     const savedData = localStorage.getItem(LOCALSTORAGE_NAME_STUDENT);
     if (savedData) {
-      form_student.reset(JSON.parse(savedData));
+      formStudent.reset(JSON.parse(savedData));
     }
-  }, [form_student]);
+  }, [formStudent]);
 
   useEffect(() => {
-    const subscription = form_student.watch(value => {
+    const subscription = formStudent.watch(value => {
       const { ...rest } = value;
       localStorage.setItem(LOCALSTORAGE_NAME_STUDENT, JSON.stringify(rest));
     });
 
     return () => subscription.unsubscribe();
-  }, [form_student]);
+  }, [formStudent]);
 
   const onFormSubmitST = async (
     data: z.infer<typeof STUDENT_LOGIN_FORM_SCHEMA>,
   ): Promise<void> => {
     try {
       setIsLoading(true);
+      toast.success('Вы успешно вошли как студент');
+
       // to-do переписать на запрос под бек
       console.log(data);
       localStorage.removeItem(LOCALSTORAGE_NAME_STUDENT);
-      form_student.reset(DEFAULT_FORM_VALUES_STUDENT);
+      formStudent.reset(DEFAULT_FORM_VALUES_STUDENT);
+
+      // to-do , оно пока что будет кидать в личный кабинет ибо нет данных с онлайн псу
+      setTimeout(() => {
+        window.location.href = '/student/join-project';
+      }, 500);
     } catch (error) {
       console.error(error);
       // to-do обработать ошибки
@@ -136,14 +149,14 @@ export default function Page() {
           </TabsList>
           <TabsContent value="student">
             <h2 className="mb-2 text-xl">Вход</h2>
-            <Form {...form_student}>
+            <Form {...formStudent}>
               <form
-                onSubmit={form_student.handleSubmit(onFormSubmitST)}
+                onSubmit={formStudent.handleSubmit(onFormSubmitST)}
                 className="flex flex-col gap-4 w-full"
               >
                 <div className="space-y-4">
                   <FormField
-                    control={form_student.control}
+                    control={formStudent.control}
                     name="login"
                     render={({ field }) => (
                       <FormItem>
@@ -156,7 +169,7 @@ export default function Page() {
                     )}
                   />
                   <FormField
-                    control={form_student.control}
+                    control={formStudent.control}
                     name="password"
                     render={({ field }) => (
                       <FormItem>
@@ -184,14 +197,14 @@ export default function Page() {
           </TabsContent>
           <TabsContent value="company">
             <h2 className="mb-2 text-xl">Вход для компаний</h2>
-            <Form {...form_company}>
+            <Form {...formCompany}>
               <form
-                onSubmit={form_company.handleSubmit(onFormSubmitCOM)}
+                onSubmit={formCompany.handleSubmit(onFormSubmitCOM)}
                 className="flex flex-col gap-4 w-full"
               >
                 <div className="space-y-4">
                   <FormField
-                    control={form_company.control}
+                    control={formCompany.control}
                     name="email"
                     render={({ field }) => (
                       <FormItem>
@@ -204,7 +217,7 @@ export default function Page() {
                     )}
                   />
                   <FormField
-                    control={form_company.control}
+                    control={formCompany.control}
                     name="password"
                     render={({ field }) => (
                       <FormItem>
@@ -220,6 +233,7 @@ export default function Page() {
                 <Recaptcha
                   onChange={isVerified => setIsCompanyRecaptchaConfirmed(isVerified)}
                 />
+
                 <Button
                   type="submit"
                   disabled={isLoading || !isCompanyRecaptchaConfirmed}
