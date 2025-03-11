@@ -1,0 +1,10 @@
+# *
+User-agent: *
+Allow: /
+Disallow: /admin
+
+# Host
+Host: https://ivanmalks.online
+
+# Sitemaps
+Sitemap: https://ivanmalks.online/sitemap.xml

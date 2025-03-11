@@ -2,21 +2,27 @@
 
 import { PopoverGroup } from '@headlessui/react';
 import Link from 'next/link';
-import * as React from 'react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useTheme } from 'next-themes';
 import { Moon, Sun } from 'lucide-react';
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTrigger,
+} from '@/components/ui/drawer';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { theme, setTheme } = useTheme();
 
   return (
-    <header className="border-b border-gray-200">
+    <header className="sticky top-0 z-50 border-b-2 border-dotted bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <nav
         aria-label="Global"
-        className="mx-auto flex  items-center justify-between p-6 lg:px-8 max-w-screen-2xl"
+        className="mx-auto flex items-center justify-between p-6 lg:px-8 max-w-screen-2xl"
       >
         <div className="flex lg:flex-1">
           <Link
@@ -50,6 +56,14 @@ export default function Header() {
           >
             Регистрация на проект
           </Link>
+          <Link
+            href={{
+              pathname: '/company/create-project',
+            }}
+            className="text-sm/6 font-semibold"
+          >
+            Создать проект
+          </Link>
         </PopoverGroup>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end mr-12">
           <Link href="/login" className="text-sm/6 font-semibold">
@@ -69,108 +83,105 @@ export default function Header() {
 
         {/* Mobile Menu Button */}
         <div className="flex lg:hidden">
-          <button
-            type="button"
-            className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700"
-            onClick={() => setIsMenuOpen(true)}
-          >
-            <svg
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="1.5"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
-              />
-            </svg>
-          </button>
-        </div>
-      </nav>
-
-      {/* Mobile Menu (Drawer) */}
-      <div className={`lg:hidden ${isMenuOpen ? 'block' : 'hidden'}`}>
-        <div className="fixed inset-0 z-50" onClick={() => setIsMenuOpen(false)} />
-        <div
-          className={`fixed inset-y-0 right-0 z-50 w-full bg-card overflow-y-auto  sm:max-w-sm`}
-        >
-          <div className="flex items-center justify-between px-6 py-6">
-            <Link href="/" className="-m-1.5 p-1.5 font-bold text-lg">
-              IKNT PROJECTS
-            </Link>
-
-            <button
-              type="button"
-              className="-m-2.5 rounded-md p-2.5 text-gray-700"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              <span className="sr-only">Close menu</span>
-              <svg
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
+          <Drawer open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+            <DrawerTrigger asChild>
+              <button
+                type="button"
+                className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </div>
-
-          <div className="mt-6">
-            <div className="">
-              <div className="flex flex-col gap-0">
-                <Link
-                  href="#"
-                  className=" block  px-3 py-3 text-base font-semibold  hover:bg-gray-50 w-full text-center md:text-left border-2"
+                <svg
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="1.5"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+                  />
+                </svg>
+              </button>
+            </DrawerTrigger>
+            <DrawerContent>
+              <DrawerHeader className="flex items-center justify-between px-6 py-6">
+                <Link href="/" className="-m-1.5 p-1.5 font-bold text-lg">
+                  IKNT PROJECTS
+                </Link>
+                <button
+                  type="button"
+                  className="-m-2.5 rounded-md p-2.5 text-gray-700"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  Проекты
-                </Link>
-                <Link
-                  href="/student/teams"
-                  className=" block  px-3 py-3 text-base font-semibold hover:bg-gray-50 w-full text-center md:text-left border-b-2 "
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Команды
-                </Link>
-                <Link
-                  href="/student/join-project"
-                  className=" block  px-3 py-3 text-base font-semibold hover:bg-gray-50 w-full text-center md:text-left border-b-2 "
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Регистрация на проект
-                </Link>
-
-                <div>
+                  <span className="sr-only">Close menu</span>
+                  <svg
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="1.5"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </DrawerHeader>
+              <ScrollArea className="h-[calc(100vh-350px)] px-6">
+                <div className="flex flex-col gap-0">
                   <Link
-                    href="/login"
-                    className=" px-3 py-3  block rounded-lg  text-center font-semibold hover:bg-gray-50 md:text-left  border-b-2"
+                    href="#"
+                    className="block px-3 py-3 text-base font-semibold w-full text-center md:text-left border-t-2 border-b-2"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Вход
+                    Проекты
                   </Link>
+                  <Link
+                    href="/student/teams"
+                    className="block px-3 py-3 text-base font-semibold w-full text-center md:text-left border-b-2"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Команды
+                  </Link>
+                  <Link
+                    href="/student/join-project"
+                    className="block px-3 py-3 text-base font-semibold  w-full text-center md:text-left border-b-2"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Регистрация на проект
+                  </Link>
+                  <Link
+                    href="/company/create-project"
+                    className="block px-3 py-3 text-base font-semibold w-full text-center md:text-left border-b-2"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Создать проект
+                  </Link>
+                  <div>
+                    <Link
+                      href="/login"
+                      className="px-3 py-3 block rounded-lg text-center font-semibold md:text-left border-b-2"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Вход
+                    </Link>
+                  </div>
+                  <Button
+                    onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+                    variant="ghost"
+                    className="w-full block border-b-2 px-3 py-3 h-auto opacity-100 md:text-left text-inherit"
+                  >
+                    {theme === 'light' ? 'Тёмная тема' : 'Светлая тема'}
+                  </Button>
                 </div>
-
-                <Button
-                  onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-                  variant="ghost"
-                  className="w-full block border-b-2 px-3 py-3 h-auto opacity-100 md:text-left text-inherit"
-                >
-                  {theme === 'light' ? 'Тёмная тема' : 'Светлая тема'}
-                </Button>
-              </div>
-            </div>
-          </div>
+              </ScrollArea>
+            </DrawerContent>
+          </Drawer>
         </div>
-      </div>
+      </nav>
     </header>
   );
 }
