@@ -1,5 +1,7 @@
 'use client';
 
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import {
   Form,
   FormControl,
@@ -9,28 +11,27 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import {
-  REGISTER_FORM_SCHEMA,
-  DEFAULT_FORM_VALUES,
-  LOCALSTORAGE_NAME,
-  UPLOAD_RESUME_DELAY,
-  RESUME_UPLOAD_URL,
-  REDIRECT_DELAY,
-} from './lib/constant';
-import { useEffect, useState, useRef } from 'react';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { CREATE_STUDENT } from './api/mutations';
-import { useMutation } from '@apollo/client';
-import { toast } from 'sonner';
 import { useAxios } from '@/lib';
-import { Card } from '@/components/ui/card';
+import { useMutation } from '@apollo/client';
+import { zodResolver } from '@hookform/resolvers/zod';
 import cn from 'classnames';
 import { useRouter } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import { z } from 'zod';
+import { CREATE_STUDENT } from './api/mutations';
+import {
+  DEFAULT_FORM_VALUES,
+  LOCALSTORAGE_NAME,
+  REDIRECT_DELAY,
+  REGISTER_FORM_SCHEMA,
+  RESUME_UPLOAD_URL,
+  UPLOAD_RESUME_DELAY,
+} from './lib/constant';
+import { TeamsSelect } from './ui';
 
 export default function Page() {
   const [isLoading, setIsLoading] = useState(false);
@@ -39,6 +40,7 @@ export default function Page() {
   const [createStudent] = useMutation(CREATE_STUDENT);
   const api = useAxios();
   const router = useRouter();
+  const [isCreatingTeam, setIsCreatingTeam] = useState(false); // Состояние для переключения режима
 
   const form = useForm<z.infer<typeof REGISTER_FORM_SCHEMA>>({
     resolver: zodResolver(REGISTER_FORM_SCHEMA),
@@ -195,20 +197,66 @@ export default function Page() {
               <FormField
                 control={form.control}
                 name="commandName"
-                render={({ field }) => (
+                render={() => (
                   <FormItem>
-                    <FormLabel>Название команды</FormLabel>
+                    <FormLabel>Режим команды</FormLabel>
                     <FormControl>
-                      <Input {...field} className="w-full" />
+                      <RadioGroup
+                        defaultValue="select"
+                        onValueChange={value => setIsCreatingTeam(value === 'create')}
+                      >
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="select" />
+                          </FormControl>
+                          <FormLabel className="font-normal">Выбрать команду</FormLabel>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="create" />
+                          </FormControl>
+                          <FormLabel className="font-normal">Создать команду</FormLabel>
+                        </FormItem>
+                      </RadioGroup>
                     </FormControl>
-                    <FormDescription className="text-red-500">
-                      Название команды должно полностью совпадать у всех членов команды,
-                      если ещё не определись с командой оставьте поле пустым
+                    <FormDescription>
+                      Если вашей команды нет в списке обновите страницу или создайте
+                      команду с идентичным названием
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
+              {isCreatingTeam ? (
+                <FormField
+                  control={form.control}
+                  name="commandName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Название новой команды</FormLabel>
+                      <FormControl>
+                        <Input {...field} className="w-full" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              ) : (
+                <FormField
+                  control={form.control}
+                  name="commandName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Выберите команду</FormLabel>
+                      <FormControl>
+                        <TeamsSelect value={field.value} onValueChange={field.onChange} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
 
               <FormField
                 control={form.control}
