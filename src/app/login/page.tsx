@@ -120,7 +120,7 @@ export default function Page() {
       localStorage.removeItem(LOCALSTORAGE_NAME_STUDENT);
       formStudent.reset(DEFAULT_FORM_VALUES_STUDENT);
 
-      // TODO , оно пока что будет кидать в личный кабинет ибо нет данных с онлайн псу
+      // to-do , оно пока что будет кидать в личный кабинет ибо нет данных с онлайн псу
       setTimeout(() => {
         window.location.href = '/student/join-project';
       }, 500);
