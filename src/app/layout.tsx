@@ -8,6 +8,7 @@ import Header from '@/components/ui/header';
 import { AuthProvider } from '@/lib/auth/use-auth';
 import { ReactNode } from 'react';
 import Head from 'next/head';
+import { Footer } from '@/components/ui/footer';
 
 const firaCode = Fira_Code({
   variable: '--font-fira-code-sans',
@@ -84,8 +85,11 @@ export default function RootLayout({
         >
           <AuthProvider>
             <Header />
-            <ApolloWrapper>{children}</ApolloWrapper>
-            <Toaster />
+            <main>
+              <ApolloWrapper>{children}</ApolloWrapper>
+              <Toaster />
+            </main>
+            <Footer />
           </AuthProvider>
         </ThemeProvider>
       </body>
