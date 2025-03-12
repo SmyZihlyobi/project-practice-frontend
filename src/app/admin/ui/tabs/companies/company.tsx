@@ -13,6 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { Skeleton } from '@/components/ui/skeleton';
 import { observer } from 'mobx-react-lite';
 import { useEffect, useState } from 'react';
 import { useAdminStore } from '../../../store';
@@ -22,10 +23,12 @@ import { DeleteCompany } from './delete-company';
 export const Company = observer(({ id }: { id: string }) => {
   const { companiesStore } = useAdminStore;
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (isExpanded) {
-      companiesStore.getCompany(id);
+      setIsLoading(true);
+      companiesStore.getCompany(id).finally(() => setIsLoading(false));
     }
   }, [id, companiesStore, isExpanded]);
 
@@ -33,6 +36,17 @@ export const Company = observer(({ id }: { id: string }) => {
   if (!currentCompany) {
     return null;
   }
+  const renderSkeletonRow = (rowsCount: number, columnsCount: number) => {
+    return Array.from({ length: rowsCount }).map((_, rowIndex) => (
+      <TableRow key={rowIndex}>
+        {Array.from({ length: columnsCount }).map((_, colIndex) => (
+          <TableCell key={colIndex} className="w-1/3">
+            <Skeleton className="h-4 w-full" />
+          </TableCell>
+        ))}
+      </TableRow>
+    ));
+  };
 
   return (
     <AccordionItem
@@ -42,7 +56,11 @@ export const Company = observer(({ id }: { id: string }) => {
     >
       <AccordionTrigger>
         <div className="w-full flex justify-between mr-4">
-          <span className="font-medium">{currentCompany.name}</span>
+          {isLoading ? (
+            <Skeleton className="h-6 w-1/4" />
+          ) : (
+            <span className="font-medium">{currentCompany.name}</span>
+          )}
           {currentCompany.studentCompany && (
             <span className="text-sm text-muted-foreground">Студенческая компания</span>
           )}
@@ -58,17 +76,23 @@ export const Company = observer(({ id }: { id: string }) => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow>
-              <TableCell>{currentCompany.name}</TableCell>
-              <TableCell>{currentCompany.contacts}</TableCell>
-              <TableCell>{currentCompany.representative}</TableCell>
-            </TableRow>
+            {isLoading ? (
+              renderSkeletonRow(1, 3)
+            ) : (
+              <TableRow>
+                <TableCell>{currentCompany.name}</TableCell>
+                <TableCell>{currentCompany.contacts}</TableCell>
+                <TableCell>{currentCompany.representative}</TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
-        <div className="w-full flex gap-2 mt-4">
-          <DeleteCompany id={currentCompany.id} />
-          {!currentCompany.isApproved && <ApproveCompony id={currentCompany.id} />}
-        </div>
+        {!isLoading && (
+          <div className="w-full flex gap-2 mt-4">
+            <DeleteCompany id={currentCompany.id} />
+            {!currentCompany.isApproved && <ApproveCompony id={currentCompany.id} />}
+          </div>
+        )}
       </AccordionContent>
     </AccordionItem>
   );

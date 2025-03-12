@@ -8,6 +8,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { toast } from 'sonner';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -16,18 +17,20 @@ import { Button } from '@/components/ui/button';
 import {
   DEFAULT_FORM_VALUES,
   LOCALSTORAGE_NAME,
-} from '../registration-project/lib/constant';
+} from '../registration-company/lib/constant';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { REGISTRATION_PROJECT_FORM_SCHEMA } from '@/app/company/registration-project/lib/constant/registration-project-form-schema';
+import { REGISTRATION_COMPANY_FORM_SCHEMA } from '@/app/company/registration-company/lib/constant/registration-company-form-schema';
+import { Recaptcha } from '@/components/ui/recaptсha';
 
 export default function Page() {
   const [isLoading, setIsLoading] = useState(false);
-
-  const form = useForm<z.infer<typeof REGISTRATION_PROJECT_FORM_SCHEMA>>({
-    resolver: zodResolver(REGISTRATION_PROJECT_FORM_SCHEMA),
+  const [isCompanyRecaptchaConfirmed, setIsCompanyRecaptchaConfirmed] =
+    useState<boolean>(false);
+  const form = useForm<z.infer<typeof REGISTRATION_COMPANY_FORM_SCHEMA>>({
+    resolver: zodResolver(REGISTRATION_COMPANY_FORM_SCHEMA),
     defaultValues: DEFAULT_FORM_VALUES,
   });
 
@@ -48,7 +51,7 @@ export default function Page() {
   }, [form]);
 
   const onFormSubmit = async (
-    data: z.infer<typeof REGISTRATION_PROJECT_FORM_SCHEMA>,
+    data: z.infer<typeof REGISTRATION_COMPANY_FORM_SCHEMA>,
   ): Promise<void> => {
     try {
       setIsLoading(true);
@@ -61,6 +64,7 @@ export default function Page() {
       // to-do обработать ошибки
     } finally {
       setIsLoading(false);
+      toast.success('Заявка отправлена. Дождитесь одобрения администратора');
     }
   };
 
@@ -128,7 +132,7 @@ export default function Page() {
               />
               <FormField
                 control={form.control}
-                name="student_project"
+                name="studentProject"
                 render={({}) => (
                   <FormItem>
                     <Checkbox></Checkbox>
@@ -138,8 +142,15 @@ export default function Page() {
                 )}
               />
             </div>
-            <Button type="submit" disabled={isLoading} className="w-full md:w-auto">
-              Добавить
+            <Recaptcha
+              onChange={isVerified => setIsCompanyRecaptchaConfirmed(isVerified)}
+            />
+            <Button
+              type="submit"
+              disabled={isLoading || !isCompanyRecaptchaConfirmed}
+              className="w-full md:w-auto"
+            >
+              Зарегистрировать
             </Button>
 
             <Link

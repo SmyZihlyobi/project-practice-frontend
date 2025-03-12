@@ -26,9 +26,13 @@ import { useAxios } from '@/lib';
 import { JwtResponse } from './dto';
 import Cookies from 'js-cookie';
 import { JWT_COOKIE_NAME } from '@/lib/constant';
+import { Recaptcha } from '@/components/ui/recaptсha';
+import { toast } from 'sonner';
 
 export default function Page() {
   const [isLoading, setIsLoading] = useState(false);
+  const [isRecaptchaConfirmed, setIsRecaptchaConfirmed] = useState<boolean>(false);
+
   const api = useAxios();
 
   const form = useForm<z.infer<typeof RESET_PASSWORD_FORM_SCHEMA>>({
@@ -48,11 +52,13 @@ export default function Page() {
   ): Promise<void> => {
     try {
       setIsLoading(true);
+      toast.success('На указанную почту прийдет новый пароль');
 
-      const response = await api.post<JwtResponse>('/company/change-password', data);
+      const response = await api.post<JwtResponse>(
+        `/company/change-password?email=${data.email}`,
+      );
 
       Cookies.set(JWT_COOKIE_NAME, response.data.token);
-      console.log(response);
       localStorage.removeItem(LOCALSTORAGE_NAME);
       form.reset(DEFAULT_FORM_VALUES);
     } catch (error) {
@@ -62,7 +68,6 @@ export default function Page() {
     }
   };
 
-  /* еще логика*/
   return (
     <div className="w-full md:w-1/2 mx-auto mt-5 mb-3 px-4">
       <Card className="p-4">
@@ -88,7 +93,12 @@ export default function Page() {
                 )}
               />
             </div>
-            <Button type="submit" disabled={isLoading} className="w-full md:w-auto">
+            <Recaptcha onChange={isVerified => setIsRecaptchaConfirmed(isVerified)} />
+            <Button
+              type="submit"
+              disabled={isLoading || !isRecaptchaConfirmed}
+              className="w-full md:w-auto"
+            >
               Отправить
             </Button>
             <div className="inline-flex">

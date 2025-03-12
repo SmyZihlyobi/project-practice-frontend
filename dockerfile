@@ -11,10 +11,10 @@ WORKDIR /app
 # Копируем файлы зависимостей
 COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* .npmrc* ./
 
-# Устанавливаем зависимости в зависимости от lock-файла
+# Устанавливаем зависимости
 RUN \
-  if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
-  elif [ -f package-lock.json ]; then npm ci; \
+  if [ -f yarn.lock ]; then yarn --frozen-lockfile --network-concurrency 1; \
+  elif [ -f package-lock.json ]; then npm ci --prefer-offline; \
   elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm i --frozen-lockfile; \
   else echo "Lockfile not found." && exit 1; \
   fi

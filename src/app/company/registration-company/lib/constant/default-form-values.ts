@@ -3,5 +3,5 @@ export const DEFAULT_FORM_VALUES = {
   name: '',
   representative: '',
   contacts: '',
-  student_project_checkbox: false,
+  studentProject: false,
 };
