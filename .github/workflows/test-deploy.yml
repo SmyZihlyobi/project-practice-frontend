@@ -118,26 +118,22 @@ jobs:
             --wait --timeout 5m
 #            --set ingress.enabled=false \
 
-      - name: Post-deployment Test 2
+      - name: Post-deployment Tests
         run: |
+          echo "=== Rollout ==="
+          kubectl rollout status deployment/frontend -n $CLUSTER_NAMESPACE
+
           echo "=== Pods ==="
           kubectl get pods -n $CLUSTER_NAMESPACE -o wide
-          
+
+          echo "=== Deployment Describe ==="
+          kubectl describe deployment/frontend -n $CLUSTER_NAMESPACE
+
           echo "=== Events ==="
           kubectl get events -n $CLUSTER_NAMESPACE --sort-by=.metadata.creationTimestamp
           
-          echo "=== Deployment Describe ==="
-          kubectl describe deployment/frontend -n $CLUSTER_NAMESPACE
-          
           echo "=== Pod Logs ==="
           kubectl logs -n $CLUSTER_NAMESPACE -l app.kubernetes.io/instance=frontend --tail=50
-
-      - name: Post-deployment Test 1
-        run: |
-          kubectl rollout status deployment/frontend -n $CLUSTER_NAMESPACE
-          kubectl get pods -n $CLUSTER_NAMESPACE -o wide
-          kubectl describe deployment/frontend -n $CLUSTER_NAMESPACE
-#          kubectl get pods -n $CLUSTER_NAMESPACE -l app.kubernetes.io/instance=frontend
 
 #  deploy-prod:
 #    needs: deploy-staging
