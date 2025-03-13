@@ -36,6 +36,12 @@ import { toast } from 'sonner';
 export default function Page() {
   const api = useAxios();
   const [isLoading, setIsLoading] = useState(false);
+  const [inputType, setInputType] = useState('password');
+
+  const toggleInput = () => {
+    setInputType(inputType === 'password' ? 'text' : 'password');
+  };
+
   const [isCompanyRecaptchaConfirmed, setIsCompanyRecaptchaConfirmed] =
     useState<boolean>(false);
   const [isStudentRecaptchaConfirmed, setIsStudentRecaptchaConfirmed] =
@@ -115,7 +121,6 @@ export default function Page() {
       setIsLoading(true);
       toast.success('Вы успешно вошли как студент');
 
-      // to-do переписать на запрос под бек
       console.log(data);
       localStorage.removeItem(LOCALSTORAGE_NAME_STUDENT);
       formStudent.reset(DEFAULT_FORM_VALUES_STUDENT);
@@ -175,8 +180,13 @@ export default function Page() {
                       <FormItem>
                         <FormLabel>Пароль</FormLabel>
                         <FormControl>
-                          <Input {...field} type="password" className="w-full" />
+                          <Input {...field} type={inputType} className="w-full" />
                         </FormControl>
+
+                        {/*Сделать красиво */}
+                        <button onClick={toggleInput} type="button">
+                          Показать пароль
+                        </button>
                         <FormMessage />
                       </FormItem>
                     )}
