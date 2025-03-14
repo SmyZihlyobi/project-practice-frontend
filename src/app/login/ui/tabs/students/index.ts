@@ -1,1 +1,1 @@
-export { StudentsFormTab } from './students-tab';
+export { LoginStudentForm } from './login-students-form';

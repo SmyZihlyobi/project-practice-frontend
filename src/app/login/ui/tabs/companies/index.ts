@@ -1,1 +1,1 @@
-export { CompaniesFormTab } from './companies-tab';
+export { LoginCompanyForm } from './login-companies-form';

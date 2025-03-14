@@ -1,5 +1,5 @@
-import { LoginTabs } from '@/app/login/ui';
+import { LoginPage } from '@/app/login/ui';
 
 export default function Page() {
-  return <LoginTabs />;
+  return <LoginPage />;
 }

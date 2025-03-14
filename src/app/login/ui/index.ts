@@ -1,1 +1,1 @@
-export { LoginTabs } from './login-tabs';
+export { LoginPage } from './login-page';
