@@ -32,15 +32,14 @@ import {
 } from './lib/constant/student';
 import { Recaptcha } from '@/components/ui/recaptсha';
 import { toast } from 'sonner';
+import { Eye, EyeOff } from 'lucide-react';
 
 export default function Page() {
   const api = useAxios();
   const [isLoading, setIsLoading] = useState(false);
-  const [inputType, setInputType] = useState('password');
+  const [isVisible, setIsVisible] = useState(false);
 
-  const toggleInput = () => {
-    setInputType(inputType === 'password' ? 'text' : 'password');
-  };
+  const toggleVisibility = () => setIsVisible(prevState => !prevState);
 
   const [isCompanyRecaptchaConfirmed, setIsCompanyRecaptchaConfirmed] =
     useState<boolean>(false);
@@ -177,18 +176,35 @@ export default function Page() {
                     control={formStudent.control}
                     name="password"
                     render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Пароль</FormLabel>
-                        <FormControl>
-                          <Input {...field} type={inputType} className="w-full" />
-                        </FormControl>
+                      <div className="relative">
+                        <FormItem>
+                          <FormLabel>Пароль</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              aria-label="Password"
+                              type={isVisible ? 'text' : 'password'}
+                              className="w-full"
+                            />
+                          </FormControl>
 
-                        {/*Сделать красиво */}
-                        <button onClick={toggleInput} type="button">
-                          Показать пароль
-                        </button>
-                        <FormMessage />
-                      </FormItem>
+                          <button
+                            className="absolute top-8 end-0 flex items-center z-20 px-2.5 cursor-pointer rounded-e-md focus:outline-none"
+                            type="button"
+                            onClick={toggleVisibility}
+                            aria-label={isVisible ? 'Hide password' : 'Show password'}
+                            aria-pressed={isVisible}
+                            aria-controls="password"
+                          >
+                            {isVisible ? (
+                              <Eye size={20} aria-hidden="true" />
+                            ) : (
+                              <EyeOff size={20} aria-hidden="true" />
+                            )}
+                          </button>
+                          <FormMessage />
+                        </FormItem>
+                      </div>
                     )}
                   />
                 </div>
@@ -230,13 +246,35 @@ export default function Page() {
                     control={formCompany.control}
                     name="password"
                     render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Пароль</FormLabel>
-                        <FormControl>
-                          <Input {...field} type="password" className="w-full" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
+                      <div className="relative">
+                        <FormItem>
+                          <FormLabel>Пароль</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              aria-label="Password"
+                              type={isVisible ? 'text' : 'password'}
+                              className="w-full"
+                            />
+                          </FormControl>
+
+                          <button
+                            className="absolute top-8 end-0 flex items-center z-20 px-2.5 cursor-pointer rounded-e-md focus:outline-none"
+                            type="button"
+                            onClick={toggleVisibility}
+                            aria-label={isVisible ? 'Hide password' : 'Show password'}
+                            aria-pressed={isVisible}
+                            aria-controls="password"
+                          >
+                            {isVisible ? (
+                              <Eye size={20} aria-hidden="true" />
+                            ) : (
+                              <EyeOff size={20} aria-hidden="true" />
+                            )}
+                          </button>
+                          <FormMessage />
+                        </FormItem>
+                      </div>
                     )}
                   />
                 </div>
