@@ -25,10 +25,6 @@ export const TeamsSelect = (props: React.ComponentProps<typeof Select>) => {
     getTeams();
   }, [getTeams]);
 
-  if (loading) {
-    return <Skeleton />;
-  }
-
   if (error) {
     return <div>Error: {error.message}</div>;
   }
@@ -39,11 +35,17 @@ export const TeamsSelect = (props: React.ComponentProps<typeof Select>) => {
         <SelectValue placeholder="Выбери команду" />
       </SelectTrigger>
       <SelectContent>
-        {data?.teams.map(team => (
-          <SelectItem key={team.name} value={team.name}>
-            {team.name}
+        {!loading ? (
+          data?.teams.map(team => (
+            <SelectItem key={team.name} value={team.name}>
+              {team.name}
+            </SelectItem>
+          ))
+        ) : (
+          <SelectItem key={'loading'} value="">
+            <Skeleton />
           </SelectItem>
-        ))}
+        )}
       </SelectContent>
     </Select>
   );
