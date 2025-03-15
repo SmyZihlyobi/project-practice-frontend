@@ -81,7 +81,7 @@ export function LoginStudentForm({
   return (
     <Form {...formStudent}>
       <form
-        className={cn('flex flex-col gap-6', className)}
+        className={cn('flex flex-col gap-6 pb-12', className)}
         onSubmit={formStudent.handleSubmit(onFormSubmitST)}
         {...props}
       >
