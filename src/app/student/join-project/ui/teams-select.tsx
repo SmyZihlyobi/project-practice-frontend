@@ -35,16 +35,16 @@ export const TeamsSelect = (props: React.ComponentProps<typeof Select>) => {
         <SelectValue placeholder="Выбери команду" />
       </SelectTrigger>
       <SelectContent>
-        {!loading ? (
+        {loading ? (
+          <SelectItem value="loading" disabled>
+            <Skeleton className="h-4 w-full" />
+          </SelectItem>
+        ) : (
           data?.teams.map(team => (
             <SelectItem key={team.name} value={team.name}>
               {team.name}
             </SelectItem>
           ))
-        ) : (
-          <SelectItem key={'loading'} value="">
-            <Skeleton />
-          </SelectItem>
         )}
       </SelectContent>
     </Select>
