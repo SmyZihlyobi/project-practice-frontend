@@ -1,19 +1,19 @@
 import { z } from 'zod';
-import { ruCensor } from '@/lib';
+import { ruCensor } from '@/lib/censor';
 
 const REGISTRATION_COMPANY_FORM_CONFIG = {
   name: z
     .string()
     .max(255, { message: 'Название компании не может превышать 256 символов' })
     .refine(val => val.trim() !== '', { message: 'Необходимо заполнить' })
-    .refine(val => !ruCensor.parse(val, '').isFindBadWords, {
+    .refine(val => !ruCensor.isContainsBadWords(val), {
       message: 'Название компании содержит недопустимые слова',
     }),
   representative: z
     .string()
     .max(255, { message: 'Имя представителя не может превышать 256 символов' })
     .refine(val => val.trim() !== '', { message: 'Необходимо заполнить' })
-    .refine(val => !ruCensor.parse(val, '').isFindBadWords, {
+    .refine(val => !ruCensor.isContainsBadWords(val), {
       message: 'Имя представителя содержит недопустимые слова',
     }),
   contacts: z
