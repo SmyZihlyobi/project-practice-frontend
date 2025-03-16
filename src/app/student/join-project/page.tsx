@@ -40,7 +40,7 @@ export default function Page() {
   const [createStudent] = useMutation(CREATE_STUDENT);
   const api = useAxios();
   const router = useRouter();
-  const [isCreatingTeam, setIsCreatingTeam] = useState(false); // Состояние для переключения режима
+  const [isCreatingTeam, setIsCreatingTeam] = useState(false);
 
   const form = useForm<z.infer<typeof REGISTER_FORM_SCHEMA>>({
     resolver: zodResolver(REGISTER_FORM_SCHEMA),
