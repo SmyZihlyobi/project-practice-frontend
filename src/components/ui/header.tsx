@@ -179,6 +179,7 @@ export default function Header() {
                   >
                     Регистрация на проект
                   </Link>
+                  {/* to-do только для роли компания */}
                   <Link
                     href="/company/create-project"
                     className="block px-3 py-3 text-base font-semibold w-full text-center md:text-left border-b-2"
@@ -187,6 +188,7 @@ export default function Header() {
                     Создать проект
                   </Link>
                   <div>
+                    {/* to-do Сделать dropdown menu после входа*/}
                     {isLoggedIn ? (
                       <Button
                         onClick={handleLogout}

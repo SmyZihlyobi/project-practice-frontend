@@ -73,7 +73,7 @@ export const Students = observer((props: StudentsProps) => {
           </TableHeader>
           <TableBody>
             {isLoading
-              ? renderSkeletonRow(5, 1)
+              ? renderSkeletonRow(1, 5)
               : students.map(student => (
                   <TableRow key={student.id}>
                     <TableCell className="w-2/6">{`${student.firstName} ${student.lastName}`}</TableCell>
