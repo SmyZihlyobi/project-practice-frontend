@@ -1,25 +1,30 @@
 import { z } from 'zod';
+import { ruCensor } from '@/lib/censor';
 
 const REGISTRATION_COMPANY_FORM_CONFIG = {
   name: z
     .string()
     .max(255, { message: 'Название компании не может превышать 256 символов' })
-    .refine(val => val.trim() !== '', { message: 'Необходимо заполнить' }),
+    .refine(val => val.trim() !== '', { message: 'Необходимо заполнить' })
+    .refine(val => !ruCensor.isContainsBadWords(val), {
+      message: 'Название компании содержит недопустимые слова',
+    }),
   representative: z
     .string()
     .max(255, { message: 'Имя представителя не может превышать 256 символов' })
-    .refine(val => val.trim() !== '', { message: 'Необходимо заполнить' }),
-
+    .refine(val => val.trim() !== '', { message: 'Необходимо заполнить' })
+    .refine(val => !ruCensor.isContainsBadWords(val), {
+      message: 'Имя представителя содержит недопустимые слова',
+    }),
   contacts: z
     .string()
-    .max(255, { message: 'Длина контактов должны быть меньше 256 символов' })
+    .max(255, { message: 'Длина контактов должна быть меньше 256 символов' })
     .refine(val => val.trim() !== '', { message: 'Необходимо заполнить' }),
   email: z
     .string()
-    .email({ message: 'Неккоректный e-mail' })
+    .email({ message: 'Некорректный e-mail' })
     .max(255, { message: 'Почта не может превышать 256 символов' })
     .refine(val => val.trim() !== '', { message: 'Необходимо заполнить' }),
-
   studentProject: z.boolean().optional(),
 };
 

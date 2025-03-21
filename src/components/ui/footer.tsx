@@ -14,7 +14,7 @@ function Footer() {
       <Dialog>
         <DialogTrigger asChild>
           <div className="mt-12 text-center text-sm text-gray-600 flex ml-auto mr-auto w-max">
-            <Button variant="ghost">Создано с ❤️ командой Смузихлёбы (Тык ми)</Button>
+            <Button variant="ghost">Создано с ❤️ командой Смузихлёбы</Button>
           </div>
         </DialogTrigger>
         <DialogContent>

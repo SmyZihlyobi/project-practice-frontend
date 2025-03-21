@@ -2,7 +2,7 @@
 
 import { PopoverGroup } from '@headlessui/react';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useTheme } from 'next-themes';
 import { Moon, Sun } from 'lucide-react';
@@ -13,10 +13,26 @@ import {
   DrawerTrigger,
 } from '@/components/ui/drawer';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import Cookies from 'js-cookie';
+import { JWT_COOKIE_NAME } from '@/lib/constant';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { theme, setTheme } = useTheme();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const token = Cookies.get(JWT_COOKIE_NAME);
+    if (token) {
+      setIsLoggedIn(true);
+    }
+  }, []);
+
+  const handleLogout = () => {
+    Cookies.remove(JWT_COOKIE_NAME);
+    setIsLoggedIn(false);
+    window.location.href = '/';
+  };
 
   return (
     <header className="sticky top-0 z-50 border-b-2 border-dotted bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -66,9 +82,19 @@ export default function Header() {
           </Link>
         </PopoverGroup>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end mr-12">
-          <Link href="/login" className="text-sm/6 font-semibold">
-            Вход <span aria-hidden="true">&rarr;</span>
-          </Link>
+          {isLoggedIn ? (
+            <Button
+              onClick={handleLogout}
+              variant="ghost"
+              className="text-sm/6 font-semibold"
+            >
+              Выйти <span aria-hidden="true">&rarr;</span>
+            </Button>
+          ) : (
+            <Link href="/login" className="text-sm/6 font-semibold">
+              Вход <span aria-hidden="true">&rarr;</span>
+            </Link>
+          )}
         </div>
 
         <div className="hidden lg:block right-6 top-5">
@@ -153,6 +179,7 @@ export default function Header() {
                   >
                     Регистрация на проект
                   </Link>
+                  {/* to-do только для роли компания */}
                   <Link
                     href="/company/create-project"
                     className="block px-3 py-3 text-base font-semibold w-full text-center md:text-left border-b-2"
@@ -161,13 +188,24 @@ export default function Header() {
                     Создать проект
                   </Link>
                   <div>
-                    <Link
-                      href="/login"
-                      className="px-3 py-3 block rounded-lg text-center font-semibold md:text-left border-b-2"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Вход
-                    </Link>
+                    {/* to-do Сделать dropdown menu после входа*/}
+                    {isLoggedIn ? (
+                      <Button
+                        onClick={handleLogout}
+                        variant="ghost"
+                        className="w-full block border-b-2 px-3 py-3 h-auto opacity-100 md:text-left text-inherit"
+                      >
+                        Выйти
+                      </Button>
+                    ) : (
+                      <Link
+                        href="/login"
+                        className="px-3 py-3 block rounded-lg text-center font-semibold md:text-left border-b-2"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        Вход
+                      </Link>
+                    )}
                   </div>
                   <Button
                     onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}

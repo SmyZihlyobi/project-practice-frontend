@@ -29,6 +29,7 @@ export default function Page() {
   const [isLoading, setIsLoading] = useState(false);
   const [isCompanyRecaptchaConfirmed, setIsCompanyRecaptchaConfirmed] =
     useState<boolean>(false);
+
   const form = useForm<z.infer<typeof REGISTRATION_COMPANY_FORM_SCHEMA>>({
     resolver: zodResolver(REGISTRATION_COMPANY_FORM_SCHEMA),
     defaultValues: DEFAULT_FORM_VALUES,
@@ -135,7 +136,7 @@ export default function Page() {
                 name="studentProject"
                 render={({}) => (
                   <FormItem>
-                    <Checkbox></Checkbox>
+                    <Checkbox />
                     <FormLabel className="ml-4">Студенческий проект</FormLabel>
                     <FormMessage />
                   </FormItem>

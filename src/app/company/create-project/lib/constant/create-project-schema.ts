@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { STACK_REGEX } from './regex';
 import { MAX_FILE_SIZE } from './max-file-size';
+import { ruCensor } from '@/lib/censor';
 
 const CREATE_PROJECT_CONFIG = {
   name: z
@@ -8,18 +9,27 @@ const CREATE_PROJECT_CONFIG = {
     .max(256, { message: 'Название проекта не может превышать 256 символов' })
     .refine(val => val.trim() !== '', {
       message: 'Необходимо заполнить название проекта',
+    })
+    .refine(val => !ruCensor.isContainsBadWords(val), {
+      message: 'Название проекта содержит недопустимые слова',
     }),
   description: z
     .string()
     .max(1000, { message: 'Описание проекта не может превышать 1000 символов' })
     .refine(val => val.trim() !== '', {
       message: 'Необходимо заполнить описание проекта',
+    })
+    .refine(val => !ruCensor.isContainsBadWords(val), {
+      message: 'Описание проекта содержит недопустимые слова',
     }),
   stack: z
     .string()
     .max(500, { message: 'Стек технологий не может превышать 500 символов' })
     .refine(val => STACK_REGEX.test(val), {
       message: 'Стек технологий должен быть в формате: "reactjs, npm, nodejs"',
+    })
+    .refine(val => !ruCensor.isContainsBadWords(val), {
+      message: 'Стек технологий содержит недопустимые слова',
     }),
   teamsAmount: z
     .number()

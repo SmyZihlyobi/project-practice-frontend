@@ -1,11 +1,15 @@
 import { z } from 'zod';
 import { RESUME_SIZE_LIMIT } from './resume-size-limit';
 import { TELEGRAM_LINK_REGEX, OTHER_PRIORITY_REGEX, HH_URL_REGEX } from './regex';
+import { ruCensor } from '@/lib/censor';
 
 const REGISTER_FORM_CONFIG = {
   commandName: z
     .string()
     .max(256, { message: 'Имя команды не может превышать 256 символов' })
+    .refine(val => !ruCensor.isContainsBadWords(val), {
+      message: 'Название команды содержит недопустимые слова',
+    })
     .optional(),
   studentId: z
     .string()
@@ -18,14 +22,23 @@ const REGISTER_FORM_CONFIG = {
   lastName: z
     .string()
     .max(100, { message: 'Фамилия не может превышать 100 символов' })
-    .refine(val => val.trim() !== '', { message: 'Необходимо заполнить' }),
+    .refine(val => val.trim() !== '', { message: 'Необходимо заполнить' })
+    .refine(val => !ruCensor.isContainsBadWords(val), {
+      message: 'Фамилия содержит недопустимые слова',
+    }),
   firstName: z
     .string()
     .max(100, { message: 'Имя не может превышать 100 символов' })
-    .refine(val => val.trim() !== '', { message: 'Необходимо заполнить' }),
+    .refine(val => val.trim() !== '', { message: 'Необходимо заполнить' })
+    .refine(val => !ruCensor.isContainsBadWords(val), {
+      message: 'Имя содержит недопустимые слова',
+    }),
   patronymic: z
     .string()
     .max(100, { message: 'Отчество не может превышать 100 символов' })
+    .refine(val => !val || !ruCensor.isContainsBadWords(val), {
+      message: 'Отчество содержит недопустимые слова',
+    })
     .optional(),
   course: z
     .number()
