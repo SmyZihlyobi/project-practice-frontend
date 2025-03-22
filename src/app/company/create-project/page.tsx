@@ -27,13 +27,13 @@ import { useEffect, useState, useRef } from 'react';
 import { CREATE_PROJECT } from './api/mutations';
 import { useMutation } from '@apollo/client';
 import { toast } from 'sonner';
-import { useAxios } from '@/lib';
 import { Card } from '@/components/ui/card';
 import cn from 'classnames';
 import { useRouter } from 'next/navigation';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Markdown } from '@/components/ui/markdown';
 import { Textarea } from '@/components/ui/textarea';
+import { axiosInstance } from '@/lib/axios';
 
 export default function CreateProjectPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -41,7 +41,6 @@ export default function CreateProjectPage() {
   const presentationInputRef = useRef<HTMLInputElement>(null);
   const technicalSpecificationsInputRef = useRef<HTMLInputElement>(null);
   const [createProject] = useMutation(CREATE_PROJECT);
-  const api = useAxios();
   const router = useRouter();
 
   const delayedToast = (
@@ -91,7 +90,7 @@ export default function CreateProjectPage() {
       const formData = new FormData();
       formData.append('projectId', id);
       formData.append('file', presentation);
-      api.post(PRESENTATION_URL, formData);
+      axiosInstance.post(PRESENTATION_URL, formData);
       delayedToast('Презентация успешно доставлена', UPLOAD_FILE_DELAY, 'success');
     } catch (error) {
       delayedToast(
@@ -118,7 +117,7 @@ export default function CreateProjectPage() {
       const formData = new FormData();
       formData.append('projectId', id);
       formData.append('file', technicalSpecification);
-      api.post(TECHNICAL_SPECIFICATION_URL, formData);
+      axiosInstance.post(TECHNICAL_SPECIFICATION_URL, formData);
       delayedToast('ТЗ успешно доставлено', UPLOAD_FILE_DELAY, 'success');
     } catch (error) {
       delayedToast('Произошла ошибка при доставке ТЗ', UPLOAD_FILE_DELAY, 'error');
