@@ -4,8 +4,9 @@ on:
     branches:
       - main
     paths:
-      - 'Dockerfile' # Предполагаем, что ваш Dockerfile называется Dockerfile
+      - 'Dockerfile'
       - 'docker-compose.yml'
+  workflow_dispatch: # Добавлен триггер workflow_dispatch для ручного запуска
 
 jobs:
   publish_images:
@@ -18,9 +19,9 @@ jobs:
         uses: docker/setup-docker-compose@v2
 
       - name: Build image with Docker Compose
-        run: docker compose build web # Указываем сервис 'web' для сборки
+        run: docker compose build web
 
       - name: push image to docker hub
         run: |
           docker login -u th3ro -p ${{ secrets.DOCKER_HUB_TOKEN }}
-          docker push th3ro/smuzi_frontend:latest # Обновленное имя образа для push
+          docker push th3ro/smuzi_frontend:latest
