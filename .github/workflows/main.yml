@@ -1,0 +1,26 @@
+name: Build and Publish image to Docker Hub
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'Dockerfile' # Предполагаем, что ваш Dockerfile называется Dockerfile
+      - 'docker-compose.yml'
+
+jobs:
+  publish_images:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Compose
+        uses: docker/setup-docker-compose@v2
+
+      - name: Build image with Docker Compose
+        run: docker compose build web # Указываем сервис 'web' для сборки
+
+      - name: push image to docker hub
+        run: |
+          docker login -u th3ro -p ${{ secrets.DOCKER_HUB_TOKEN }}
+          docker push th3ro/smuzi_frontend:latest # Обновленное имя образа для push
