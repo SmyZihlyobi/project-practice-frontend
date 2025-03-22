@@ -5,6 +5,7 @@ on:
       - main
     paths:
       - 'Dockerfile' # Предполагаем, что ваш Dockerfile называется Dockerfile
+  workflow_dispatch: # Добавляем ручной триггер
 
 jobs:
   publish_images:
