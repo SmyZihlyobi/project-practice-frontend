@@ -1,7 +1,7 @@
-import { apolloClient } from '@/lib';
+import { apolloClient } from '@/lib/Apollo';
 import { makeAutoObservable } from 'mobx';
 import { GET_TEAMS_QUERY } from '../api/queries';
-import { GetTeamResponse, GetTeamsResponse, Team } from '../dto';
+import { GetTeamResponse, GetTeamsResponse, Team } from '../api/dto';
 import { GET_TEAM_QUERY } from '../api/queries/get-team';
 
 class TeamStore {

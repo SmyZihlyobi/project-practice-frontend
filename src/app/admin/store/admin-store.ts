@@ -2,10 +2,8 @@ import { makeAutoObservable } from 'mobx';
 import { TeamStore } from './teams-store';
 import { CompaniesStore } from './companies-store';
 import { ProjectStore } from './projects-store';
-import { useAxios } from '@/lib';
+import { axiosInstance } from '@/lib/axios';
 import { EXEL_EXPORT_API } from '../lib/constant';
-
-const api = useAxios;
 
 class AdminStore {
   public teamStore: TeamStore;
@@ -16,7 +14,7 @@ class AdminStore {
   async loadExelFile(): Promise<Blob> {
     try {
       this.isLoading = true;
-      const response = await api().get(EXEL_EXPORT_API, { responseType: 'blob' });
+      const response = await axiosInstance.get(EXEL_EXPORT_API, { responseType: 'blob' });
       return response.data;
     } catch (error) {
       console.log(error);

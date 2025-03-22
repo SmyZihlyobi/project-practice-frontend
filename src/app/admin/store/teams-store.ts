@@ -1,4 +1,5 @@
-import { apolloClient, useAxios } from '@/lib';
+import { apolloClient } from '@/lib/Apollo';
+import { axiosInstance } from '@/lib/axios';
 import { isApolloError } from '@apollo/client';
 import { makeAutoObservable } from 'mobx';
 import { toast } from 'sonner';
@@ -10,10 +11,13 @@ import {
 } from '../api/mutations';
 import { GET_TEAMS_QUERY } from '../api/queries';
 import { GET_TEAM_QUERY } from '../api/queries/get-team';
-import { DeleteStudentResponse, GetTeamResponse, GetTeamsResponse, Team } from '../dto';
+import {
+  DeleteStudentResponse,
+  GetTeamResponse,
+  GetTeamsResponse,
+  Team,
+} from '../api/dto';
 import { RESUME_API } from '../lib/constant';
-
-const api = useAxios;
 
 export class TeamStore {
   public teams: Team[] = [];
@@ -27,7 +31,7 @@ export class TeamStore {
   private async deleteStudentResume(resumePdf?: string): Promise<void> {
     try {
       this.loading = true;
-      await api().delete(`${RESUME_API}/${resumePdf}`);
+      await axiosInstance.delete(`${RESUME_API}/${resumePdf}`);
     } catch (error) {
       console.error(error);
     } finally {
@@ -243,7 +247,7 @@ export class TeamStore {
   async deleteAllResume() {
     try {
       this.loading = true;
-      await api().delete(`${RESUME_API}/clear-bucket`);
+      await axiosInstance.delete(`${RESUME_API}/clear-bucket`);
       toast.success('Все резюме успешно удалены');
     } catch (error) {
       console.error('ERROR while delete all resume', error);

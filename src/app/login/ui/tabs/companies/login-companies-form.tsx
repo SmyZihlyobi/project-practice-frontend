@@ -2,7 +2,7 @@ import { Input } from '@/components/ui/input';
 import cn from 'classnames';
 import { Recaptcha } from '@/components/ui/recaptсha';
 import { Button } from '@/components/ui/button';
-import { useAxios } from '@/lib';
+import { axiosInstance } from '@/lib/axios';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -13,7 +13,7 @@ import {
 } from '@/app/login/lib/constant';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
-import { JwtResponse } from '@/app/login/dto';
+import { JwtResponse } from '@/app/login/api/dto';
 import Cookies from 'js-cookie';
 import { JWT_COOKIE_NAME } from '@/lib/constant';
 import {
@@ -30,7 +30,6 @@ export function LoginCompanyForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<'form'>) {
-  const api = useAxios();
   const [isLoading, setIsLoading] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -67,7 +66,7 @@ export function LoginCompanyForm({
       setIsLoading(true);
       toast.success('Вы успешно вошли как компания');
 
-      const response = await api.post<JwtResponse>('/company/login', data);
+      const response = await axiosInstance.post<JwtResponse>('/company/login', data);
 
       Cookies.set(JWT_COOKIE_NAME, response.data.token);
       console.log(response);

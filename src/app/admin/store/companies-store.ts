@@ -1,14 +1,13 @@
 import { makeAutoObservable } from 'mobx';
-import { Company, GetCompaniesResponse, GetCompanyResponse } from '../dto';
-import { apolloClient, useAxios } from '@/lib';
+import { Company, GetCompaniesResponse, GetCompanyResponse } from '../api/dto';
+import { apolloClient } from '@/lib/Apollo';
+import { axiosInstance } from '@/lib/axios';
 import { GET_COMPANIES_QUERY, GET_COMPANY_QUERY } from '../api/queries';
 import { toast } from 'sonner';
 import { DELETE_ALL_COMPANIES_MUTATION, DELETE_COMPANY_MUTATION } from '../api/mutations';
 import { isAxiosError } from 'axios';
 import { isApolloError } from '@apollo/client';
 import { APPROVE_API } from '../lib/constant';
-
-const api = useAxios;
 
 export class CompaniesStore {
   public companies: Company[] = [];
@@ -124,7 +123,7 @@ export class CompaniesStore {
         throw new Error('Company not found');
       }
 
-      await api().post(`${APPROVE_API}?companyId=${id}`);
+      await axiosInstance.post(`${APPROVE_API}?companyId=${id}`);
 
       this.companies[companyToApproveIndex].isApproved = true;
       toast.success('Компания успешно одобрена');

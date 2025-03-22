@@ -1,19 +1,24 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { LOGIN_PATH } from '../constant';
 import { useAuth } from './use-auth';
 import { AuthCheckProps } from './types';
+import { DefaultAuthFallback } from './default-auth-fallback';
 
 export function AuthCheck({ children, fallback, requiredRole }: AuthCheckProps) {
   const { user, isLoading, isAuthenticated } = useAuth();
   const router = useRouter();
 
-  const hasRequiredRole = useCallback(() => {
-    if (!requiredRole || !user?.role) return true;
+  const resolvedFallback = useMemo(() => {
+    return fallback || <DefaultAuthFallback requiredRole={requiredRole} />;
+  }, [fallback, requiredRole]);
 
-    const userRoles = user.role;
+  const hasRequiredRole = useCallback(() => {
+    if (!requiredRole || !user?.roles) return true;
+
+    const userRoles = user.roles;
     return Array.isArray(requiredRole)
       ? requiredRole.some(role => userRoles.includes(role))
       : userRoles.includes(requiredRole);
@@ -27,12 +32,8 @@ export function AuthCheck({ children, fallback, requiredRole }: AuthCheckProps) 
     }
   }, [isLoading, isAuthenticated, router, hasRequiredRole]);
 
-  if (isLoading) {
-    return fallback ? <>{fallback}</> : <div>Загрузка...</div>;
-  }
-
-  if (!isAuthenticated || !hasRequiredRole()) {
-    return null;
+  if (isLoading || !isAuthenticated || !hasRequiredRole()) {
+    return <>{resolvedFallback}</>;
   }
 
   return <>{children}</>;

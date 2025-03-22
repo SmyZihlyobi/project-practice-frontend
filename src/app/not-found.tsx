@@ -1,12 +1,11 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import notFoundImg from '../../public/404.png';
 
 const NotFound: React.FC = () => {
   return (
     <div className="flex flex-col gap-4 w-full mx-auto items-center">
-      <Image src={notFoundImg} alt="Not Found" width={300} height={30} />
+      <Image src="/images/404/404.png" alt="Not Found" width={300} height={30} />
       <h1 className="text-9xl">404</h1>
       <h1 className="text-2xl font-semibold">Такой страницы нет</h1>
       <Link
