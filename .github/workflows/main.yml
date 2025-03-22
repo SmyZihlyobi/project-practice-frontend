@@ -1,9 +1,7 @@
 name: Build and Publish image to Docker Hub
 on:
   push:
-    branches:
-      - master
-      - development # Добавляем ветку development
+    branches: ["master","development"]
     paths:
       - 'Dockerfile' # Предполагаем, что ваш Dockerfile называется Dockerfile
   workflow_dispatch: # Добавляем ручной триггер
