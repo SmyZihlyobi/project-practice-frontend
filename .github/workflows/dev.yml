@@ -1,8 +1,8 @@
-name: Build and Publish image:latest to Docker Hub
+name: Build and Publish image:unstable to Docker Hub
 on:
   push:
     branches:
-      - master
+      - development
     paths:
       - 'Dockerfile' # Предполагаем, что ваш Dockerfile называется Dockerfile
   workflow_dispatch: # Добавляем ручной триггер
@@ -14,8 +14,8 @@ jobs:
       - name: checkout
         uses: actions/checkout@v4
       - name: build image
-        run: docker build . -t th3ro/smuzi_frontend:latest # Собираем образ из Dockerfile в корне
+        run: docker build . -t th3ro/smuzi_frontend:unstable # Собираем образ из Dockerfile в корне
       - name: push image to docker hub
         run: |
           docker login -u th3ro -p ${{ secrets.DOCKER_HUB_TOKEN }}
-          docker push th3ro/smuzi_frontend:latest
+          docker push th3ro/smuzi_frontend:unstable
