@@ -1,8 +1,7 @@
 name: Build and Publish image:unstable to Docker Hub
 on:
   push:
-    branches:
-      - development
+    branches: [ "development" ]
     paths:
       - 'Dockerfile' # Предполагаем, что ваш Dockerfile называется Dockerfile
   workflow_dispatch: # Добавляем ручной триггер
