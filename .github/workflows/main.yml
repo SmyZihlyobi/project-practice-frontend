@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Docker Compose
-        uses: docker/setup-docker-compose@v2
+        uses: docker/setup-docker-compose@latest
 
       - name: Build image with Docker Compose
         run: docker compose build web
