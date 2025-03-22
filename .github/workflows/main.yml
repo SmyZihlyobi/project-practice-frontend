@@ -2,7 +2,8 @@ name: Build and Publish image to Docker Hub
 on:
   push:
     branches:
-      - main
+      - master
+      - development # Добавляем ветку development
     paths:
       - 'Dockerfile' # Предполагаем, что ваш Dockerfile называется Dockerfile
   workflow_dispatch: # Добавляем ручной триггер
@@ -14,8 +15,19 @@ jobs:
       - name: checkout
         uses: actions/checkout@v4
       - name: build image
-        run: docker build . -t th3ro/smuzi_frontend:latest # Собираем образ из Dockerfile в корне
+        run: |
+          BRANCH_NAME=${GITHUB_REF_NAME} # Получаем имя текущей ветки
+          IMAGE_TAG=latest # По умолчанию тег latest для main
+          if [ "$BRANCH_NAME" == "development" ]; then
+            IMAGE_TAG=unstable # Меняем тег на unstable для development
+          fi
+          docker build . -t th3ro/smuzi_frontend:${IMAGE_TAG} # Собираем образ с определенным тегом
       - name: push image to docker hub
         run: |
+          BRANCH_NAME=${GITHUB_REF_NAME} # Получаем имя текущей ветки
+          IMAGE_TAG=latest # По умолчанию тег latest для main
+          if [ "$BRANCH_NAME" == "development" ]; then
+            IMAGE_TAG=unstable # Меняем тег на unstable для development
+          fi
           docker login -u th3ro -p ${{ secrets.DOCKER_HUB_TOKEN }}
-          docker push th3ro/smuzi_frontend:latest
+          docker push th3ro/smuzi_frontend:${IMAGE_TAG} # Публикуем образ с определенным тегом
