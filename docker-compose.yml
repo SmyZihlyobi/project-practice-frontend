@@ -2,7 +2,8 @@ version: '3.8'
 
 services:
   web:
-    build: 
+    image: th3ro/smuzi_frontend:latest
+    build:
       context: .
       args:
         DOCKER_BUILDKIT: 1
