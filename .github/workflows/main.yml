@@ -4,9 +4,7 @@ on:
     branches:
       - main
     paths:
-      - 'Dockerfile'
-      - 'docker-compose.yml'
-  workflow_dispatch: # Добавлен триггер workflow_dispatch для ручного запуска
+      - 'Dockerfile' # Предполагаем, что ваш Dockerfile называется Dockerfile
 
 jobs:
   publish_images:
@@ -14,13 +12,8 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v4
-
-      - name: Set up Docker Compose
-        uses: docker/setup-docker-compose@latest
-
-      - name: Build image with Docker Compose
-        run: docker compose build web
-
+      - name: build image
+        run: docker build . -t th3ro/smuzi_frontend:latest # Собираем образ из Dockerfile в корне
       - name: push image to docker hub
         run: |
           docker login -u th3ro -p ${{ secrets.DOCKER_HUB_TOKEN }}
