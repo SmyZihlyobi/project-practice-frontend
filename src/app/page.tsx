@@ -24,7 +24,7 @@ export default function Page() {
           </CardHeader>
           <CardContent className="flex flex-col items-center space-y-4">
             <Image
-              src="/students.jpg"
+              src="images/index/students.jpg"
               alt="Студенты"
               width={400}
               height={300}
@@ -53,7 +53,7 @@ export default function Page() {
           </CardHeader>
           <CardContent className="flex flex-col items-center space-y-4">
             <Image
-              src="/companies.jpg"
+              src="images/index/companies.jpg"
               alt="Компании"
               width={400}
               height={300}

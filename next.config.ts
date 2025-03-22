@@ -5,19 +5,13 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-
-  typescript: {
-    ignoreBuildErrors: true,
-  },
 
   webpack: (config, { webpack, dev }) => {
     if (!dev) {
       config.devtool = false;
     }
 
+    // Отключаем дев тулзы apollo graphql
     config.plugins.push(
       new webpack.DefinePlugin({
         'globalThis.__DEV__': JSON.stringify(dev),

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useReCaptcha } from 'next-recaptcha-v3';
-import { useAxios } from '@/lib';
+import { axiosInstance } from '@/lib/axios';
 import { Button } from './button';
 import { Skeleton } from './skeleton';
 
@@ -13,7 +13,6 @@ interface RecaptchaProps {
 export const Recaptcha = (props: RecaptchaProps) => {
   const { onChange } = props;
   const { executeRecaptcha } = useReCaptcha();
-  const api = useAxios();
   const [isVerified, setIsVerified] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -27,7 +26,7 @@ export const Recaptcha = (props: RecaptchaProps) => {
       const token = await executeRecaptcha('form_submit');
 
       if (token) {
-        const response = await api.post(
+        const response = await axiosInstance.post(
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/verify-recaptcha`,
           { token },
         );

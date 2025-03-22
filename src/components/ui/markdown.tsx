@@ -1,10 +1,11 @@
 import ReactMarkdown from 'react-markdown';
 import cn from 'classnames';
 
-export interface MarkdownProps extends React.HTMLAttributes<HTMLDivElement> {
+interface MarkdownProps extends React.HTMLAttributes<HTMLDivElement> {
   text: string;
 }
-export const Markdown = (props: MarkdownProps) => {
+
+const Markdown = (props: MarkdownProps) => {
   const { text, className } = props;
 
   return (
@@ -56,3 +57,5 @@ export const Markdown = (props: MarkdownProps) => {
     </div>
   );
 };
+
+export { Markdown };

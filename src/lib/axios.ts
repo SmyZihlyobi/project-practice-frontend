@@ -3,7 +3,7 @@ import Cookies from 'js-cookie';
 import { JWT_COOKIE_NAME } from './constant';
 import { loginPageMigration } from './utils';
 
-const axiosInstance = axios.create({
+export const axiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
 });
 
@@ -28,9 +28,3 @@ axiosInstance.interceptors.response.use(
     return Promise.reject(error);
   },
 );
-
-export const useAxios = () => {
-  return axiosInstance;
-};
-
-export default axiosInstance;
