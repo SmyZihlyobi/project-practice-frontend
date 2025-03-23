@@ -1,5 +1,6 @@
-import { Filter, Search, Teams } from './ui';
 import { Card } from '@/components/ui/card';
+
+import { Filter, Search, Teams, TeamsPagination } from './ui';
 
 export default function Pages() {
   return (
@@ -16,6 +17,9 @@ export default function Pages() {
             <Card className="p-4">
               <Search />
               <Teams />
+            </Card>
+            <Card className="p-4 mt-3">
+              <TeamsPagination />
             </Card>
           </div>
         </div>

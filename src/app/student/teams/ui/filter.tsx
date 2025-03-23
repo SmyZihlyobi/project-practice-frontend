@@ -1,10 +1,12 @@
 'use client';
 
 import { observer } from 'mobx-react-lite';
-import { useTeamStore } from '../store/team-store';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
+
 import { Card } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+
+import { useTeamStore } from '../store';
 
 export const Filter = observer(() => {
   const teamStore = useTeamStore;
