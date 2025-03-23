@@ -6,11 +6,11 @@ export const DefaultAuthFallback = (props: DefaultAuthFallbackProps) => {
 
   const getRoleText = (role: Roles): string => {
     switch (role) {
-      case Roles.ROLE_ADMIN:
+      case Roles.Admin:
         return 'администратор';
-      case Roles.ROLE_STUDENT:
+      case Roles.Student:
         return 'студент';
-      case Roles.ROLE_COMPANY:
+      case Roles.Company:
         return 'компания';
       default:
         return 'администратор';
