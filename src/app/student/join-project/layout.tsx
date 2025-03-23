@@ -1,11 +1,10 @@
 import { Metadata } from 'next';
-import { ReCaptchaProvider } from 'next-recaptcha-v3';
 import { ReactNode } from 'react';
 
 export const metadata: Metadata = {
-  title: 'Регистрация компании',
+  title: 'Присоединится к проекту | команде',
   description:
-    'Зарегистрируйте свою компанию чтобы потом выложить проект для проектной практики ИКНТ ПГНИУ',
+    'Сайт для управления проектами и командами по проектной деятельности ПГНИУ ИКНТ. Участвуйте в проектах, создавайте команды и развивайте навыки.',
   keywords: [
     'проектная практика',
     'ИКНТ',
@@ -15,7 +14,8 @@ export const metadata: Metadata = {
     'икнт',
     'пгниу',
     'проекты',
-    'регистрация компании',
+    'присоединиться',
+    'присоединиться к проекту',
   ],
   openGraph: {
     title: 'Проектная практика ИКНТ',
@@ -53,5 +53,5 @@ export default function Layout({
 }: Readonly<{
   children: ReactNode;
 }>) {
-  return <ReCaptchaProvider>{children}</ReCaptchaProvider>;
+  return <>{children}</>;
 }

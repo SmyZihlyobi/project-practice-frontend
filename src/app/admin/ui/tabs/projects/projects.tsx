@@ -29,7 +29,7 @@ export const Projects = observer(() => {
 
   return (
     <>
-      <h2 className="text-lg font-semibold mb-4">Список компаний</h2>
+      <h2 className="text-lg font-semibold mb-4">Список проектов</h2>
       {isLoading ? (
         renderSkeletonRow(5, 1)
       ) : projects.length === 0 ? (
