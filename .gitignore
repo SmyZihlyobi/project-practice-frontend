@@ -10,7 +10,9 @@
 !.yarn/releases
 !.yarn/versions
 
-public/sitemap*
+/public/sitemap-0.xml
+/public/sitemap.xml
+/public/robots.txt
 
 # testing
 /coverage
@@ -43,3 +45,5 @@ yarn-error.log*
 next-env.d.ts
 
 .vscode
+public/sitemap-0.xml
+public/sitemap-0.xml

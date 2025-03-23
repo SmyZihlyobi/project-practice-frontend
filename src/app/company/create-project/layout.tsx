@@ -1,7 +1,8 @@
+import { ReactNode } from 'react';
+
 import { AuthCheck } from '@/lib/auth/auth-check';
 import { Roles } from '@/lib/constant/roles';
 import { Metadata } from 'next';
-import { ReactNode } from 'react';
 
 export const metadata: Metadata = {
   title: 'Создание проекта',
@@ -52,5 +53,5 @@ export default function Layout({
 }: Readonly<{
   children: ReactNode;
 }>) {
-  return <AuthCheck requiredRole={Roles.ROLE_COMPANY}>{children}</AuthCheck>;
+  return <AuthCheck requiredRole={Roles.Company}>{children}</AuthCheck>;
 }

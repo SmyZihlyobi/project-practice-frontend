@@ -1,11 +1,13 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo } from 'react';
+
+import { useRouter } from 'next/navigation';
+
 import { LOGIN_PATH } from '../constant';
-import { useAuth } from './use-auth';
-import { AuthCheckProps } from './types';
 import { DefaultAuthFallback } from './default-auth-fallback';
+import { AuthCheckProps } from './types';
+import { useAuth } from './use-auth';
 
 export function AuthCheck({ children, fallback, requiredRole }: AuthCheckProps) {
   const { user, isLoading, isAuthenticated } = useAuth();
