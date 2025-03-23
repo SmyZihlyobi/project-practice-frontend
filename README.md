@@ -20,7 +20,12 @@ yarn dev
 ```
 
 ## Запуск прод версии
-
 ```
-docker compose up -d
+docker run -d \
+  -p 8080:80 \
+  -e NEXT_PUBLIC_BACKEND_URL="https://your-backend.com" \
+  -e NEXT_PUBLIC_FRONTEND_URL="https://your-frontend.com" \
+  -e NEXT_PUBLIC_RECAPTCHA_SITE_KEY="your_recaptcha_site_key_value" \
+  -e NEXT_PUBLIC_YANDEX_VERIFICATION="your_yandex_verification_value" \
+  th3ro/smuzi_frontend:latest
 ```
