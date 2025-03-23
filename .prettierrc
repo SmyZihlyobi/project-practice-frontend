@@ -5,7 +5,15 @@
   "singleQuote": true,
   "tabWidth": 2,
   "semi": true,
-  "importOrder": ["^react" ,"<THIRD_PARTY_MODULES>", "^@lib/(.*)$", "^@components/ui/(.*)$", "^[./]"],
+  "importOrder": [
+    "^react",
+    "<THIRD_PARTY_MODULES>",
+    "^@/lib",
+    "^@/components",
+    "^@/app",
+    "^[./]"
+  ],
   "importOrderSeparation": true,
-  "importOrderSortSpecifiers": true
+  "importOrderSortSpecifiers": true,
+  "plugins": ["@trivago/prettier-plugin-sort-imports"]
 }

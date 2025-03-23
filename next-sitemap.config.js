@@ -9,6 +9,7 @@ module.exports = {
         disallow: ['/admin'],
       },
     ],
+
     additionalSitemaps: [`${process.env.NEXT_PUBLIC_FRONTEND_URL}/sitemap.xml`],
   },
 };

@@ -2,12 +2,14 @@
 
 import { useCallback, useMemo } from 'react';
 
-import { Input } from '@/components/ui/input';
-import { debounce } from '@/lib/utils';
 import { observer } from 'mobx-react-lite';
 
+import { debounce } from '@/lib/utils';
+
+import { Input } from '@/components/ui/input';
+
 import { SEARCH_DELAY } from '../lib/constant';
-import { useTeamStore } from '../store/team-store';
+import { useTeamStore } from '../store';
 
 export const Search = observer(() => {
   const teamStore = useTeamStore;
