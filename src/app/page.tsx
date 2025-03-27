@@ -1,13 +1,14 @@
+import Image from 'next/image';
+
+import { Button } from '@/components/ui/button';
 import {
   Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter,
 } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import Image from 'next/image';
 
 export default function Page() {
   return (
@@ -24,7 +25,7 @@ export default function Page() {
           </CardHeader>
           <CardContent className="flex flex-col items-center space-y-4">
             <Image
-              src="images/index/students.jpg"
+              src="/images/index/students.jpg"
               alt="Студенты"
               width={400}
               height={300}
@@ -53,7 +54,7 @@ export default function Page() {
           </CardHeader>
           <CardContent className="flex flex-col items-center space-y-4">
             <Image
-              src="images/index/companies.jpg"
+              src="/images/index/companies.jpg"
               alt="Компании"
               width={400}
               height={300}

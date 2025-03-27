@@ -59,7 +59,6 @@
     "@testing-library/jest-dom": "6.6.3",
     "@testing-library/react": "16.2.0",
     "@testing-library/user-event": "14.6.1",
-    "@trivago/prettier-plugin-sort-imports": "5.2.2",
     "@types/js-cookie": "3.0.6",
     "@types/node": "20",
     "@types/react": "19",

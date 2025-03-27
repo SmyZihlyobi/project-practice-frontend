@@ -50,7 +50,7 @@ export default function Header() {
 
         {/* Desktop Navigation */}
         <div className="hidden lg:flex lg:gap-x-12">
-          <Link href="#" className="text-sm/6 font-semibold">
+          <Link href="/project" className="text-sm/6 font-semibold">
             Проекты
           </Link>
           <Link
@@ -123,7 +123,7 @@ export default function Header() {
             </DrawerTrigger>
             <DrawerContent>
               <DrawerHeader className="flex items-center justify-between px-6 py-6">
-                <Link href="/" className="-m-1.5 p-1.5 font-bold text-lg">
+                <Link href="/project" className="-m-1.5 p-1.5 font-bold text-lg">
                   IKNT PROJECTS
                 </Link>
                 <button
@@ -150,7 +150,7 @@ export default function Header() {
               <ScrollArea className="h-[calc(100vh-350px)] px-6">
                 <div className="flex flex-col gap-0">
                   <Link
-                    href="#"
+                    href="/project"
                     className="block px-3 py-3 text-base font-semibold w-full text-center md:text-left border-t-2 border-b-2"
                     onClick={() => setIsMenuOpen(false)}
                   >
