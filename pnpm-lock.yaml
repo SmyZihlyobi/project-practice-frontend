@@ -110,6 +110,9 @@ importers:
       react-markdown:
         specifier: 10.0.1
         version: 10.0.1(@types/react@19.0.10)(react@19.0.0)
+      russian-bad-word-censor:
+        specifier: ^1.0.8
+        version: 1.1.7
       sonner:
         specifier: 2.0.1
         version: 2.0.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -3588,6 +3591,9 @@ packages:
 
   run-parallel@1.2.0:
     resolution: {integrity: sha512-5l4VyZR86LZ/lDxZTR6jqL8AFE2S0IFLMP26AbjsLVADxHdhB/c0GUsH+y39UfCi3dzz8OlQuPmnaJOMoDHQBA==}
+
+  russian-bad-word-censor@1.1.7:
+    resolution: {integrity: sha512-ETtke5nXDiKoNjne/4OlSiqyR8pwcMt109QOeVHoWUh9MNu7FFnFOwhy7JfH6VP6ZZN4sq+MEoCwwkYfQoUUnA==}
 
   safe-array-concat@1.1.3:
     resolution: {integrity: sha512-AURm5f0jYEOydBj7VQlVvDrjeFgthDdEF5H1dP+6mNpoXOMo1quQqJ4wvJDyRZ9+pO3kGWoOdmV08cSv2aJV6Q==}
@@ -8248,6 +8254,8 @@ snapshots:
   run-parallel@1.2.0:
     dependencies:
       queue-microtask: 1.2.3
+
+  russian-bad-word-censor@1.1.7: {}
 
   safe-array-concat@1.1.3:
     dependencies:

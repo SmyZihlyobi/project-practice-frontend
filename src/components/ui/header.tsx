@@ -1,7 +1,15 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+
+import { PopoverGroup } from '@headlessui/react';
+import Cookies from 'js-cookie';
+import { Moon, Sun } from 'lucide-react';
+import { useTheme } from 'next-themes';
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+
+import { JWT_COOKIE_NAME } from '@/lib/constant';
+
 import { Button } from '@/components/ui/button';
 import {
   Drawer,
@@ -10,12 +18,10 @@ import {
   DrawerTrigger,
 } from '@/components/ui/drawer';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import Cookies from 'js-cookie';
-import { JWT_COOKIE_NAME } from '@/lib/constant';
-import { ThemeChanger } from './theme-change';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { theme, setTheme } = useTheme();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
@@ -49,8 +55,8 @@ export default function Header() {
         </div>
 
         {/* Desktop Navigation */}
-        <div className="hidden lg:flex lg:gap-x-12">
-          <Link href="#" className="text-sm/6 font-semibold">
+        <PopoverGroup className="hidden lg:flex lg:gap-x-12">
+          <Link href="/project" className="text-sm/6 font-semibold">
             Проекты
           </Link>
           <Link
@@ -77,7 +83,7 @@ export default function Header() {
           >
             Создать проект
           </Link>
-        </div>
+        </PopoverGroup>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end mr-12">
           {isLoggedIn ? (
             <Button
@@ -95,7 +101,13 @@ export default function Header() {
         </div>
 
         <div className="hidden lg:block right-6 top-5">
-          <ThemeChanger />
+          <Button
+            onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+            variant="ghost"
+            className="block px-3 py-3 h-auto opacity-100 text-inherit"
+          >
+            {theme === 'light' ? <Sun /> : <Moon />}
+          </Button>
         </div>
 
         {/* Mobile Menu Button */}
@@ -123,7 +135,7 @@ export default function Header() {
             </DrawerTrigger>
             <DrawerContent>
               <DrawerHeader className="flex items-center justify-between px-6 py-6">
-                <Link href="/" className="-m-1.5 p-1.5 font-bold text-lg">
+                <Link href="/project" className="-m-1.5 p-1.5 font-bold text-lg">
                   IKNT PROJECTS
                 </Link>
                 <button
@@ -150,7 +162,7 @@ export default function Header() {
               <ScrollArea className="h-[calc(100vh-350px)] px-6">
                 <div className="flex flex-col gap-0">
                   <Link
-                    href="#"
+                    href="/project"
                     className="block px-3 py-3 text-base font-semibold w-full text-center md:text-left border-t-2 border-b-2"
                     onClick={() => setIsMenuOpen(false)}
                   >
@@ -198,9 +210,13 @@ export default function Header() {
                       </Link>
                     )}
                   </div>
-                </div>
-                <div className="mt-2 max-w-fit ml-auto">
-                  <ThemeChanger />
+                  <Button
+                    onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+                    variant="ghost"
+                    className="w-full block border-b-2 px-3 py-3 h-auto opacity-100 md:text-left text-inherit"
+                  >
+                    {theme === 'light' ? 'Тёмная тема' : 'Светлая тема'}
+                  </Button>
                 </div>
               </ScrollArea>
             </DrawerContent>
