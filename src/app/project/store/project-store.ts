@@ -1,6 +1,6 @@
 import { makeAutoObservable } from 'mobx';
 import type { GetProjectResponse, Project } from '../dto/project';
-import { apolloClient } from '@/lib';
+import { apolloClient } from '@/lib/Apollo';
 import { GET_PROJECTS_QUERY } from '../api/queries/get-projects';
 
 class ProjectStore {
