@@ -1,15 +1,18 @@
 'use client';
 
-import { Accordion } from '@/components/ui/accordion';
-import { Students } from './students';
-import { observer } from 'mobx-react-lite';
 import { useEffect, useState } from 'react';
-import { useTeamStore } from '../store/team-store';
+
+import { observer } from 'mobx-react-lite';
+
+import { Accordion } from '@/components/ui/accordion';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
+import { useTeamStore } from '../store';
+import { Students } from './students';
+
 export const Teams = observer(() => {
-  const { getTeams, currentTeams } = useTeamStore;
+  const { getTeams, currentTeamsPage } = useTeamStore;
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -32,13 +35,13 @@ export const Teams = observer(() => {
       <h2 className="text-lg font-semibold mb-4">Список команд</h2>
       {isLoading ? (
         renderSkeletonRow(5, 1)
-      ) : currentTeams.length === 0 ? (
-        <div className="text-center text-gray-500 py-6">
+      ) : currentTeamsPage.length === 0 ? (
+        <div className="text-center py-6">
           <p>Ничего не найдено</p>
         </div>
       ) : (
         <Accordion type="multiple" className="w-full">
-          {currentTeams.map(team => (
+          {currentTeamsPage.map(team => (
             <Students key={team.id} id={team.id} />
           ))}
         </Accordion>

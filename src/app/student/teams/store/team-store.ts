@@ -1,12 +1,16 @@
-import { apolloClient } from '@/lib/Apollo';
 import { makeAutoObservable } from 'mobx';
-import { GET_TEAMS_QUERY } from '../api/queries';
+
+import { apolloClient } from '@/lib/Apollo';
+
 import { GetTeamResponse, GetTeamsResponse, Team } from '../api/dto';
+import { GET_TEAMS_QUERY } from '../api/queries';
 import { GET_TEAM_QUERY } from '../api/queries/get-team';
+import { TEAMS_PER_PAGE } from '../lib/constant';
 
 class TeamStore {
   private teams: Team[] = [];
   public loading: boolean = false;
+  public currentTeamPageIndex: number = 1;
   public currentTeams: Team[] = [];
 
   constructor() {
@@ -27,6 +31,25 @@ class TeamStore {
     } finally {
       this.loading = false;
     }
+  }
+
+  get currentTeamsPagesCount(): number {
+    return Math.ceil(this.currentTeams.length / TEAMS_PER_PAGE);
+  }
+
+  get currentTeamsPage(): Team[] {
+    const pageCount = this.currentTeamsPagesCount;
+    if (pageCount < 1) {
+      return [];
+    }
+    const startIdx = (this.currentTeamPageIndex - 1) * TEAMS_PER_PAGE;
+    const endIdx = this.currentTeamPageIndex * TEAMS_PER_PAGE;
+
+    return this.currentTeams.slice(startIdx, endIdx);
+  }
+
+  setCurrentPage(newPage: number): void {
+    this.currentTeamPageIndex = newPage;
   }
 
   async getTeam(id: string): Promise<void> {
@@ -58,8 +81,27 @@ class TeamStore {
 
   sortByCourse(course: number): void {
     this.currentTeams = this.teams.filter(team => {
-      const studentsInCourse = team.students.filter(student => student.year === course);
-      return studentsInCourse.length > 0;
+      const courseCounts: { [key: number]: number } = {};
+
+      team.students.forEach(student => {
+        if (courseCounts[student.year]) {
+          courseCounts[student.year]++;
+        } else {
+          courseCounts[student.year] = 1;
+        }
+      });
+
+      let predominantCourse = -1;
+      let maxCount = 0;
+
+      for (const [year, count] of Object.entries(courseCounts)) {
+        if (count > maxCount) {
+          maxCount = count;
+          predominantCourse = parseInt(year, 10);
+        }
+      }
+
+      return predominantCourse === course;
     });
   }
 
