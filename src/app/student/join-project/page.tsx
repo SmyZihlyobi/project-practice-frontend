@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { useAxios } from '@/lib';
+import { axiosInstance } from '@/lib/axios';
 import { useMutation } from '@apollo/client';
 import { zodResolver } from '@hookform/resolvers/zod';
 import cn from 'classnames';
@@ -38,7 +38,7 @@ export default function Page() {
   const [isSuccess, setIsSuccess] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [createStudent] = useMutation(CREATE_STUDENT);
-  const api = useAxios();
+
   const router = useRouter();
   const [isCreatingTeam, setIsCreatingTeam] = useState(false);
 
@@ -80,7 +80,7 @@ export default function Page() {
       formData.append('userId', String(id));
       formData.append('file', resumePDF);
 
-      await api.post(RESUME_UPLOAD_URL, formData);
+      await axiosInstance.post(RESUME_UPLOAD_URL, formData);
       await delayedToast(
         'Ваше резюме успешно доставлено',
         UPLOAD_RESUME_DELAY,

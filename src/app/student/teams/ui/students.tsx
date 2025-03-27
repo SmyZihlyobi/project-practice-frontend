@@ -1,10 +1,15 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+
+import { observer } from 'mobx-react-lite';
+
 import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   Table,
   TableBody,
@@ -13,11 +18,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Skeleton } from '@/components/ui/skeleton';
+
+import { useTeamStore } from '../store';
 import { StudentsProps } from '../types';
-import { observer } from 'mobx-react-lite';
-import { useEffect, useState } from 'react';
-import { useTeamStore } from '../store/team-store';
 
 export const Students = observer((props: StudentsProps) => {
   const { id } = props;

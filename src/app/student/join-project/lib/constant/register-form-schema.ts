@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { RESUME_SIZE_LIMIT } from './resume-size-limit';
 import { TELEGRAM_LINK_REGEX, OTHER_PRIORITY_REGEX, HH_URL_REGEX } from './regex';
-import { ruCensor } from '@/lib/censor';
+import { ruCensor } from '@/lib/ru-censor';
 
 const REGISTER_FORM_CONFIG = {
   commandName: z

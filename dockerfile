@@ -1,23 +1,10 @@
-# syntax=docker.io/docker/dockerfile:1
+FROM oven/bun:latest AS base
 
-# Базовый образ
-FROM node:20-alpine AS base
-
-# Этап установки зависимостей
 FROM base AS deps
-RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Копируем файлы зависимостей
-COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* .npmrc* ./
-
-# Устанавливаем зависимости
-RUN \
-  if [ -f yarn.lock ]; then yarn --frozen-lockfile --network-concurrency 1; \
-  elif [ -f package-lock.json ]; then npm ci --prefer-offline; \
-  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm i --frozen-lockfile; \
-  else echo "Lockfile not found." && exit 1; \
-  fi
+COPY package.json bun.lock* .npmrc* ./
+RUN bun install --frozen-lockfile
 
 # Этап сборки
 FROM base AS builder
@@ -28,25 +15,22 @@ COPY . .
 # Отключаем телеметрию Next.js
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Собираем приложение
-RUN \
-  if [ -f yarn.lock ]; then yarn run build; \
-  elif [ -f package-lock.json ]; then npm run build; \
-  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm run build; \
-  else echo "Lockfile not found." && exit 1; \
-  fi
+# Объявляем ARG для переменных, которые могут быть переданы во время сборки
+ARG NEXT_PUBLIC_BACKEND_URL
+ARG NEXT_PUBLIC_FRONTEND_URL
+ARG NEXT_PUBLIC_RECAPTCHA_SITE_KEY
+ARG NEXT_PUBLIC_YANDEX_VERIFICATION
 
-# Этап production
+# Создаем .env файл с переданными аргументами
+RUN echo "NEXT_PUBLIC_BACKEND_URL=${NEXT_PUBLIC_BACKEND_URL}" > .env \
+    && echo "NEXT_PUBLIC_FRONTEND_URL=${NEXT_PUBLIC_FRONTEND_URL}" >> .env \
+    && echo "NEXT_PUBLIC_RECAPTCHA_SITE_KEY=${NEXT_PUBLIC_RECAPTCHA_SITE_KEY}" >> .env \
+    && echo "NEXT_PUBLIC_YANDEX_VERIFICATION=${NEXT_PUBLIC_YANDEX_VERIFICATION}" >> .env
+
+RUN bun run build
+
 FROM nginx:alpine AS runner
 
-# Копируем статические файлы из сборки Next.js
 COPY --from=builder /app/out /usr/share/nginx/html
-
-# Копируем конфигурацию Nginx (опционально)
+COPY --from=builder /app/.env /usr/share/nginx/html/.env
 COPY nginx.conf /etc/nginx/nginx.conf
-
-# Открываем порт 80
-EXPOSE 80
-
-# Запускаем Nginx
-CMD ["nginx", "-g", "daemon off;"]

@@ -1,20 +1,27 @@
 'use client';
 
-import { Input } from '@/components/ui/input';
-import { debounce } from '@/lib/utils';
+import { useCallback, useMemo } from 'react';
+
 import { observer } from 'mobx-react-lite';
-import { useTeamStore } from '../store/team-store';
-import { useCallback } from 'react';
+
+import { debounce } from '@/lib/utils';
+
+import { Input } from '@/components/ui/input';
+
 import { SEARCH_DELAY } from '../lib/constant';
+import { useTeamStore } from '../store';
 
 export const Search = observer(() => {
   const teamStore = useTeamStore;
 
-  const handleSearch = useCallback(
-    debounce((value: string) => {
-      teamStore.findByName(value);
-    }, SEARCH_DELAY),
+  const debouncedFindByName = useMemo(
+    () => debounce((value: string) => teamStore.findByName(value), SEARCH_DELAY),
     [teamStore],
+  );
+
+  const handleSearch = useCallback(
+    (value: string) => debouncedFindByName(value),
+    [debouncedFindByName],
   );
 
   return (

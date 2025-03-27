@@ -22,8 +22,8 @@ import {
   DEFAULT_FORM_VALUES,
   LOCALSTORAGE_NAME,
 } from '@/app/company/reset-password/lib/constant';
-import { useAxios } from '@/lib';
-import { JwtResponse } from './dto';
+import { axiosInstance } from '@/lib/axios';
+import { JwtResponse } from './api/dto';
 import Cookies from 'js-cookie';
 import { JWT_COOKIE_NAME } from '@/lib/constant';
 import { Recaptcha } from '@/components/ui/recaptсha';
@@ -32,8 +32,6 @@ import { toast } from 'sonner';
 export default function Page() {
   const [isLoading, setIsLoading] = useState(false);
   const [isRecaptchaConfirmed, setIsRecaptchaConfirmed] = useState<boolean>(false);
-
-  const api = useAxios();
 
   const form = useForm<z.infer<typeof RESET_PASSWORD_FORM_SCHEMA>>({
     resolver: zodResolver(RESET_PASSWORD_FORM_SCHEMA),
@@ -54,7 +52,7 @@ export default function Page() {
       setIsLoading(true);
       toast.success('На указанную почту прийдет новый пароль');
 
-      const response = await api.post<JwtResponse>(
+      const response = await axiosInstance.post<JwtResponse>(
         `/company/change-password?email=${data.email}`,
       );
 

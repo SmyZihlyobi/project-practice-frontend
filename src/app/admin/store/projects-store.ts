@@ -1,13 +1,13 @@
 import { makeAutoObservable } from 'mobx';
-import { GetProjectResponse, GetProjectsResponse, Project } from '../dto';
+import { GetProjectResponse, GetProjectsResponse, Project } from '../api/dto';
 import { toast } from 'sonner';
-import { apolloClient, useAxios } from '@/lib';
 import { GET_PROJECT_QUERY, GET_PROJECTS_QUERY } from '../api/queries';
 import { isApolloError } from '@apollo/client';
 import { DELETE_ALL_PROJECTS_MUTATION, DELETE_PROJECT_MUTATION } from '../api/mutations';
 import { PRESENTATION_API, TECHNICAL_SPECIFICATION_API } from '../lib/constant';
+import { apolloClient } from '@/lib/Apollo';
+import { axiosInstance } from '@/lib/axios';
 
-const api = useAxios;
 export class ProjectStore {
   public projects: Project[] = [];
   public loading: boolean = false;
@@ -19,10 +19,10 @@ export class ProjectStore {
   private async deleteProjectFiles(project: Project) {
     try {
       this.loading = true;
-      await api().delete(
+      await axiosInstance.delete(
         `${TECHNICAL_SPECIFICATION_API}/${project.technicalSpecifications}`,
       );
-      await api().delete(`${PRESENTATION_API}/${project.presentation}`);
+      await axiosInstance.delete(`${PRESENTATION_API}/${project.presentation}`);
     } catch (error) {
       console.error(error);
     } finally {
@@ -162,7 +162,7 @@ export class ProjectStore {
   async deleteAllPresentations() {
     try {
       this.loading = true;
-      api().delete(`${PRESENTATION_API}/clear-bucket`);
+      axiosInstance.delete(`${PRESENTATION_API}/clear-bucket`);
     } catch (error) {
       console.error(error);
     } finally {
@@ -173,7 +173,7 @@ export class ProjectStore {
   async deleteAllTechnicalSpecification() {
     try {
       this.loading = true;
-      api().delete(`${TECHNICAL_SPECIFICATION_API}/clear-bucket`);
+      axiosInstance.delete(`${TECHNICAL_SPECIFICATION_API}/clear-bucket`);
     } catch (error) {
       console.error(error);
     } finally {

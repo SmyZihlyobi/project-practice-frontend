@@ -12,6 +12,7 @@ import { jwtDecode } from 'jwt-decode';
 import Cookies from 'js-cookie';
 import { JWT_COOKIE_NAME } from '../constant';
 import { AuthContextType, JwtPayload, User } from './types';
+import { Roles } from '../constant/roles';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -34,7 +35,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             id: decoded.id,
             email: decoded.email,
             name: decoded.name,
-            role: decoded.roles,
+            roles: decoded.roles as Roles[],
             is_student_company: decoded.is_student_company,
           });
         }
