@@ -185,7 +185,7 @@ export default function CreateProjectPage() {
       }
 
       setTimeout(() => {
-        router.push('/company/projects');
+        router.push('/project');
       }, REDIRECT_DELAY);
     } catch (error) {
       console.error(error);
