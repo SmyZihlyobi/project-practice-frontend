@@ -2,7 +2,7 @@ import { apolloClient } from '@/lib/Apollo';
 import { makeAutoObservable } from 'mobx';
 
 import { GET_PROJECTS_QUERY } from '../api/queries/get-projects';
-import type { GetProjectResponse, Project } from '../dto/project';
+import type { GetProjectResponse, Project } from '../api/dto/project';
 
 class ProjectStore {
   private projects: Project[] = [];
@@ -25,11 +25,9 @@ class ProjectStore {
       const response: GetProjectResponse = await apolloClient.query({
         query: GET_PROJECTS_QUERY,
       });
-      const companiesStudents = response.data.projects.filter(
-        project => !project.studentProject,
-      );
-      this.projects = companiesStudents;
-      this.currentProjects = companiesStudents;
+
+      this.projects = response.data.projects;
+      this.currentProjects = this.projects.filter(project => !!project.active);
 
       this.getStackItems();
       this.updatePaginatedProjects();
@@ -65,7 +63,7 @@ class ProjectStore {
   }
 
   filterByPresentation(isFiltered: boolean): void {
-    if (isFiltered) return;
+    if (isFiltered) this.currentProjects = this.projects;
     else
       this.currentProjects = this.currentProjects.filter(
         project =>
@@ -77,8 +75,28 @@ class ProjectStore {
     this.updatePaginatedProjects();
   }
 
+  filterByCompany(isFiltered: boolean): void {
+    if (isFiltered) this.currentProjects = this.projects;
+    else
+      this.currentProjects = this.currentProjects.filter(
+        project => !project.studentProject,
+      );
+    this.currentPage = 1;
+    this.updatePaginatedProjects();
+  }
+
+  filterByActive(isFiltered: boolean): void {
+    if (isFiltered) {
+      this.currentProjects = this.projects.filter(project => !!project.active);
+    } else {
+      this.currentProjects = this.projects;
+    }
+    this.currentPage = 1;
+    this.updatePaginatedProjects();
+  }
+
   filterByTechnicalSpecifications(isFiltered: boolean): void {
-    if (isFiltered) return;
+    if (isFiltered) this.currentProjects = this.projects;
     else
       this.currentProjects = this.currentProjects.filter(
         project =>

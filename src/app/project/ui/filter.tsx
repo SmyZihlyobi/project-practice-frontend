@@ -11,10 +11,13 @@ import { useProjectStore } from '../store/project-store';
 
 const Filter = observer(() => {
   const store = useProjectStore;
-  const [isToggledList, setIsToggledList] = useState(true);
-  const [isFilteredByPresentation, setIsFilteredByPresentation] = useState(false);
+  const [isToggledList, setIsToggledList] = useState<boolean>(true);
+  const [isFilteredByCompany, setIsFilteredByCompany] = useState<boolean>(false);
+  const [isFilteredByPresentation, setIsFilteredByPresentation] =
+    useState<boolean>(false);
   const [isFilteredByTechnicalSpecifications, setIsFilteredByTechnicalSpecifications] =
-    useState(false);
+    useState<boolean>(false);
+  const [isFilteredByActive, setIsFilteredByActive] = useState<boolean>(true);
 
   useEffect(() => {
     store.getStackItems();
@@ -29,6 +32,7 @@ const Filter = observer(() => {
 
     setIsFilteredByPresentation(false);
     setIsFilteredByTechnicalSpecifications(false);
+    setIsFilteredByActive(true);
   };
 
   return (
@@ -55,6 +59,28 @@ const Filter = observer(() => {
           }}
         >
           {isToggledList ? 'Посмотреть все' : 'Свернуть'}
+        </span>
+        <span className="flex items-center gap-3">
+          <Checkbox
+            checked={isFilteredByCompany}
+            onCheckedChange={() => {
+              store.filterByCompany(isFilteredByCompany);
+              if (isFilteredByCompany) setIsFilteredByCompany(false);
+              else setIsFilteredByCompany(true);
+            }}
+          />
+          <h2>Проект от компании</h2>
+        </span>
+        <span className="flex items-center gap-3">
+          <Checkbox
+            checked={isFilteredByActive}
+            onCheckedChange={checked => {
+              const newValue = Boolean(checked);
+              setIsFilteredByActive(newValue);
+              store.filterByActive(newValue);
+            }}
+          />
+          <h2>Скрыть архивные</h2>
         </span>
         <span className="flex items-center gap-3">
           <Checkbox

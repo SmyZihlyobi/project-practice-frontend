@@ -8,6 +8,7 @@ export interface Project {
   studentProject: boolean;
   teamsAmount: number;
   technicalSpecifications?: string;
+  active: boolean;
   id: string;
 }
 

@@ -6,6 +6,7 @@ export const GET_PROJECTS_QUERY = gql`
       id
       name
       studentProject
+      active
     }
   }
 `;

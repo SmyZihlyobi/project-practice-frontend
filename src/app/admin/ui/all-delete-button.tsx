@@ -47,6 +47,9 @@ export const AllDeleteButton = () => {
       case 'тех. спецификаций':
         projectStore.deleteAllTechnicalSpecification();
         break;
+      case 'архив':
+        projectStore.archiveAllProject();
+        break;
       default:
         console.error('Не выбрано действие');
         break;
@@ -90,6 +93,9 @@ export const AllDeleteButton = () => {
             onClick={() => handleDeleteClick('тех. спецификаций')}
           >
             Удаление тех. спецификаций
+          </Button>
+          <Button variant="destructive" onClick={() => handleDeleteClick('архив')}>
+            Архивировать все проекты
           </Button>
         </div>
       </DialogContent>
