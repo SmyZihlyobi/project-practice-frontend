@@ -7,6 +7,7 @@ import { ThemeProvider } from '@/components/ui/theme-provider';
 import { ApolloWrapper } from '@/lib/Apollo';
 import { AuthProvider } from '@/lib/auth/use-auth';
 import type { Metadata } from 'next';
+import { ReCaptchaProvider } from 'next-recaptcha-v3';
 import { Fira_Code } from 'next/font/google';
 import Head from 'next/head';
 
@@ -146,10 +147,12 @@ export default function RootLayout({
         >
           <AuthProvider>
             <Header />
-            <main>
-              <ApolloWrapper>{children}</ApolloWrapper>
-              <Toaster />
-            </main>
+            <ReCaptchaProvider>
+              <main>
+                <ApolloWrapper>{children}</ApolloWrapper>
+                <Toaster />
+              </main>
+            </ReCaptchaProvider>
             <Footer />
           </AuthProvider>
         </ThemeProvider>

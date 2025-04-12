@@ -19,7 +19,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Eye, EyeOff } from 'lucide-react';
-import { Recaptcha } from '@/components/ui/recaptсha';
+import { Recaptcha } from '@/components/ui/recaptcha';
 import { Button } from '@/components/ui/button';
 import cn from 'classnames';
 

@@ -1,6 +1,6 @@
 import { Input } from '@/components/ui/input';
 import cn from 'classnames';
-import { Recaptcha } from '@/components/ui/recaptсha';
+import { Recaptcha } from '@/components/ui/recaptcha';
 import { Button } from '@/components/ui/button';
 import { axiosInstance } from '@/lib/axios';
 import { useEffect, useState } from 'react';
