@@ -17,12 +17,10 @@ import { observer } from 'mobx-react-lite';
 import { useProjectStore } from '../store/project-store';
 import { ProjectPagination } from './project-pagination';
 import { Search } from './search';
-import { useSearchParams } from 'next/navigation';
 
 export const Projects = observer(() => {
   const { paginatedProjects, getProjects } = useProjectStore;
   const [isLoading, setIsLoading] = useState(false);
-  const searchParams = useSearchParams();
 
   useEffect(() => {
     setIsLoading(true);
@@ -30,7 +28,7 @@ export const Projects = observer(() => {
       useProjectStore.getStackItems();
       setIsLoading(false);
     });
-  }, [getProjects, searchParams]);
+  }, [getProjects]);
   if (isLoading) {
     return <div>Loading</div>;
   }

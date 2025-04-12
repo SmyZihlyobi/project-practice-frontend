@@ -8,7 +8,7 @@ import {
 import { onError } from '@apollo/client/link/error';
 import Cookies from 'js-cookie';
 import { JWT_COOKIE_NAME } from '../constant';
-import { loginPageMigration } from '../utils';
+import { toast } from 'sonner';
 
 const httpLink = new HttpLink({ uri: `${process.env.NEXT_PUBLIC_BACKEND_URL}/graphql` });
 
@@ -34,8 +34,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
         err.message.includes('401') ||
         err.message.includes('Unauthorized')
       ) {
-        Cookies.remove(JWT_COOKIE_NAME);
-        loginPageMigration();
+        toast.error('У тебя здесь нет власти! 😈');
 
         return new Observable(observer => {
           observer.complete();
@@ -46,8 +45,6 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 
   if (networkError && 'statusCode' in networkError && networkError.statusCode === 401) {
     Cookies.remove(JWT_COOKIE_NAME);
-
-    loginPageMigration();
 
     return new Observable(observer => {
       observer.complete();
