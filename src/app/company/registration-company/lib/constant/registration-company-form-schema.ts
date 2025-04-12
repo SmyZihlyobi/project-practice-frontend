@@ -18,7 +18,7 @@ const REGISTRATION_COMPANY_FORM_CONFIG = {
     .email({ message: 'Некорректный e-mail' })
     .max(255, { message: 'Почта не может превышать 256 символов' })
     .refine(val => val.trim() !== '', { message: 'Необходимо заполнить' }),
-  studentProject: z.boolean().optional(),
+  studentProject: z.boolean(),
 };
 
 export const REGISTRATION_COMPANY_FORM_SCHEMA = z.object(
