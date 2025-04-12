@@ -1,6 +1,7 @@
 import { Card } from '@/components/ui/card';
 
 import { Filter, Search, Teams, TeamsPagination } from './ui';
+import { Suspense } from 'react';
 
 export default function Pages() {
   return (
@@ -16,7 +17,9 @@ export default function Pages() {
           <div className="md:col-span-3">
             <Card className="p-4">
               <Search />
-              <Teams />
+              <Suspense fallback={<div>Loading...</div>}>
+                <Teams />
+              </Suspense>
             </Card>
             <Card className="p-4 mt-3">
               <TeamsPagination />
