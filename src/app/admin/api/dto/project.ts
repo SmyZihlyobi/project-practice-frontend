@@ -9,6 +9,7 @@ export interface Project {
   teamsAmount?: number;
   technicalSpecifications?: string;
   description?: string;
+  active: boolean;
 }
 
 interface GetProjects {

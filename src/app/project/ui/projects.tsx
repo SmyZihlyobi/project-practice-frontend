@@ -17,12 +17,10 @@ import { observer } from 'mobx-react-lite';
 import { useProjectStore } from '../store/project-store';
 import { ProjectPagination } from './project-pagination';
 import { Search } from './search';
-import { useSearchParams } from 'next/navigation';
 
 export const Projects = observer(() => {
   const { paginatedProjects, getProjects } = useProjectStore;
   const [isLoading, setIsLoading] = useState(false);
-  const searchParams = useSearchParams();
 
   useEffect(() => {
     setIsLoading(true);
@@ -30,7 +28,7 @@ export const Projects = observer(() => {
       useProjectStore.getStackItems();
       setIsLoading(false);
     });
-  }, [getProjects, searchParams]);
+  }, [getProjects]);
   if (isLoading) {
     return <div>Loading</div>;
   }
@@ -41,6 +39,12 @@ export const Projects = observer(() => {
         <Card key={project.id}>
           <CardHeader className="flex flex-row w-full items-center justify-between">
             <h2 className="text-lg  font-semibold">{project.name}</h2>
+            <h2 className="text-m !m-0 text-muted">
+              {!project.active && 'Архивный проект'}
+            </h2>
+            <h2 className="text-m !m-0">
+              {project.studentProject ? 'Студенческий' : `От компании id=${project.id}`}
+            </h2>
           </CardHeader>
           <CardContent className="gap-2 flex flex-col">
             <span>{'Количество команд: ' + project.teamsAmount}</span>

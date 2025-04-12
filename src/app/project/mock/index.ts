@@ -1,4 +1,4 @@
-import type { Project } from '../dto/project';
+import type { Project } from '../api/dto/project';
 
 export const mockProjects: Project[] = [
   {
@@ -11,6 +11,7 @@ export const mockProjects: Project[] = [
     teamsAmount: 2,
     technicalSpecifications: 'Shiv_Kyle_(2).pdf',
     id: '1',
+    active: false,
   },
   {
     description:
@@ -22,6 +23,7 @@ export const mockProjects: Project[] = [
     teamsAmount: 3,
     technicalSpecifications: 'FitTrack_specs.pdf',
     id: '2',
+    active: false,
   },
   {
     description:
@@ -33,6 +35,7 @@ export const mockProjects: Project[] = [
     teamsAmount: 4,
     technicalSpecifications: 'EduPortal_technical_specs.pdf',
     id: '3',
+    active: true,
   },
   {
     description:
@@ -44,6 +47,7 @@ export const mockProjects: Project[] = [
     teamsAmount: 5,
     technicalSpecifications: '',
     id: '4',
+    active: true,
   },
   {
     description:
@@ -55,6 +59,7 @@ export const mockProjects: Project[] = [
     teamsAmount: 2,
     technicalSpecifications: '',
     id: '5',
+    active: false,
   },
   {
     description:
@@ -66,6 +71,7 @@ export const mockProjects: Project[] = [
     teamsAmount: 3,
     technicalSpecifications: 'ShopBuilder_specs.pdf',
     id: '6',
+    active: true,
   },
   {
     description:
@@ -77,6 +83,7 @@ export const mockProjects: Project[] = [
     teamsAmount: 2,
     technicalSpecifications: 'SecureChat_technical_docs.pdf',
     id: '7',
+    active: false,
   },
   {
     description:
@@ -88,6 +95,7 @@ export const mockProjects: Project[] = [
     teamsAmount: 1,
     technicalSpecifications: '',
     id: '8',
+    active: false,
   },
   {
     description:
@@ -99,6 +107,7 @@ export const mockProjects: Project[] = [
     teamsAmount: 3,
     technicalSpecifications: 'TravelPlanner_specs.pdf',
     id: '9',
+    active: true,
   },
   {
     description:
@@ -110,6 +119,7 @@ export const mockProjects: Project[] = [
     teamsAmount: 4,
     technicalSpecifications: 'ConferenceHub_technical_docs.pdf',
     id: '10',
+    active: false,
   },
   {
     description:
@@ -121,6 +131,7 @@ export const mockProjects: Project[] = [
     teamsAmount: 2,
     technicalSpecifications: '',
     id: '11',
+    active: false,
   },
   {
     description:
@@ -132,6 +143,7 @@ export const mockProjects: Project[] = [
     teamsAmount: 3,
     technicalSpecifications: 'SmartHome_specs.pdf',
     id: '12',
+    active: true,
   },
   {
     description:
@@ -143,6 +155,7 @@ export const mockProjects: Project[] = [
     teamsAmount: 2,
     technicalSpecifications: 'DesignStudio_technical_docs.pdf',
     id: '13',
+    active: false,
   },
   {
     description:
@@ -154,6 +167,7 @@ export const mockProjects: Project[] = [
     teamsAmount: 4,
     technicalSpecifications: '',
     id: '14',
+    active: false,
   },
   {
     description:
@@ -165,5 +179,6 @@ export const mockProjects: Project[] = [
     teamsAmount: 2,
     technicalSpecifications: 'LinguaLearn_specs.pdf',
     id: '15',
+    active: false,
   },
 ];
