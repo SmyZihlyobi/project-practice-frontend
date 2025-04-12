@@ -1,5 +1,11 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Form,
   FormControl,
@@ -8,27 +14,31 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Recaptcha } from '@/components/ui/recaptсha';
+import { ApolloError } from '@apollo/client';
+import { useMutation } from '@apollo/client';
+import { zodResolver } from '@hookform/resolvers/zod';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { z } from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+
 import {
   DEFAULT_FORM_VALUES,
+  ERROR_TOAST_DELAY,
   LOCALSTORAGE_NAME,
+  REDIRECT_DELAY,
+  REGISTRATION_COMPANY_FORM_SCHEMA,
 } from '../registration-company/lib/constant';
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { Card } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
-import { REGISTRATION_COMPANY_FORM_SCHEMA } from '@/app/company/registration-company/lib/constant/registration-company-form-schema';
-import { Recaptcha } from '@/components/ui/recaptсha';
+import { CREATE_COMPANY_MUTATION } from './api/mutations';
 
 export default function Page() {
   const [isLoading, setIsLoading] = useState(false);
   const [isCompanyRecaptchaConfirmed, setIsCompanyRecaptchaConfirmed] =
     useState<boolean>(false);
+  const [createCompany] = useMutation(CREATE_COMPANY_MUTATION);
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof REGISTRATION_COMPANY_FORM_SCHEMA>>({
     resolver: zodResolver(REGISTRATION_COMPANY_FORM_SCHEMA),
@@ -56,16 +66,55 @@ export default function Page() {
   ): Promise<void> => {
     try {
       setIsLoading(true);
-      // to-do переписать на запрос под бек
-      console.log(data);
-      localStorage.removeItem(LOCALSTORAGE_NAME);
+
+      const result = await createCompany({
+        variables: {
+          name: data.name,
+          representative: data.representative,
+          email: data.email,
+          contacts: data.contacts,
+          studentProject: data.studentProject,
+        },
+      });
+
+      if (result.errors) {
+        throw new ApolloError({ graphQLErrors: result.errors });
+      }
+
       form.reset(DEFAULT_FORM_VALUES);
+      localStorage.removeItem(LOCALSTORAGE_NAME);
+
+      toast.success('Заявка успешно отправлена. Дождитесь одобрения администратора');
+      setTimeout(() => {
+        router.push('/');
+      }, REDIRECT_DELAY);
     } catch (error) {
-      console.error(error);
-      // to-do обработать ошибки
+      let errorMessage = 'Произошла ошибка при отправке формы';
+
+      if (error instanceof ApolloError) {
+        errorMessage =
+          error.graphQLErrors?.[0]?.message ||
+          error.message ||
+          'Ошибка сервера при обработке запроса';
+
+        if (error.graphQLErrors.some(e => e.message === 'Email already exist')) {
+          errorMessage = 'Компания с таким email уже зарегистрирована';
+        } else if (error.graphQLErrors.some(e => e.message === 'Validation error')) {
+          errorMessage = 'Проверьте правильность введенных данных';
+        }
+      } else if (error instanceof Error) {
+        errorMessage = error.message || errorMessage;
+      }
+
+      toast.error(errorMessage, {
+        duration: ERROR_TOAST_DELAY,
+        action: {
+          label: 'Повторить',
+          onClick: () => onFormSubmit(data),
+        },
+      });
     } finally {
       setIsLoading(false);
-      toast.success('Заявка отправлена. Дождитесь одобрения администратора');
     }
   };
 
@@ -134,9 +183,13 @@ export default function Page() {
               <FormField
                 control={form.control}
                 name="studentProject"
-                render={({}) => (
+                render={({ field }) => (
                   <FormItem>
-                    <Checkbox />
+                    <Checkbox
+                      className="mt-2"
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
                     <FormLabel className="ml-4">Студенческий проект</FormLabel>
                     <FormMessage />
                   </FormItem>
@@ -151,7 +204,7 @@ export default function Page() {
               disabled={isLoading || !isCompanyRecaptchaConfirmed}
               className="w-full md:w-auto"
             >
-              Зарегистрировать
+              {isLoading ? 'Отправка...' : 'Зарегистрировать'}
             </Button>
 
             <Link
