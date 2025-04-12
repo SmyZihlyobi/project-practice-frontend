@@ -1,7 +1,8 @@
-import { makeAutoObservable } from 'mobx';
-import type { GetProjectResponse, Project } from '../dto/project';
 import { apolloClient } from '@/lib/Apollo';
+import { makeAutoObservable } from 'mobx';
+
 import { GET_PROJECTS_QUERY } from '../api/queries/get-projects';
+import type { GetProjectResponse, Project } from '../dto/project';
 
 class ProjectStore {
   private projects: Project[] = [];
@@ -24,9 +25,11 @@ class ProjectStore {
       const response: GetProjectResponse = await apolloClient.query({
         query: GET_PROJECTS_QUERY,
       });
-
-      this.projects = response.data.projects;
-      this.currentProjects = response.data.projects;
+      const companiesStudents = response.data.projects.filter(
+        project => !project.studentProject,
+      );
+      this.projects = companiesStudents;
+      this.currentProjects = companiesStudents;
 
       this.getStackItems();
       this.updatePaginatedProjects();
@@ -57,16 +60,6 @@ class ProjectStore {
     this.currentProjects = this.projects.filter(project =>
       project.name.toLocaleLowerCase().startsWith(name.toLocaleLowerCase()),
     );
-    this.currentPage = 1;
-    this.updatePaginatedProjects();
-  }
-
-  filterByCompany(isFiltered: boolean): void {
-    if (isFiltered) return;
-    else
-      this.currentProjects = this.currentProjects.filter(
-        project => !project.studentProject,
-      );
     this.currentPage = 1;
     this.updatePaginatedProjects();
   }
@@ -136,9 +129,13 @@ class ProjectStore {
   }
 
   updatePaginatedProjects(): void {
-    const startIndex = (this.currentPage - 1) * this.pageSize;
-    const endIndex = startIndex + this.pageSize;
-    this.paginatedProjects = this.currentProjects.slice(startIndex, endIndex);
+    if (this.pageSize === Infinity) {
+      this.paginatedProjects = this.currentProjects;
+    } else {
+      const startIndex = (this.currentPage - 1) * this.pageSize;
+      const endIndex = startIndex + this.pageSize;
+      this.paginatedProjects = this.currentProjects.slice(startIndex, endIndex);
+    }
   }
 
   nextPage(): void {
@@ -162,7 +159,7 @@ class ProjectStore {
     }
   }
 
-  setPageSize(size: number): void {
+  setPageSize(size: number | typeof Infinity): void {
     this.pageSize = size;
 
     if (this.currentPage > this.totalPages) {

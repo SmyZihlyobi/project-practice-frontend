@@ -10,15 +10,17 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 import { useTeamStore } from '../store';
 import { Students } from './students';
+import { useSearchParams } from 'next/navigation';
 
 export const Teams = observer(() => {
   const { getTeams, currentTeamsPage } = useTeamStore;
   const [isLoading, setIsLoading] = useState(true);
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     setIsLoading(true);
     useTeamStore.getTeams().finally(() => setIsLoading(false));
-  }, [getTeams]);
+  }, [getTeams, searchParams]);
 
   const renderSkeletonRow = (rowsCount: number, columnsCount: number) => {
     return Array.from({ length: rowsCount }).map((_, rowIndex) => (

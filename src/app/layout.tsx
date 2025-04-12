@@ -1,14 +1,17 @@
-import type { Metadata } from 'next';
-import { Fira_Code } from 'next/font/google';
-import './globals.css';
-import { ApolloWrapper } from '@/lib/Apollo';
+import { ReactNode } from 'react';
+
+import { Footer } from '@/components/ui/footer';
+import Header from '@/components/ui/header';
 import { Toaster } from '@/components/ui/sonner';
 import { ThemeProvider } from '@/components/ui/theme-provider';
-import Header from '@/components/ui/header';
+import { ApolloWrapper } from '@/lib/Apollo';
 import { AuthProvider } from '@/lib/auth/use-auth';
-import { ReactNode } from 'react';
+import type { Metadata } from 'next';
+import { ReCaptchaProvider } from 'next-recaptcha-v3';
+import { Fira_Code } from 'next/font/google';
 import Head from 'next/head';
-import { Footer } from '@/components/ui/footer';
+
+import './globals.css';
 
 const firaCode = Fira_Code({
   variable: '--font-fira-code-sans',
@@ -93,8 +96,28 @@ export const metadata: Metadata = {
     images: [`${process.env.NEXT_PUBLIC_FRONTEND_URL}/og-images/og-image.jpg`],
   },
   icons: {
-    icon: '/favicon.ico',
-    apple: '/apple-icon.png',
+    icon: '/icons/favicons/favicon.ico',
+    shortcut: '/icons/favicons/favicon.png',
+    apple: '/icons/favicons/apple-icon.png',
+    other: [
+      {
+        rel: 'icon',
+        type: 'image/png',
+        sizes: '192x192',
+        url: '/icons/favicons/web-app-manifest-192x192.png',
+      },
+      {
+        rel: 'icon',
+        type: 'image/png',
+        sizes: '512x512',
+        url: '/icons/favicons/web-app-manifest-512x512.png',
+      },
+      {
+        rel: 'icon',
+        type: 'image/svg+xml',
+        url: '/icons/favicons/favicon.svg',
+      },
+    ],
   },
   manifest: '/site.webmanifest',
   other: {
@@ -108,7 +131,7 @@ export default function RootLayout({
   children: ReactNode;
 }>) {
   return (
-    <html lang="ru">
+    <html lang="ru" suppressHydrationWarning>
       <Head>
         <meta name="apple-mobile-web-app-title" content="PP IKNT" />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
@@ -124,10 +147,12 @@ export default function RootLayout({
         >
           <AuthProvider>
             <Header />
-            <main>
-              <ApolloWrapper>{children}</ApolloWrapper>
-              <Toaster />
-            </main>
+            <ReCaptchaProvider>
+              <main>
+                <ApolloWrapper>{children}</ApolloWrapper>
+                <Toaster />
+              </main>
+            </ReCaptchaProvider>
             <Footer />
           </AuthProvider>
         </ThemeProvider>

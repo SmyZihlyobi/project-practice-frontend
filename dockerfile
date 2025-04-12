@@ -3,8 +3,8 @@ FROM oven/bun:latest AS base
 FROM base AS deps
 WORKDIR /app
 
-COPY package.json bun.lock* .npmrc* ./
-RUN bun install --frozen-lockfile
+COPY package.json  ./
+RUN bun install 
 
 # Этап сборки
 FROM base AS builder

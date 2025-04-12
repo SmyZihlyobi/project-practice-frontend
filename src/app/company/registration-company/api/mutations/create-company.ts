@@ -1,14 +1,20 @@
 import { gql } from '@apollo/client';
 
 export const CREATE_COMPANY_MUTATION = gql`
-  mutation MyMutation {
+  mutation createCompany(
+    $name: String!
+    $representative: String!
+    $email: String!
+    $contacts: String!
+    $studentProject: Boolean!
+  ) {
     createCompany(
       input: {
-        name: "fdfd"
-        representative: "fdf"
-        email: "drankov.alex@yandex.ru"
-        contacts: "fdf"
-        studentCompany: false
+        name: $name
+        representative: $representative
+        email: $email
+        contacts: $contacts
+        studentCompany: $studentProject
       }
     ) {
       id

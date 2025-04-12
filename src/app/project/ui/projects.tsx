@@ -1,25 +1,28 @@
 'use client';
-import { observer } from 'mobx-react-lite';
+
 import React, { useEffect, useState } from 'react';
-import { useProjectStore } from '../store/project-store';
+
+import { PRESENTATION_API, TECHNICAL_SPECIFICATION_API } from '@/app/admin/lib/constant';
+import { Accordion } from '@/components/ui/accordion';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Markdown } from '@/components/ui/markdown';
-import { Accordion } from '@/components/ui/accordion';
 import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from '@radix-ui/react-accordion';
+import { observer } from 'mobx-react-lite';
 
-import { PRESENTATION_API, TECHNICAL_SPECIFICATION_API } from '@/app/admin/lib/constant';
-import { Button } from '@/components/ui/button';
-import { Search } from './search';
-
+import { useProjectStore } from '../store/project-store';
 import { ProjectPagination } from './project-pagination';
+import { Search } from './search';
+import { useSearchParams } from 'next/navigation';
 
 export const Projects = observer(() => {
   const { paginatedProjects, getProjects } = useProjectStore;
   const [isLoading, setIsLoading] = useState(false);
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     setIsLoading(true);
@@ -27,22 +30,19 @@ export const Projects = observer(() => {
       useProjectStore.getStackItems();
       setIsLoading(false);
     });
-  }, [getProjects]);
+  }, [getProjects, searchParams]);
   if (isLoading) {
     return <div>Loading</div>;
   }
   return (
-    <div className="gap-4 flex-col flex">
+    <div className="gap-3 flex-col flex">
       <Search></Search>
       {paginatedProjects.map(project => (
         <Card key={project.id}>
           <CardHeader className="flex flex-row w-full items-center justify-between">
             <h2 className="text-lg  font-semibold">{project.name}</h2>
-            <h2 className="text-m !m-0">
-              {project.studentProject ? 'Студенческий' : 'От компании'}
-            </h2>
           </CardHeader>
-          <CardContent className="gap-4 flex flex-col">
+          <CardContent className="gap-2 flex flex-col">
             <span>{'Количество команд: ' + project.teamsAmount}</span>
             <Accordion type="multiple" className="w-full">
               <AccordionItem value="text">

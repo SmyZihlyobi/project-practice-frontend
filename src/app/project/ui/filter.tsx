@@ -1,22 +1,25 @@
 'use client';
+
 import { useEffect, useState } from 'react';
-import { useProjectStore } from '../store/project-store';
-import { observer } from 'mobx-react-lite';
-import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
+
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { observer } from 'mobx-react-lite';
+
+import { useProjectStore } from '../store/project-store';
 
 const Filter = observer(() => {
   const store = useProjectStore;
   const [isToggledList, setIsToggledList] = useState(true);
-  const [isFilteredByCompany, setIsFilteredByCompany] = useState(false);
   const [isFilteredByPresentation, setIsFilteredByPresentation] = useState(false);
   const [isFilteredByTechnicalSpecifications, setIsFilteredByTechnicalSpecifications] =
     useState(false);
 
   useEffect(() => {
     store.getStackItems();
-  }, []);
+  }, [store]);
+
   let stackItems = Array.from(store.stackItems).slice(0, 3);
   if (!isToggledList) {
     stackItems = Array.from(store.stackItems);
@@ -24,7 +27,6 @@ const Filter = observer(() => {
   const handleResetFilters = () => {
     store.resetFilters();
 
-    setIsFilteredByCompany(false);
     setIsFilteredByPresentation(false);
     setIsFilteredByTechnicalSpecifications(false);
   };
@@ -53,17 +55,6 @@ const Filter = observer(() => {
           }}
         >
           {isToggledList ? 'Посмотреть все' : 'Свернуть'}
-        </span>
-        <span className="flex items-center gap-3">
-          <Checkbox
-            checked={isFilteredByCompany}
-            onCheckedChange={() => {
-              store.filterByCompany(isFilteredByCompany);
-              if (isFilteredByCompany) setIsFilteredByCompany(false);
-              else setIsFilteredByCompany(true);
-            }}
-          />
-          <h2>Проект от компании</h2>
         </span>
         <span className="flex items-center gap-3">
           <Checkbox

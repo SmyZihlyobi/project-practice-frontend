@@ -1,6 +1,7 @@
 import { Card } from '@/components/ui/card';
 import Filter from './ui/filter';
 import { Projects } from './ui/projects';
+import { Suspense } from 'react';
 
 export default function Pages() {
   return (
@@ -15,7 +16,9 @@ export default function Pages() {
 
           <div className="md:col-span-3">
             <Card className="p-4">
-              <Projects></Projects>
+              <Suspense fallback={<div>Loading...</div>}>
+                <Projects />
+              </Suspense>
             </Card>
           </div>
         </div>

@@ -1,8 +1,10 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useReCaptcha } from 'next-recaptcha-v3';
+
 import { axiosInstance } from '@/lib/axios';
+import { useReCaptcha } from 'next-recaptcha-v3';
+
 import { Button } from './button';
 import { Skeleton } from './skeleton';
 
@@ -59,6 +61,17 @@ export const Recaptcha = (props: RecaptchaProps) => {
       ) : (
         <Skeleton className="h-[36] w-full" />
       )}
+      <div className="text-xs mt-2">
+        This site is protected by reCAPTCHA and the Google{' '}
+        <a className="text-blue-600" href="https://policies.google.com/privacy">
+          Privacy Policy{' '}
+        </a>
+        and{' '}
+        <a className="text-blue-600" href="https://policies.google.com/terms">
+          Terms of Service
+        </a>{' '}
+        apply.
+      </div>
     </div>
   );
 };

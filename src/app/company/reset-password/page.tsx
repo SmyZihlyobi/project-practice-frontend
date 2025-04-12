@@ -26,7 +26,7 @@ import { axiosInstance } from '@/lib/axios';
 import { JwtResponse } from './api/dto';
 import Cookies from 'js-cookie';
 import { JWT_COOKIE_NAME } from '@/lib/constant';
-import { Recaptcha } from '@/components/ui/recaptсha';
+import { Recaptcha } from '@/components/ui/recaptcha';
 import { toast } from 'sonner';
 
 export default function Page() {
