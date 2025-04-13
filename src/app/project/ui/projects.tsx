@@ -17,19 +17,29 @@ import { observer } from 'mobx-react-lite';
 import { useProjectStore } from '../store/project-store';
 import { ProjectPagination } from './project-pagination';
 import { Search } from './search';
+import { useAuth } from '@/lib/auth/use-auth';
+import { FavoriteToggle } from './favorite-toggle';
 
 export const Projects = observer(() => {
-  const { paginatedProjects, getProjects } = useProjectStore;
-  const [isLoading, setIsLoading] = useState(false);
+  const { paginatedProjects, getProjects, getFavoriteProjects } = useProjectStore;
+  const [isLoadingProjects, setIsLoadingProjects] = useState(false);
+  const { user, isAuthenticated } = useAuth();
 
   useEffect(() => {
-    setIsLoading(true);
+    setIsLoadingProjects(true);
     useProjectStore.getProjects().finally(() => {
       useProjectStore.getStackItems();
-      setIsLoading(false);
+      setIsLoadingProjects(false);
     });
   }, [getProjects]);
-  if (isLoading) {
+
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      getFavoriteProjects(user.id);
+    }
+  }, [getFavoriteProjects, isAuthenticated, user]);
+
+  if (isLoadingProjects) {
     return <div>Loading</div>;
   }
   return (
@@ -38,12 +48,20 @@ export const Projects = observer(() => {
       {paginatedProjects.map(project => (
         <Card key={project.id}>
           <CardHeader className="flex flex-row w-full items-center justify-between">
-            <h2 className="text-lg  font-semibold">{project.name}</h2>
+            <h2 className="text-lg w-1/3  font-semibold">{project.name}</h2>
             <h2 className="text-m !m-0 text-muted">
               {!project.active && 'Архивный проект'}
             </h2>
-            <h2 className="text-m !m-0">
-              {project.studentProject ? 'Студенческий' : `От компании id=${project.id}`}
+            <h2 className="text-m !m-0 flex items-center gap-1">
+              {project.studentProject ? (
+                'Студенческий'
+              ) : (
+                <div className="flex flex-col">
+                  <p>От компании: {project.companyName}</p>{' '}
+                  <p>ID проекта: {project.id}</p>
+                </div>
+              )}
+              <FavoriteToggle projectId={project.id} />
             </h2>
           </CardHeader>
           <CardContent className="gap-2 flex flex-col">

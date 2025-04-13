@@ -1,8 +1,15 @@
 import { apolloClient } from '@/lib/Apollo';
 import { makeAutoObservable } from 'mobx';
 
-import { GET_PROJECTS_QUERY } from '../api/queries/get-projects';
-import type { GetProjectResponse, Project } from '../api/dto/project';
+import { GET_FAVORITE_PROJECT_QUERY, GET_PROJECTS_QUERY } from '../api/queries';
+import type {
+  FavoriteProject,
+  GetFavoriteProjectResponse,
+  GetProjectResponse,
+  Project,
+} from '../api/dto';
+import { SER_FAVORITE_MUTATION, SER_UNFAVORITE_MUTATION } from '../api/mutations';
+import { toast } from 'sonner';
 
 class ProjectStore {
   private projects: Project[] = [];
@@ -10,7 +17,7 @@ class ProjectStore {
   public currentProjects: Project[] = [];
   public stackItems: Set<string> = new Set();
   public selectedStackItems: Set<string> = new Set();
-
+  public favoriteProject: FavoriteProject[] = [];
   public currentPage = 1;
   public pageSize = 10;
   public paginatedProjects: Project[] = [];
@@ -19,7 +26,7 @@ class ProjectStore {
     makeAutoObservable(this);
   }
 
-  async getProjects(): Promise<void> {
+  getProjects = async (): Promise<void> => {
     try {
       this.loading = true;
       const response: GetProjectResponse = await apolloClient.query({
@@ -36,9 +43,73 @@ class ProjectStore {
     } finally {
       this.loading = false;
     }
-  }
+  };
 
-  getStackItems(): void {
+  getFavoriteProjects = async (id: string): Promise<void> => {
+    try {
+      this.loading = true;
+      const response: GetFavoriteProjectResponse = await apolloClient.query({
+        query: GET_FAVORITE_PROJECT_QUERY,
+        variables: { id },
+      });
+      this.favoriteProject = response.data.favoriteProjects;
+    } catch (error) {
+      console.error('ERROR while fetching favorite projects', error);
+    } finally {
+      this.loading = false;
+    }
+  };
+
+  isFavoriteProject = (projectId: string): boolean => {
+    return !!this.favoriteProject.find(project => project.projectId === projectId);
+  };
+
+  setFavoriteProject = async (projectId: string, studentId: string): Promise<void> => {
+    try {
+      if (!projectId || !studentId) return;
+
+      await apolloClient.mutate({
+        mutation: SER_FAVORITE_MUTATION,
+        variables: {
+          input: {
+            studentId,
+            projectId,
+          },
+        },
+      });
+      this.favoriteProject.push({ projectId });
+    } catch (error) {
+      console.error(
+        `ERROR while setting project with id=${projectId} by student with id=${studentId}`,
+        error,
+      );
+      toast.error(
+        'Произошла ошибка при добавлении проект в избранные, повторите ещё раз',
+      );
+    }
+  };
+
+  setUnfavoriteProject = async (projectId: string, studentId: string): Promise<void> => {
+    try {
+      await apolloClient.mutate({
+        mutation: SER_UNFAVORITE_MUTATION,
+        variables: { studentId, projectId },
+      });
+      this.favoriteProject = this.favoriteProject.filter(
+        project => project.projectId !== projectId,
+      );
+    } catch (error) {
+      console.error(
+        `ERROR while deleting project with id=${projectId} by student with id=${studentId} from favorites`,
+        error,
+      );
+      toast.error(
+        'Произошла ошибка при удаления проекта из избранных, повторите ещё раз',
+      );
+    }
+  };
+
+  getStackItems = (): void => {
     try {
       this.stackItems.clear();
       for (const project of this.projects) {
@@ -52,17 +123,17 @@ class ProjectStore {
     } catch (error) {
       console.log((error as Error).message);
     }
-  }
+  };
 
-  findByName(name: string): void {
+  findByName = (name: string): void => {
     this.currentProjects = this.projects.filter(project =>
       project.name.toLocaleLowerCase().startsWith(name.toLocaleLowerCase()),
     );
     this.currentPage = 1;
     this.updatePaginatedProjects();
-  }
+  };
 
-  filterByPresentation(isFiltered: boolean): void {
+  filterByPresentation = (isFiltered: boolean): void => {
     if (isFiltered) this.currentProjects = this.projects;
     else
       this.currentProjects = this.currentProjects.filter(
@@ -73,9 +144,19 @@ class ProjectStore {
       );
     this.currentPage = 1;
     this.updatePaginatedProjects();
-  }
+  };
 
-  filterByCompany(isFiltered: boolean): void {
+  filterByFavorite = (isFiltered: boolean): void => {
+    if (isFiltered) this.currentProjects = this.projects;
+    else
+      this.currentProjects = this.currentProjects.filter(project =>
+        this.isFavoriteProject(project.id),
+      );
+    this.currentPage = 1;
+    this.updatePaginatedProjects();
+  };
+
+  filterByCompany = (isFiltered: boolean): void => {
     if (isFiltered) this.currentProjects = this.projects;
     else
       this.currentProjects = this.currentProjects.filter(
@@ -83,9 +164,9 @@ class ProjectStore {
       );
     this.currentPage = 1;
     this.updatePaginatedProjects();
-  }
+  };
 
-  filterByActive(isFiltered: boolean): void {
+  filterByActive = (isFiltered: boolean): void => {
     if (isFiltered) {
       this.currentProjects = this.projects.filter(project => !!project.active);
     } else {
@@ -93,9 +174,9 @@ class ProjectStore {
     }
     this.currentPage = 1;
     this.updatePaginatedProjects();
-  }
+  };
 
-  filterByTechnicalSpecifications(isFiltered: boolean): void {
+  filterByTechnicalSpecifications = (isFiltered: boolean): void => {
     if (isFiltered) this.currentProjects = this.projects;
     else
       this.currentProjects = this.currentProjects.filter(
@@ -106,25 +187,26 @@ class ProjectStore {
       );
     this.currentPage = 1;
     this.updatePaginatedProjects();
-  }
+  };
 
-  resetFilters() {
+  resetFilters = () => {
     this.selectedStackItems = new Set();
     this.currentProjects = this.projects;
     this.currentPage = 1;
     this.updatePaginatedProjects();
-  }
+    this.filterByActive(true);
+  };
 
-  toggleStackItem(item: string): void {
+  toggleStackItem = (item: string): void => {
     if (this.selectedStackItems.size !== 0 && this.selectedStackItems.has(item)) {
       this.selectedStackItems.delete(item);
     } else {
       this.selectedStackItems.add(item);
     }
     this.filterProjects();
-  }
+  };
 
-  filterProjects(): void {
+  filterProjects = (): void => {
     if (this.selectedStackItems.size === 0) {
       this.currentProjects = this.projects;
     } else {
@@ -140,13 +222,13 @@ class ProjectStore {
     }
     this.currentPage = 1;
     this.updatePaginatedProjects();
-  }
+  };
 
   get totalPages(): number {
     return Math.ceil(this.currentProjects.length / this.pageSize);
   }
 
-  updatePaginatedProjects(): void {
+  updatePaginatedProjects = (): void => {
     if (this.pageSize === Infinity) {
       this.paginatedProjects = this.currentProjects;
     } else {
@@ -154,37 +236,37 @@ class ProjectStore {
       const endIndex = startIndex + this.pageSize;
       this.paginatedProjects = this.currentProjects.slice(startIndex, endIndex);
     }
-  }
+  };
 
-  nextPage(): void {
+  nextPage = (): void => {
     if (this.currentPage < this.totalPages) {
       this.currentPage++;
       this.updatePaginatedProjects();
     }
-  }
+  };
 
-  prevPage(): void {
+  prevPage = (): void => {
     if (this.currentPage > 1) {
       this.currentPage--;
       this.updatePaginatedProjects();
     }
-  }
+  };
 
-  goToPage(page: number): void {
+  goToPage = (page: number): void => {
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
       this.updatePaginatedProjects();
     }
-  }
+  };
 
-  setPageSize(size: number | typeof Infinity): void {
+  setPageSize = (size: number | typeof Infinity): void => {
     this.pageSize = size;
 
     if (this.currentPage > this.totalPages) {
       this.currentPage = this.totalPages || 1;
     }
     this.updatePaginatedProjects();
-  }
+  };
 }
 
 export const useProjectStore = new ProjectStore();
