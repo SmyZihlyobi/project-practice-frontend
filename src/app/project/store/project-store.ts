@@ -1,5 +1,5 @@
 import { apolloClient } from '@/lib/Apollo';
-import { makeAutoObservable } from 'mobx';
+import { makeAutoObservable, toJS } from 'mobx';
 
 import { GET_FAVORITE_PROJECT_QUERY, GET_PROJECTS_QUERY } from '../api/queries';
 import type {
@@ -10,6 +10,7 @@ import type {
 } from '../api/dto';
 import { SER_FAVORITE_MUTATION, SER_UNFAVORITE_MUTATION } from '../api/mutations';
 import { toast } from 'sonner';
+import { IndexedDBService } from '@/lib/index-db/index-db-service';
 
 class ProjectStore {
   private projects: Project[] = [];
@@ -21,10 +22,30 @@ class ProjectStore {
   public currentPage = 1;
   public pageSize = 10;
   public paginatedProjects: Project[] = [];
+  private dbService: IndexedDBService | null;
 
   constructor() {
     makeAutoObservable(this);
+    this.dbService = null;
   }
+
+  private loadFromCache = async (): Promise<void> => {
+    if (!this.dbService) return;
+    const cachedProjects = await this.dbService.getAll<Project>();
+    if (cachedProjects.length > 0) {
+      this.setProjects(cachedProjects);
+    }
+  };
+
+  private saveToCache = async (): Promise<void> => {
+    if (!this.dbService) return;
+    await this.dbService.saveAll(toJS(this.projects.filter(project => !!project.active)));
+  };
+
+  preLoad = async (): Promise<void> => {
+    this.dbService = new IndexedDBService('ProjectsDB', 'projects');
+    this.loadFromCache();
+  };
 
   getProjects = async (): Promise<void> => {
     try {
@@ -33,16 +54,21 @@ class ProjectStore {
         query: GET_PROJECTS_QUERY,
       });
 
-      this.projects = response.data.projects;
-      this.currentProjects = this.projects.filter(project => !!project.active);
-
-      this.getStackItems();
-      this.updatePaginatedProjects();
+      this.setProjects(response.data.projects);
+      this.saveToCache();
     } catch (error) {
       console.error('ERROR while fetching teams', error);
     } finally {
       this.loading = false;
     }
+  };
+
+  private setProjects = (projects: Project[]) => {
+    this.projects = projects;
+    this.currentProjects = this.projects.filter(project => !!project.active);
+
+    this.getStackItems();
+    this.updatePaginatedProjects();
   };
 
   getFavoriteProjects = async (id: string): Promise<void> => {

@@ -15,6 +15,7 @@ export const CREATE_STUDENT = gql`
     $resumePdf: String!
     $telegram: String!
     $otherPriorities: String!
+    $username: String!
   ) {
     createStudent(
       input: {
@@ -31,6 +32,7 @@ export const CREATE_STUDENT = gql`
         resumePdf: $resumePdf
         telegram: $telegram
         otherPriorities: $otherPriorities
+        username: $username
       }
     ) {
       id

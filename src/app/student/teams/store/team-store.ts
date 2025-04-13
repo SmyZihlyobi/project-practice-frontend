@@ -1,21 +1,56 @@
 import { apolloClient } from '@/lib/Apollo';
-import { makeAutoObservable } from 'mobx';
+import { makeAutoObservable, toJS } from 'mobx';
 
 import { GetTeamResponse, GetTeamsResponse, Team } from '../api/dto';
 import { GET_TEAMS_QUERY } from '../api/queries';
 import { GET_TEAM_QUERY } from '../api/queries/get-team';
 import { TEAMS_PER_PAGE } from '../lib/constant';
+import { IndexedDBService } from '@/lib/index-db/index-db-service';
 
 class TeamStore {
   private teams: Team[] = [];
+  private _currentTeamPageIndex: number = 1;
   public loading: boolean = false;
-  public currentTeamPageIndex: number = 1;
   public currentTeams: Team[] = [];
-  public pageSize: number = TEAMS_PER_PAGE;
+  private _pageSize: number = TEAMS_PER_PAGE;
+  private dbService: IndexedDBService | null;
 
   constructor() {
     makeAutoObservable(this);
+    this.dbService = null;
   }
+
+  private loadFromCache = async (): Promise<void> => {
+    if (!this.dbService) return;
+    const cachedTeams = await this.dbService.getAll<Team>();
+    if (cachedTeams.length > 0) {
+      this.setTeams(cachedTeams);
+    }
+  };
+
+  preLoad = async (): Promise<void> => {
+    this.dbService = new IndexedDBService('TeamsDB', 'teams');
+    this.loadFromCache();
+  };
+
+  private saveToCache = async (): Promise<void> => {
+    if (!this.dbService) return;
+    await this.dbService.saveAll(toJS(this.teams));
+  };
+
+  get pageSize(): number {
+    return this._pageSize;
+  }
+
+  get currentTeamPageIndex(): number {
+    return this._currentTeamPageIndex;
+  }
+
+  setCurrentPage = (newPage: number): void => {
+    if (newPage >= 1 && newPage <= this.currentTeamsPagesCount) {
+      this._currentTeamPageIndex = newPage;
+    }
+  };
 
   getTeams = async (): Promise<void> => {
     try {
@@ -24,14 +59,19 @@ class TeamStore {
         query: GET_TEAMS_QUERY,
       });
 
-      this.teams = response.data.teams;
-      this.currentTeams = response.data.teams;
-      this.currentTeamPageIndex = 1;
+      this.setTeams(response.data.teams);
+      this.saveToCache();
     } catch (error) {
       console.error('ERROR while fetching teams', error);
     } finally {
       this.loading = false;
     }
+  };
+
+  setTeams = (teams: Team[]) => {
+    this.teams = teams;
+    this.currentTeams = teams;
+    this.setCurrentPage(1);
   };
 
   get currentTeamsPagesCount(): number {
@@ -54,21 +94,15 @@ class TeamStore {
     return this.currentTeams.slice(startIdx, endIdx);
   }
 
-  setCurrentPage = (newPage: number): void => {
-    if (newPage >= 1 && newPage <= this.currentTeamsPagesCount) {
-      this.currentTeamPageIndex = newPage;
-    }
-  };
-
   nextPage = (): void => {
     if (this.currentTeamPageIndex < this.currentTeamsPagesCount) {
-      this.currentTeamPageIndex++;
+      this.setCurrentPage(this.currentTeamPageIndex + 1);
     }
   };
 
   prevPage = (): void => {
     if (this.currentTeamPageIndex > 1) {
-      this.currentTeamPageIndex--;
+      this.setCurrentPage(this.currentTeamPageIndex - 1);
     }
   };
 
@@ -77,8 +111,8 @@ class TeamStore {
   };
 
   setPageSize = (size: number): void => {
-    this.pageSize = size;
-    this.currentTeamPageIndex = 1;
+    this._pageSize = size;
+    this.setCurrentPage(1);
   };
 
   getTeam = async (id: string): Promise<void> => {
@@ -132,7 +166,7 @@ class TeamStore {
 
       return predominantCourse === course;
     });
-    this.currentTeamPageIndex = 1;
+    this.setCurrentPage(1);
   };
 
   sortByStudentCount = (
@@ -147,27 +181,27 @@ class TeamStore {
     } else {
       this.currentTeams = this.teams.filter(team => team.students.length <= count);
     }
-    this.currentTeamPageIndex = 1;
+    this.setCurrentPage(1);
   };
 
   findByName = (name: string): void => {
     this.currentTeams = this.teams.filter(team => team.name.startsWith(name));
-    this.currentTeamPageIndex = 1;
+    this.setCurrentPage(1);
   };
 
   findByStudentLastName = (lastName: string): void => {
     this.currentTeams = this.filterStudentsByCriteria({ lastName });
-    this.currentTeamPageIndex = 1;
+    this.setCurrentPage(1);
   };
 
   findByStudentFirstName = (firstName: string): void => {
     this.currentTeams = this.filterStudentsByCriteria({ firstName });
-    this.currentTeamPageIndex = 1;
+    this.setCurrentPage(1);
   };
 
   findByPatronymic = (patronymic: string): void => {
     this.currentTeams = this.filterStudentsByCriteria({ patronymic });
-    this.currentTeamPageIndex = 1;
+    this.setCurrentPage(1);
   };
 
   findByStudentFullName = (
@@ -180,7 +214,7 @@ class TeamStore {
       firstName,
       patronymic,
     });
-    this.currentTeamPageIndex = 1;
+    this.setCurrentPage(1);
   };
 
   private filterStudentsByCriteria = (criteria: {
@@ -219,7 +253,7 @@ class TeamStore {
 
   resetFilters = (): void => {
     this.currentTeams = this.teams;
-    this.currentTeamPageIndex = 1;
+    this.setCurrentPage(1);
   };
 }
 

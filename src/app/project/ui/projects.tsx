@@ -19,19 +19,30 @@ import { ProjectPagination } from './project-pagination';
 import { Search } from './search';
 import { useAuth } from '@/lib/auth/use-auth';
 import { FavoriteToggle } from './favorite-toggle';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export const Projects = observer(() => {
-  const { paginatedProjects, getProjects, getFavoriteProjects } = useProjectStore;
-  const [isLoadingProjects, setIsLoadingProjects] = useState(false);
+  const {
+    paginatedProjects,
+    getProjects,
+    getFavoriteProjects,
+    currentProjects,
+    preLoad,
+    getStackItems,
+  } = useProjectStore;
+
   const { user, isAuthenticated } = useAuth();
+
+  const [isLoadingProjects, setIsLoadingProjects] = useState(false);
 
   useEffect(() => {
     setIsLoadingProjects(true);
-    useProjectStore.getProjects().finally(() => {
-      useProjectStore.getStackItems();
+    preLoad();
+    getProjects().finally(() => {
+      getStackItems();
       setIsLoadingProjects(false);
     });
-  }, [getProjects]);
+  }, [getProjects, preLoad, getStackItems]);
 
   useEffect(() => {
     if (isAuthenticated && user) {
@@ -39,9 +50,17 @@ export const Projects = observer(() => {
     }
   }, [getFavoriteProjects, isAuthenticated, user]);
 
-  if (isLoadingProjects) {
-    return <div>Loading</div>;
+  if (isLoadingProjects || currentProjects.length === 0) {
+    return (
+      <div className="gap-3 flex-col flex">
+        <Search />
+        {[...Array(5)].map((_, index) => (
+          <Skeleton key={index} className="h-[282px] w-[890px] rounded-xl" />
+        ))}
+      </div>
+    );
   }
+
   return (
     <div className="gap-3 flex-col flex">
       <Search></Search>

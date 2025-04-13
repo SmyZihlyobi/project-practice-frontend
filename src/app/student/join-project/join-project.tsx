@@ -31,14 +31,15 @@ import {
   UPLOAD_RESUME_DELAY,
 } from './lib/constant';
 import { TeamsSelect } from './ui';
+import { useAuth } from '@/lib/auth/use-auth';
 
 export default function JoinProject() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [createStudent] = useMutation(CREATE_STUDENT);
-
   const [isCreatingTeam, setIsCreatingTeam] = useState(false);
+  const { user } = useAuth();
 
   const form = useForm<z.infer<typeof REGISTER_FORM_SCHEMA>>({
     resolver: zodResolver(REGISTER_FORM_SCHEMA),
@@ -128,6 +129,7 @@ export default function JoinProject() {
         resumePdf: '', // Это поле будет передаваться по id в хранилище
         telegram: telegram,
         otherPriorities: student.otherPriority || '',
+        username: user?.username,
       };
 
       const response = await createStudent({ variables });

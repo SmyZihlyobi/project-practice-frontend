@@ -34,6 +34,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             id: String(decoded.id),
             email: decoded.email,
             name: decoded.name,
+            username: decoded.username,
             roles: decoded.roles as Roles[],
             is_student_company: decoded.is_student_company,
           });
