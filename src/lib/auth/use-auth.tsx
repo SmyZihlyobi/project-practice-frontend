@@ -25,14 +25,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (token) {
       try {
         const decoded = jwtDecode<JwtPayload>(token);
-
         const currentTime = Date.now() / 1000;
         if (decoded.exp && decoded.exp < currentTime) {
           Cookies.remove(JWT_COOKIE_NAME);
           setUser(null);
         } else {
           setUser({
-            id: decoded.id,
+            id: String(decoded.id),
             email: decoded.email,
             name: decoded.name,
             roles: decoded.roles as Roles[],

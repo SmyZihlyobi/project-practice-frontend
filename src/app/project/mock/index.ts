@@ -12,6 +12,7 @@ export const mockProjects: Project[] = [
     technicalSpecifications: 'Shiv_Kyle_(2).pdf',
     id: '1',
     active: false,
+    companyName: 'a',
   },
   {
     description:
@@ -24,6 +25,7 @@ export const mockProjects: Project[] = [
     technicalSpecifications: 'FitTrack_specs.pdf',
     id: '2',
     active: false,
+    companyName: 'b',
   },
   {
     description:
@@ -36,6 +38,7 @@ export const mockProjects: Project[] = [
     technicalSpecifications: 'EduPortal_technical_specs.pdf',
     id: '3',
     active: true,
+    companyName: 'c',
   },
   {
     description:
@@ -48,6 +51,7 @@ export const mockProjects: Project[] = [
     technicalSpecifications: '',
     id: '4',
     active: true,
+    companyName: 'v',
   },
   {
     description:
@@ -60,6 +64,7 @@ export const mockProjects: Project[] = [
     technicalSpecifications: '',
     id: '5',
     active: false,
+    companyName: 'fg',
   },
   {
     description:
@@ -72,6 +77,7 @@ export const mockProjects: Project[] = [
     technicalSpecifications: 'ShopBuilder_specs.pdf',
     id: '6',
     active: true,
+    companyName: 'ad',
   },
   {
     description:
@@ -84,6 +90,7 @@ export const mockProjects: Project[] = [
     technicalSpecifications: 'SecureChat_technical_docs.pdf',
     id: '7',
     active: false,
+    companyName: 'as',
   },
   {
     description:
@@ -96,6 +103,7 @@ export const mockProjects: Project[] = [
     technicalSpecifications: '',
     id: '8',
     active: false,
+    companyName: 'asdf',
   },
   {
     description:
@@ -108,6 +116,7 @@ export const mockProjects: Project[] = [
     technicalSpecifications: 'TravelPlanner_specs.pdf',
     id: '9',
     active: true,
+    companyName: 'asd',
   },
   {
     description:
@@ -120,6 +129,7 @@ export const mockProjects: Project[] = [
     technicalSpecifications: 'ConferenceHub_technical_docs.pdf',
     id: '10',
     active: false,
+    companyName: 'asd',
   },
   {
     description:
@@ -132,6 +142,7 @@ export const mockProjects: Project[] = [
     technicalSpecifications: '',
     id: '11',
     active: false,
+    companyName: 'adgdf',
   },
   {
     description:
@@ -144,6 +155,7 @@ export const mockProjects: Project[] = [
     technicalSpecifications: 'SmartHome_specs.pdf',
     id: '12',
     active: true,
+    companyName: 'agfdg',
   },
   {
     description:
@@ -156,6 +168,7 @@ export const mockProjects: Project[] = [
     technicalSpecifications: 'DesignStudio_technical_docs.pdf',
     id: '13',
     active: false,
+    companyName: 'agfdh',
   },
   {
     description:
@@ -168,6 +181,7 @@ export const mockProjects: Project[] = [
     technicalSpecifications: '',
     id: '14',
     active: false,
+    companyName: 'afgdd',
   },
   {
     description:
@@ -180,5 +194,6 @@ export const mockProjects: Project[] = [
     technicalSpecifications: 'LinguaLearn_specs.pdf',
     id: '15',
     active: false,
+    companyName: 'agdsfgfhb',
   },
 ];

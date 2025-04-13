@@ -18,6 +18,7 @@ const Filter = observer(() => {
   const [isFilteredByTechnicalSpecifications, setIsFilteredByTechnicalSpecifications] =
     useState<boolean>(false);
   const [isFilteredByActive, setIsFilteredByActive] = useState<boolean>(true);
+  const [isFilteredByFavorite, setIsFilteredByFavorite] = useState<boolean>(false);
 
   useEffect(() => {
     store.getStackItems();
@@ -32,6 +33,7 @@ const Filter = observer(() => {
 
     setIsFilteredByPresentation(false);
     setIsFilteredByTechnicalSpecifications(false);
+    setIsFilteredByFavorite(false);
     setIsFilteredByActive(true);
   };
 
@@ -59,6 +61,17 @@ const Filter = observer(() => {
           }}
         >
           {isToggledList ? 'Посмотреть все' : 'Свернуть'}
+        </span>
+        <span className="flex items-center gap-3">
+          <Checkbox
+            checked={isFilteredByFavorite}
+            onCheckedChange={() => {
+              store.filterByFavorite(isFilteredByFavorite);
+              if (isFilteredByFavorite) setIsFilteredByFavorite(false);
+              else setIsFilteredByFavorite(true);
+            }}
+          />
+          <h2>Избранное</h2>
         </span>
         <span className="flex items-center gap-3">
           <Checkbox

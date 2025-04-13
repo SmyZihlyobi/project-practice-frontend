@@ -12,6 +12,7 @@ export const GET_PROJECTS_QUERY = gql`
       technicalSpecifications
       active
       id
+      companyName
     }
   }
 `;

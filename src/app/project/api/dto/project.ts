@@ -10,6 +10,7 @@ export interface Project {
   technicalSpecifications?: string;
   active: boolean;
   id: string;
+  companyName: string;
 }
 
 interface ProjectQueryResponse {
