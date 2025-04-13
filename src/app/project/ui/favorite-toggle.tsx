@@ -6,6 +6,8 @@ import { FavoriteToggleProps } from '../types';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/lib/auth/use-auth';
 import { observer } from 'mobx-react-lite';
+import { Roles } from '@/lib/constant/roles';
+import { isArray } from '@apollo/client/utilities';
 
 export const FavoriteToggle = observer((props: FavoriteToggleProps) => {
   const { projectId } = props;
@@ -18,6 +20,16 @@ export const FavoriteToggle = observer((props: FavoriteToggleProps) => {
 
   if (!user) {
     return null;
+  }
+
+  if (isArray(user.roles)) {
+    if (!user.roles.includes(Roles.Student)) {
+      return null;
+    }
+  } else {
+    if (user.roles !== Roles.Student) {
+      return null;
+    }
   }
 
   const favoriteToggleHandler = () => {
