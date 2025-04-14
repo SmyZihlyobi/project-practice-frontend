@@ -23,6 +23,7 @@ class ProjectStore {
   public pageSize = 10;
   public paginatedProjects: Project[] = [];
   private dbService: IndexedDBService | null;
+  private isCacheLoaded: boolean = false;
 
   constructor() {
     makeAutoObservable(this);
@@ -43,8 +44,14 @@ class ProjectStore {
   };
 
   preLoad = async (): Promise<void> => {
+    if (this.isCacheLoaded) return;
     this.dbService = new IndexedDBService('ProjectsDB', 'projects');
-    this.loadFromCache();
+    await this.loadFromCache();
+    this.isCacheLoaded = true;
+  };
+
+  getIsCacheLoaded = (): boolean => {
+    return this.isCacheLoaded;
   };
 
   getProjects = async (): Promise<void> => {

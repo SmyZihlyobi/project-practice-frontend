@@ -28,7 +28,8 @@ export class IndexedDBService {
       request.onupgradeneeded = event => {
         const db = (event.target as IDBOpenDBRequest).result;
         if (!db.objectStoreNames.contains(this.storeName)) {
-          db.createObjectStore(this.storeName, { keyPath: 'id' });
+          const store = db.createObjectStore(this.storeName, { keyPath: 'id' });
+          store.createIndex('by_field', 'field', { unique: false });
         }
       };
     });
@@ -62,7 +63,7 @@ export class IndexedDBService {
 
   async saveAll<T extends { id: string }>(items: T[]): Promise<void> {
     if (!this.db) await this.init();
-
+    const plainItems = items.map(item => this.sanitizeForIndexedDB(item));
     return new Promise((resolve, reject) => {
       const transaction = this.db!.transaction(this.storeName, 'readwrite');
       const store = transaction.objectStore(this.storeName);
@@ -71,7 +72,7 @@ export class IndexedDBService {
       const clearRequest = store.clear();
 
       clearRequest.onsuccess = () => {
-        items.forEach(item => store.put(item));
+        plainItems.forEach(item => store.put(item));
 
         transaction.oncomplete = () => resolve();
         transaction.onerror = () => reject(transaction.error);
@@ -118,5 +119,114 @@ export class IndexedDBService {
       request.onsuccess = () => resolve();
       request.onerror = () => reject(request.error);
     });
+  }
+
+  async updateItem<T extends { id: string }>(
+    id: string,
+    updates: Partial<T>,
+  ): Promise<void> {
+    if (!this.db) await this.init();
+
+    return new Promise(async (resolve, reject) => {
+      try {
+        // Сначала получаем текущий элемент
+        const currentItem = await this.getById<T>(id);
+
+        if (!currentItem) {
+          throw new Error(`Item with id ${id} not found`);
+        }
+
+        // Создаем обновленную версию элемента
+        const updatedItem = { ...currentItem, ...updates, id };
+
+        const transaction = this.db!.transaction(this.storeName, 'readwrite');
+        const store = transaction.objectStore(this.storeName);
+        const request = store.put(updatedItem);
+
+        request.onsuccess = () => resolve();
+        request.onerror = () => reject(request.error);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  async updateByField<T extends { id: string }>(
+    fieldName: string,
+    fieldValue: never,
+    updates: Partial<T>,
+  ): Promise<void> {
+    if (!this.db) await this.init();
+
+    return new Promise(async (resolve, reject) => {
+      try {
+        // Находим элемент по полю
+        const item = await this.getItemByField<T>(fieldName, fieldValue);
+
+        if (!item) {
+          throw new Error(`Item with ${fieldName}=${fieldValue} not found`);
+        }
+
+        // Обновляем элемент
+        await this.updateItem(item.id, updates);
+        resolve();
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  async getAllByField<T>(fieldName: string, value: never): Promise<T[]> {
+    if (!this.db) await this.init();
+
+    return new Promise((resolve, reject) => {
+      const transaction = this.db!.transaction(this.storeName, 'readonly');
+      const store = transaction.objectStore(this.storeName);
+      const index = store.index(`by_${fieldName}`);
+      const request = index.getAll(value);
+
+      request.onsuccess = () => resolve(request.result || []);
+      request.onerror = () => reject(request.error);
+    });
+  }
+
+  async getItemByField<T>(fieldName: string, value: string): Promise<T | undefined> {
+    if (!this.db) await this.init();
+
+    return new Promise((resolve, reject) => {
+      const transaction = this.db!.transaction(this.storeName, 'readonly');
+      const store = transaction.objectStore(this.storeName);
+      const index = store.index(`by_${fieldName}`);
+      const request = index.get(value);
+
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private sanitizeForIndexedDB(data: any): any {
+    if (data === null || typeof data !== 'object') {
+      return data;
+    }
+
+    // Handle arrays
+    if (Array.isArray(data)) {
+      return data.map(item => this.sanitizeForIndexedDB(item));
+    }
+
+    // Handle plain objects (not MobX proxies)
+    if (Object.prototype.toString.call(data) === '[object Object]') {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const result: Record<string, any> = {};
+      for (const key in data) {
+        if (data.hasOwnProperty(key)) {
+          result[key] = this.sanitizeForIndexedDB(data[key]);
+        }
+      }
+      return result;
+    }
+
+    return JSON.parse(JSON.stringify(data));
   }
 }

@@ -13,6 +13,7 @@ class TeamStore {
   public loading: boolean = false;
   public currentTeams: Team[] = [];
   private _pageSize: number = TEAMS_PER_PAGE;
+  private _isCacheLoaded: boolean = false;
   private dbService: IndexedDBService | null;
 
   constructor() {
@@ -29,9 +30,15 @@ class TeamStore {
   };
 
   preLoad = async (): Promise<void> => {
+    if (this._isCacheLoaded) return;
     this.dbService = new IndexedDBService('TeamsDB', 'teams');
-    this.loadFromCache();
+    await this.loadFromCache();
+    this._isCacheLoaded = true;
   };
+
+  get isCachedLoaded() {
+    return this._isCacheLoaded;
+  }
 
   private saveToCache = async (): Promise<void> => {
     if (!this.dbService) return;
