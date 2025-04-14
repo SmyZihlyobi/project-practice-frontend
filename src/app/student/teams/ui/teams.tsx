@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 import { observer } from 'mobx-react-lite';
 
@@ -12,15 +12,11 @@ import { useTeamStore } from '../store';
 import { Students } from './students';
 
 export const Teams = observer(() => {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { getTeams, currentTeamsPage, preLoad } = useTeamStore;
+  const { getTeams, currentTeamsPage, preLoad, isCachedLoaded } = useTeamStore;
 
   useEffect(() => {
-    setIsLoading(true);
     preLoad();
-    getTeams().finally(() => {
-      setIsLoading(false);
-    });
+    getTeams();
   }, [getTeams, preLoad]);
 
   const renderSkeletonRow = (rowsCount: number, columnsCount: number) => {
@@ -36,7 +32,7 @@ export const Teams = observer(() => {
   return (
     <Card className="p-4 mt-4">
       <h2 className="text-lg font-semibold mb-4">Список команд</h2>
-      {currentTeamsPage.length === 0 && isLoading ? (
+      {!isCachedLoaded ? (
         renderSkeletonRow(5, 1)
       ) : currentTeamsPage.length === 0 ? (
         <div className="text-center py-6">

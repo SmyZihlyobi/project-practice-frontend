@@ -1,58 +1,134 @@
+'use client';
+
 import {
   ApolloClient,
-  ApolloLink,
-  HttpLink,
   InMemoryCache,
+  from,
+  HttpLink,
+  ApolloLink,
+  Operation,
   Observable,
 } from '@apollo/client';
-import { onError } from '@apollo/client/link/error';
+import { IndexedDBService } from '../index-db/index-db-service';
+import { nanoid } from 'nanoid';
 import Cookies from 'js-cookie';
 import { JWT_COOKIE_NAME } from '../constant';
 import { toast } from 'sonner';
+import { QueuedGraphQLRequest } from './types';
 
-const httpLink = new HttpLink({ uri: `${process.env.NEXT_PUBLIC_BACKEND_URL}/graphql` });
+let indexedDb: IndexedDBService | null = null;
+let userExpire: number = 0;
 
-const authMiddleware = new ApolloLink((operation, forward) => {
+export const setApolloIndexDb = (indexDb: IndexedDBService) => {
+  indexedDb = indexDb;
+};
+
+export const setUserExpire = (expire: number) => {
+  userExpire = expire;
+};
+const generateRequestKey = (operation: Operation): string => {
+  return `${operation.operationName}:${JSON.stringify(operation.variables)}`;
+};
+
+const httpLink = new HttpLink({
+  uri: process.env.NEXT_PUBLIC_BACKEND_URL + '/graphql',
+});
+
+const authLink = new ApolloLink((operation, forward) => {
   const token = Cookies.get(JWT_COOKIE_NAME);
-
   operation.setContext({
     headers: {
-      Authorization: token ? `Bearer ${token}` : '',
+      authorization: token ? `Bearer ${token}` : '',
     },
-    connectToDevTools: false,
   });
-
   return forward(operation);
 });
 
-const errorLink = onError(({ graphQLErrors, networkError }) => {
-  if (graphQLErrors) {
-    for (const err of graphQLErrors) {
-      if (
-        err.extensions?.code === 'UNAUTHENTICATED' ||
-        err.extensions?.code === 'FORBIDDEN' ||
-        err.message.includes('401') ||
-        err.message.includes('Unauthorized')
-      ) {
-        toast.error('У тебя здесь нет власти! 😈');
+const offlineLink = new ApolloLink((operation, forward) => {
+  if (typeof window !== undefined && !navigator.onLine) {
+    const { operationName } = operation;
+
+    if (operationName && operationName.startsWith('Mutation')) {
+      if (indexedDb) {
+        const requestKey = generateRequestKey(operation);
+
+        indexedDb
+          .getItemByField<QueuedGraphQLRequest>('requestKey', requestKey)
+          .then(existingRequest => {
+            if (!indexedDb) return;
+            if (existingRequest) {
+              return indexedDb.updateItem(existingRequest.id, {
+                ...existingRequest,
+                timestamp: Date.now(),
+                priority: existingRequest.priority + 1,
+              });
+            } else {
+              const requestToSave: QueuedGraphQLRequest = {
+                id: nanoid(),
+                operation: operation,
+                timestamp: Date.now(),
+                expiresAt: userExpire,
+                requestKey: requestKey,
+                priority: 1,
+              };
+              return indexedDb.addItem(requestToSave);
+            }
+          });
 
         return new Observable(observer => {
+          observer.next({
+            data: { message: 'Request queued offline' },
+          });
           observer.complete();
         });
       }
     }
+
+    throw new Error('No internet connection');
   }
 
-  if (networkError && 'statusCode' in networkError && networkError.statusCode === 401) {
-    Cookies.remove(JWT_COOKIE_NAME);
-
-    return new Observable(observer => {
-      observer.complete();
-    });
-  }
+  return forward(operation);
 });
+
+const errorLink = new ApolloLink((operation, forward) => {
+  return forward(operation).map(response => {
+    if (response.errors) {
+      response.errors.forEach(error => {
+        if (error.message === 'Unauthenticated' || error.message === 'Unauthorized') {
+          toast.error('У тебя здесь нет власти! 😈');
+        }
+        if (error.message.includes('NetworkError')) {
+          throw error;
+        }
+      });
+    }
+    return response;
+  });
+});
+
+const link = from([offlineLink, authLink, errorLink, httpLink]);
 
 export const apolloClient = new ApolloClient({
-  cache: new InMemoryCache({ addTypename: false }),
-  link: ApolloLink.from([errorLink, authMiddleware, httpLink]),
+  link: link,
+  cache: new InMemoryCache(),
 });
+
+export const processApolloQueue = async () => {
+  if (navigator.onLine && indexedDb) {
+    const requests = await indexedDb.getAll<QueuedGraphQLRequest>();
+
+    requests.sort((a, b) => b.priority - a.priority || b.timestamp - a.timestamp);
+
+    for (const request of requests) {
+      try {
+        await apolloClient.mutate({
+          mutation: request.operation.query,
+          variables: request.operation.variables,
+        });
+        await indexedDb.deleteItem(request.id);
+      } catch (error) {
+        console.error('Failed to process queued request:', error);
+      }
+    }
+  }
+};

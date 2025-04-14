@@ -12,6 +12,7 @@ import { Fira_Code } from 'next/font/google';
 import Head from 'next/head';
 
 import './globals.css';
+import { OfflineWrapper } from '@/lib/offline-wrapper';
 
 const firaCode = Fira_Code({
   variable: '--font-fira-code-sans',
@@ -146,14 +147,18 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <AuthProvider>
-            <Header />
-            <ReCaptchaProvider>
-              <main>
-                <ApolloWrapper>{children}</ApolloWrapper>
-                <Toaster />
-              </main>
-            </ReCaptchaProvider>
-            <Footer />
+            <ApolloWrapper>
+              <OfflineWrapper>
+                <Header />
+                <ReCaptchaProvider>
+                  <main>
+                    {children}
+                    <Toaster />
+                  </main>
+                </ReCaptchaProvider>
+                <Footer />
+              </OfflineWrapper>
+            </ApolloWrapper>
           </AuthProvider>
         </ThemeProvider>
       </body>

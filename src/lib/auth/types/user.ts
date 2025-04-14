@@ -7,4 +7,5 @@ export interface User {
   roles: Roles[];
   username?: string;
   is_student_company?: boolean;
+  userExpire: number;
 }
