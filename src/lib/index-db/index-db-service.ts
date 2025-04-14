@@ -129,14 +129,12 @@ export class IndexedDBService {
 
     return new Promise(async (resolve, reject) => {
       try {
-        // Сначала получаем текущий элемент
         const currentItem = await this.getById<T>(id);
 
         if (!currentItem) {
           throw new Error(`Item with id ${id} not found`);
         }
 
-        // Создаем обновленную версию элемента
         const updatedItem = { ...currentItem, ...updates, id };
 
         const transaction = this.db!.transaction(this.storeName, 'readwrite');
@@ -160,14 +158,12 @@ export class IndexedDBService {
 
     return new Promise(async (resolve, reject) => {
       try {
-        // Находим элемент по полю
         const item = await this.getItemByField<T>(fieldName, fieldValue);
 
         if (!item) {
           throw new Error(`Item with ${fieldName}=${fieldValue} not found`);
         }
 
-        // Обновляем элемент
         await this.updateItem(item.id, updates);
         resolve();
       } catch (error) {
@@ -204,18 +200,17 @@ export class IndexedDBService {
     });
   }
 
+  // Для удобства использования MobX
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private sanitizeForIndexedDB(data: any): any {
     if (data === null || typeof data !== 'object') {
       return data;
     }
 
-    // Handle arrays
     if (Array.isArray(data)) {
       return data.map(item => this.sanitizeForIndexedDB(item));
     }
 
-    // Handle plain objects (not MobX proxies)
     if (Object.prototype.toString.call(data) === '[object Object]') {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const result: Record<string, any> = {};
