@@ -15,7 +15,7 @@ echo ">>> Git pull successful."
 
 # 2. Пересобрать и перезапустить контейнеры Docker Compose
 echo ">>> Rebuilding and restarting Docker containers..."
-if ! docker-compose up --build -d; then
+if ! docker compose up --build -d; then
     echo "!!! Docker Compose failed. Aborting deployment."
     exit 1
 fi
