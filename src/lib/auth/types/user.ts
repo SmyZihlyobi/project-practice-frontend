@@ -5,5 +5,6 @@ export interface User {
   email: string;
   name?: string;
   roles: Roles[];
+  username?: string;
   is_student_company?: boolean;
 }

@@ -12,13 +12,16 @@ import { useTeamStore } from '../store';
 import { Students } from './students';
 
 export const Teams = observer(() => {
-  const { getTeams, currentTeamsPage } = useTeamStore;
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { getTeams, currentTeamsPage, preLoad } = useTeamStore;
 
   useEffect(() => {
     setIsLoading(true);
-    useTeamStore.getTeams().finally(() => setIsLoading(false));
-  }, [getTeams]);
+    preLoad();
+    getTeams().finally(() => {
+      setIsLoading(false);
+    });
+  }, [getTeams, preLoad]);
 
   const renderSkeletonRow = (rowsCount: number, columnsCount: number) => {
     return Array.from({ length: rowsCount }).map((_, rowIndex) => (
@@ -33,7 +36,7 @@ export const Teams = observer(() => {
   return (
     <Card className="p-4 mt-4">
       <h2 className="text-lg font-semibold mb-4">Список команд</h2>
-      {isLoading ? (
+      {currentTeamsPage.length === 0 && isLoading ? (
         renderSkeletonRow(5, 1)
       ) : currentTeamsPage.length === 0 ? (
         <div className="text-center py-6">
