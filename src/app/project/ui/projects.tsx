@@ -60,7 +60,7 @@ export const Projects = observer(() => {
 
   if (currentProjects.length < 1) {
     return (
-      <div className="h-[182px] w-[890px] rounded-xl flex items-center justify-center text-lg">
+      <div className="h-[182px] w-full rounded-xl flex items-center justify-center text-lg">
         <div className="w-max"> Нет проектов по заданному запросу</div>
       </div>
     );
