@@ -52,7 +52,7 @@ export const Projects = observer(() => {
       <div className="gap-3 flex-col flex">
         <Search />
         {[...Array(5)].map((_, index) => (
-          <Skeleton key={index} className="h-[282px] w-[890px] rounded-xl" />
+          <Skeleton key={index} className="h-[282px] w-full rounded-xl" />
         ))}
       </div>
     );
