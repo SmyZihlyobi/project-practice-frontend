@@ -25,6 +25,18 @@ services:
     # depends_on: # Not needed unless telegraf relies on web starting first completely
     #   - telegraf
 
+  nginx-exporter:
+    image: nginx/nginx-prometheus-exporter:latest
+    command:
+      - -nginx.scrape-uri=http://web:81/nginx_status
+      - -web.listen-address=:9113
+      - -web.telemetry-path=/metrics
+    ports:
+      - "9113:9113"
+    depends_on:
+      - web
+    restart: unless-stopped
+
   telegraf:
     image: telegraf:latest
     ports: # Expose the Prometheus metrics port to the host
@@ -45,6 +57,7 @@ services:
       HOST_SYS: /host/sys   # Tell Telegraf where to find host /sys
     depends_on:
       - web # Ensure web service (nginx) is started before Telegraf tries to connect
+      - nginx-exporter
     restart: unless-stopped
     # user: telegraf:$(stat -c '%g' /var/log/nginx) # Potentially adjust user/group if log read permission issues arise
 
