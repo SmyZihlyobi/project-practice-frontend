@@ -31,6 +31,13 @@ RUN bun run build
 
 FROM nginx:alpine AS runner
 
+# Create log directory and set permissions for the nginx user
+RUN mkdir -p /var/log/nginx && \
+    chown -R nginx:nginx /var/log/nginx
+
 COPY --from=builder /app/out /usr/share/nginx/html
 COPY --from=builder /app/.env /usr/share/nginx/html/.env
 COPY nginx.conf /etc/nginx/nginx.conf
+
+# Optional: Ensure nginx runs as the nginx user (usually default)
+# USER nginx
