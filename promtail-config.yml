@@ -1,0 +1,18 @@
+server:
+  http_listen_port: 9091
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+- job_name: nginx
+  static_configs:
+  - targets:
+      - localhost
+    labels:
+      job: nginx_logs
+      __path__: /var/log/nginx/*log # Путь к логам внутри контейнера Promtail
