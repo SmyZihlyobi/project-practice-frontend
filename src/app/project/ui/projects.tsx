@@ -108,7 +108,7 @@ export const Projects = observer(() => {
             <span className="w-full">
               {'Технический стек: ' + project.stack.toLowerCase()}
             </span>
-            {!project.technicalSpecifications && project.presentation && (
+            {project.technicalSpecifications || project.presentation ? (
               <div className="w-full flex flex-col gap-2 sm:flex-row justify-between border-dashed border-2 p-3 rounded-xl l">
                 {project.technicalSpecifications ? (
                   <Button className="sm:w-5/12 w-full sm:text-m">
@@ -133,7 +133,7 @@ export const Projects = observer(() => {
                   </Button>
                 ) : null}
               </div>
-            )}
+            ) : null}
           </CardContent>
         </Card>
       ))}
