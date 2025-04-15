@@ -19,16 +19,5 @@ services:
       - nginx_logs:/var/log/nginx
     restart: always
 
-  promtail:
-    image: grafana/promtail:2.9.0
-    volumes:
-      - nginx_logs:/var/log/nginx
-      - ./promtail-config.yml:/etc/promtail/config.yml
-    command: -config.file=/etc/promtail/config.yml
-    depends_on:
-      - web
-    restart: always
-
 volumes:
   nginx_logs:
-  grafana_data:
