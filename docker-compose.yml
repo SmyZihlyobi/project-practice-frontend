@@ -21,7 +21,7 @@ services:
       - nginx_logs:/var/log/nginx
     restart: always
     # Override the default command to fix permissions before starting nginx
-    command: /bin/sh -c "touch /var/log/nginx/access.log && chown nginx:nginx /var/log/nginx /var/log/nginx/access.log && nginx -g 'daemon off;'"
+    command: /bin/sh -c "touch /var/log/nginx/access.log && chmod -R 777 /var/log/nginx && nginx -g 'daemon off;'"
     # depends_on: # Not needed unless telegraf relies on web starting first completely
     #   - telegraf
 
