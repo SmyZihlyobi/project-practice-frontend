@@ -9,10 +9,10 @@ clients:
   - url: http://loki:3100/loki/api/v1/push
 
 scrape_configs:
-- job_name: nginx
+- job_name: nginx_frontend
   static_configs:
   - targets:
       - localhost
     labels:
-      job: nginx_logs
-      __path__: /var/log/nginx/*log # Путь к логам внутри контейнера Promtail
+      job: nginx_frontend_logs
+      __path__: /var/log/nginx/*log
