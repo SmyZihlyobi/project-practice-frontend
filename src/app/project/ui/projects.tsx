@@ -3,7 +3,6 @@
 import { useEffect } from 'react';
 import { PRESENTATION_API, TECHNICAL_SPECIFICATION_API } from '@/app/admin/lib/constant';
 import { Accordion } from '@/components/ui/accordion';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Markdown } from '@/components/ui/markdown';
 import {
@@ -109,28 +108,26 @@ export const Projects = observer(() => {
               {'Технический стек: ' + project.stack.toLowerCase()}
             </span>
             {project.technicalSpecifications || project.presentation ? (
-              <div className="w-full flex flex-col gap-2 sm:flex-row justify-between border-dashed border-2 p-3 rounded-xl l">
+              <div className="w-full flex flex-col gap-2 text-center sm:flex-row justify-between border-dashed border-2 p-3 rounded-xl l">
                 {project.technicalSpecifications ? (
-                  <Button className="sm:w-5/12 w-full sm:text-m">
-                    <a
-                      href={`${process.env.NEXT_PUBLIC_BACKEND_URL}${TECHNICAL_SPECIFICATION_API}/${project.technicalSpecifications}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Скачать тех. задание
-                    </a>
-                  </Button>
+                  <a
+                    className='class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2 sm:w-5/12 w-full sm:text-m"'
+                    href={`${process.env.NEXT_PUBLIC_BACKEND_URL}${TECHNICAL_SPECIFICATION_API}/${project.technicalSpecifications}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Скачать тех. задание
+                  </a>
                 ) : null}
                 {project.presentation ? (
-                  <Button className="sm:w-5/12 w-full sm:text-m">
-                    <a
-                      href={`${process.env.NEXT_PUBLIC_BACKEND_URL}${PRESENTATION_API}/${project.presentation}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Скачать презентацию
-                    </a>
-                  </Button>
+                  <a
+                    className='class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2 sm:w-5/12 w-full sm:text-m"'
+                    href={`${process.env.NEXT_PUBLIC_BACKEND_URL}${PRESENTATION_API}/${project.presentation}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Скачать презентацию
+                  </a>
                 ) : null}
               </div>
             ) : null}
