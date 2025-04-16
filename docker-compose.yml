@@ -28,7 +28,7 @@ services:
   nginx-exporter:
     image: nginx/nginx-prometheus-exporter:latest
     command:
-      - -nginx.scrape-uri=http://web:81/nginx_status
+      - -nginx.scrape-uri=http://web:81/metrics
       - -web.listen-address=:9113
       - -web.telemetry-path=/metrics
     ports:
