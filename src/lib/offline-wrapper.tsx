@@ -9,7 +9,7 @@ import { useAuth } from './auth/use-auth';
 import { setApolloIndexDb } from './Apollo/apollo-client';
 
 export const OfflineWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [isOffline, setIsOffline] = useState(true);
+  const [isOffline, setIsOffline] = useState<boolean | null>(null);
   const [networkError, setNetworkError] = useState(false);
   const indexedAxiosDbRef = useRef<IndexedDBService | null>(null);
   const indexedApolloDbRef = useRef<IndexedDBService | null>(null);
@@ -63,7 +63,7 @@ export const OfflineWrapper: React.FC<{ children: React.ReactNode }> = ({ childr
       indexedAxiosDbRef.current = axiosIndexedDB;
       setAxiosIndexDb(axiosIndexedDB);
       const apolloIndexedDB = new IndexedDBService('ApolloDB', 'graphql-requests');
-      indexedApolloDbRef.current = axiosIndexedDB;
+      indexedApolloDbRef.current = apolloIndexedDB;
       setApolloIndexDb(apolloIndexedDB);
     }
   }, [user]);
@@ -82,6 +82,10 @@ export const OfflineWrapper: React.FC<{ children: React.ReactNode }> = ({ childr
     processAxiosQueue();
     processApolloQueue();
   };
+
+  if (isOffline === null) {
+    return <>{children}</>;
+  }
 
   return (
     <>
