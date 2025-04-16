@@ -18,6 +18,7 @@ class ProjectStore {
   public currentProjects: Project[] = [];
   public stackItems: Set<string> = new Set();
   public selectedStackItems: Set<string> = new Set();
+  public currentStackItems: Array<string> = [];
   public favoriteProject: FavoriteProject[] = [];
   public currentPage = 1;
   public pageSize = 10;
@@ -151,6 +152,7 @@ class ProjectStore {
         }
         project.stack.split(', ').forEach(stackItem => {
           this.stackItems.add(stackItem.toLowerCase());
+          this.currentStackItems.push(stackItem.toLowerCase());
         });
       }
     } catch (error) {
@@ -162,6 +164,17 @@ class ProjectStore {
     this.currentProjects = this.projects.filter(project =>
       project.name.toLocaleLowerCase().startsWith(name.toLocaleLowerCase()),
     );
+    this.currentPage = 1;
+    this.updatePaginatedProjects();
+  };
+  findByStackItemName = (name: string): void => {
+    const filtredItems = Array.from(this.stackItems).filter(stackItem =>
+      stackItem.toLocaleLowerCase().startsWith(name.toLocaleLowerCase()),
+    );
+    this.currentStackItems = [];
+    filtredItems.forEach(item => {
+      this.currentStackItems.push(item);
+    });
     this.currentPage = 1;
     this.updatePaginatedProjects();
   };
