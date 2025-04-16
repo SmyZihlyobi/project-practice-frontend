@@ -15,6 +15,7 @@ import Cookies from 'js-cookie';
 import { JWT_COOKIE_NAME } from '../constant';
 import { toast } from 'sonner';
 import { QueuedGraphQLRequest } from './types';
+import { onError } from '@apollo/client/link/error';
 
 let indexedDb: IndexedDBService | null = null;
 let userExpire: number = 0;
@@ -90,20 +91,43 @@ const offlineLink = new ApolloLink((operation, forward) => {
   return forward(operation);
 });
 
-const errorLink = new ApolloLink((operation, forward) => {
-  return forward(operation).map(response => {
-    if (response.errors) {
-      response.errors.forEach(error => {
-        if (error.message === 'Unauthenticated' || error.message === 'Unauthorized') {
-          toast.error('У тебя здесь нет власти! 😈');
-        }
-        if (error.message.includes('NetworkError')) {
-          throw error;
-        }
-      });
-    }
-    return response;
+const errorLink = onError(({ graphQLErrors, networkError, operation }) => {
+  console.log('Apollo error:', {
+    operation: operation.operationName,
+    graphQLErrors,
+    networkError,
   });
+
+  if (graphQLErrors) {
+    graphQLErrors.forEach(error => {
+      const { message, extensions } = error;
+      const errorCode = extensions?.code || '';
+
+      const isAuthError =
+        errorCode === 'UNAUTHENTICATED' ||
+        errorCode === 'UNAUTHORIZED' ||
+        message.includes('Unauthenticated') ||
+        message.includes('Unauthorized') ||
+        message.includes('401') ||
+        message.includes('403') ||
+        message.includes('Invalid token') ||
+        message.includes('Authentication failed');
+
+      if (isAuthError) {
+        toast.error('У тебя здесь нет власти! 😈');
+      }
+
+      if (message.includes('NetworkError')) {
+        throw error;
+      }
+    });
+  }
+
+  if (networkError && 'statusCode' in networkError) {
+    if (networkError.statusCode === 401 || networkError.statusCode === 403) {
+      toast.error('У тебя здесь нет власти! 😈');
+    }
+  }
 });
 
 const link = from([offlineLink, authLink, errorLink, httpLink]);
