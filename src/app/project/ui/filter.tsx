@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { observer } from 'mobx-react-lite';
 
 import { useProjectStore } from '../store/project-store';
+import { StackSearch } from './stack-search';
 
 const Filter = observer(() => {
   const store = useProjectStore;
@@ -24,9 +25,9 @@ const Filter = observer(() => {
     store.getStackItems();
   }, [store]);
 
-  let stackItems = Array.from(store.stackItems).slice(0, 3);
+  let stackItems = store.currentStackItems.slice(0, 3);
   if (!isToggledList) {
-    stackItems = Array.from(store.stackItems);
+    stackItems = store.currentStackItems;
   }
   const handleResetFilters = () => {
     store.resetFilters();
@@ -42,6 +43,7 @@ const Filter = observer(() => {
       <h2 className="text-lg font-semibold mb-4">Фильтры</h2>
       <div className="w-full h-fit flex flex-col gap-2">
         <h2 className="text-lg">Технический стек </h2>
+        <StackSearch></StackSearch>
 
         {stackItems.map((item, index) => (
           <div className="w-full flex items-center gap-3" key={index}>

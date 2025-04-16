@@ -41,7 +41,11 @@ export const FavoriteToggle = observer((props: FavoriteToggleProps) => {
   };
 
   return (
-    <Button variant="ghost" onClick={favoriteToggleHandler}>
+    <Button
+      variant="ghost"
+      className="flex items-start pt-1"
+      onClick={favoriteToggleHandler}
+    >
       <Star
         className={
           isThisFavoriteProject ? 'text-amber-400 fill-amber-400' : 'text-current'
