@@ -13,6 +13,8 @@
 /public/sitemap-0.xml
 /public/sitemap.xml
 /public/robots.txt
+public/sitemap*
+public/robots.txt
 
 # testing
 /coverage
@@ -37,6 +39,12 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# lock files
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+bun.lockb
+
 # vercel
 .vercel
 
@@ -47,3 +55,6 @@ next-env.d.ts
 .vscode
 public/sitemap-0.xml
 public/sitemap-0.xml
+public/robots.txt
+public/sitemap-0.xml
+public/sitemap.xml

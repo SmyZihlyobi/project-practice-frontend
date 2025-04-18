@@ -11,6 +11,7 @@ export const GET_PROJECT_QUERY = gql`
       teamsAmount
       technicalSpecifications
       description
+      active
     }
   }
 `;

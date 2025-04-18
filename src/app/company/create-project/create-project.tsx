@@ -22,7 +22,6 @@ import { axiosInstance } from '@/lib/axios';
 import { useMutation } from '@apollo/client';
 import { zodResolver } from '@hookform/resolvers/zod';
 import cn from 'classnames';
-import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
@@ -43,7 +42,6 @@ export default function CreateProjectPage() {
   const presentationInputRef = useRef<HTMLInputElement>(null);
   const technicalSpecificationsInputRef = useRef<HTMLInputElement>(null);
   const [createProject] = useMutation(CREATE_PROJECT);
-  const router = useRouter();
 
   const delayedToast = (
     toastMessage: string,
@@ -185,7 +183,7 @@ export default function CreateProjectPage() {
       }
 
       setTimeout(() => {
-        router.push('/company/projects');
+        window.location.href = '/project';
       }, REDIRECT_DELAY);
     } catch (error) {
       console.error(error);

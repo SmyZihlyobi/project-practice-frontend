@@ -1,15 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-
-import { PopoverGroup } from '@headlessui/react';
-import Cookies from 'js-cookie';
-import { Moon, Sun } from 'lucide-react';
-import { useTheme } from 'next-themes';
 import Link from 'next/link';
-
-import { JWT_COOKIE_NAME } from '@/lib/constant';
-
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Drawer,
@@ -18,10 +10,12 @@ import {
   DrawerTrigger,
 } from '@/components/ui/drawer';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import Cookies from 'js-cookie';
+import { JWT_COOKIE_NAME } from '@/lib/constant';
+import { ThemeChanger } from './theme-change';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { theme, setTheme } = useTheme();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
@@ -55,7 +49,7 @@ export default function Header() {
         </div>
 
         {/* Desktop Navigation */}
-        <PopoverGroup className="hidden lg:flex lg:gap-x-12">
+        <div className="hidden lg:flex lg:gap-x-12">
           <Link href="/project" className="text-sm/6 font-semibold">
             Проекты
           </Link>
@@ -83,7 +77,7 @@ export default function Header() {
           >
             Создать проект
           </Link>
-        </PopoverGroup>
+        </div>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end mr-12">
           {isLoggedIn ? (
             <Button
@@ -101,13 +95,7 @@ export default function Header() {
         </div>
 
         <div className="hidden lg:block right-6 top-5">
-          <Button
-            onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-            variant="ghost"
-            className="block px-3 py-3 h-auto opacity-100 text-inherit"
-          >
-            {theme === 'light' ? <Sun /> : <Moon />}
-          </Button>
+          <ThemeChanger />
         </div>
 
         {/* Mobile Menu Button */}
@@ -210,13 +198,9 @@ export default function Header() {
                       </Link>
                     )}
                   </div>
-                  <Button
-                    onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-                    variant="ghost"
-                    className="w-full block border-b-2 px-3 py-3 h-auto opacity-100 md:text-left text-inherit"
-                  >
-                    {theme === 'light' ? 'Тёмная тема' : 'Светлая тема'}
-                  </Button>
+                </div>
+                <div className="mt-2 max-w-fit ml-auto">
+                  <ThemeChanger />
                 </div>
               </ScrollArea>
             </DrawerContent>

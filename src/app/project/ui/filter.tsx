@@ -2,25 +2,28 @@
 
 import { useEffect, useState } from 'react';
 
-import { observer } from 'mobx-react-lite';
-
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
+import { observer } from 'mobx-react-lite';
 
 import { useProjectStore } from '../store/project-store';
 
 const Filter = observer(() => {
   const store = useProjectStore;
-  const [isToggledList, setIsToggledList] = useState(true);
-  const [isFilteredByCompany, setIsFilteredByCompany] = useState(false);
-  const [isFilteredByPresentation, setIsFilteredByPresentation] = useState(false);
+  const [isToggledList, setIsToggledList] = useState<boolean>(true);
+  const [isFilteredByCompany, setIsFilteredByCompany] = useState<boolean>(false);
+  const [isFilteredByPresentation, setIsFilteredByPresentation] =
+    useState<boolean>(false);
   const [isFilteredByTechnicalSpecifications, setIsFilteredByTechnicalSpecifications] =
-    useState(false);
+    useState<boolean>(false);
+  const [isFilteredByActive, setIsFilteredByActive] = useState<boolean>(true);
+  const [isFilteredByFavorite, setIsFilteredByFavorite] = useState<boolean>(false);
 
   useEffect(() => {
     store.getStackItems();
-  }, []);
+  }, [store]);
+
   let stackItems = Array.from(store.stackItems).slice(0, 3);
   if (!isToggledList) {
     stackItems = Array.from(store.stackItems);
@@ -28,9 +31,10 @@ const Filter = observer(() => {
   const handleResetFilters = () => {
     store.resetFilters();
 
-    setIsFilteredByCompany(false);
     setIsFilteredByPresentation(false);
     setIsFilteredByTechnicalSpecifications(false);
+    setIsFilteredByFavorite(false);
+    setIsFilteredByActive(true);
   };
 
   return (
@@ -60,6 +64,17 @@ const Filter = observer(() => {
         </span>
         <span className="flex items-center gap-3">
           <Checkbox
+            checked={isFilteredByFavorite}
+            onCheckedChange={() => {
+              store.filterByFavorite(isFilteredByFavorite);
+              if (isFilteredByFavorite) setIsFilteredByFavorite(false);
+              else setIsFilteredByFavorite(true);
+            }}
+          />
+          <h2>Избранное</h2>
+        </span>
+        <span className="flex items-center gap-3">
+          <Checkbox
             checked={isFilteredByCompany}
             onCheckedChange={() => {
               store.filterByCompany(isFilteredByCompany);
@@ -68,6 +83,17 @@ const Filter = observer(() => {
             }}
           />
           <h2>Проект от компании</h2>
+        </span>
+        <span className="flex items-center gap-3">
+          <Checkbox
+            checked={isFilteredByActive}
+            onCheckedChange={checked => {
+              const newValue = Boolean(checked);
+              setIsFilteredByActive(newValue);
+              store.filterByActive(newValue);
+            }}
+          />
+          <h2>Скрыть архивные</h2>
         </span>
         <span className="flex items-center gap-3">
           <Checkbox

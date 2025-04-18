@@ -3,11 +3,10 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import {
   DEFAULT_FORM_VALUES_STUDENT,
-  LOCALSTORAGE_NAME_STUDENT,
   STUDENT_LOGIN_FORM_SCHEMA,
 } from '@/app/login/lib/constant';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 import {
   Form,
@@ -19,9 +18,15 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Eye, EyeOff } from 'lucide-react';
-import { Recaptcha } from '@/components/ui/recaptсha';
+import { Recaptcha } from '@/components/ui/recaptcha';
 import { Button } from '@/components/ui/button';
 import cn from 'classnames';
+import { axiosInstance } from '@/lib/axios';
+import { JwtResponse } from '@/app/login/api/dto';
+import Cookies from 'js-cookie';
+import { JWT_COOKIE_NAME } from '@/lib/constant';
+import { AxiosError } from 'axios';
+import { Checkbox } from '@/components/ui/checkbox';
 
 export function LoginStudentForm({
   className,
@@ -39,31 +44,30 @@ export function LoginStudentForm({
     defaultValues: DEFAULT_FORM_VALUES_STUDENT,
   });
 
-  useEffect(() => {
-    const savedData = localStorage.getItem(LOCALSTORAGE_NAME_STUDENT);
-    if (savedData) {
-      formStudent.reset(JSON.parse(savedData));
-    }
-  }, [formStudent]);
-
-  useEffect(() => {
-    const subscription = formStudent.watch(value => {
-      const { ...rest } = value;
-      localStorage.setItem(LOCALSTORAGE_NAME_STUDENT, JSON.stringify(rest));
-    });
-
-    return () => subscription.unsubscribe();
-  }, [formStudent]);
-
   const onFormSubmitST = async (
     data: z.infer<typeof STUDENT_LOGIN_FORM_SCHEMA>,
   ): Promise<void> => {
     try {
       setIsLoading(true);
+
+      const student = {
+        username: data.login,
+        password: data.password,
+        rememberMe: data.rememberMe,
+      };
+
+      const response = await axiosInstance.post<JwtResponse>(
+        '/student/register',
+        student,
+      );
+
+      if (!response.data.token) {
+        throw new Error('Неверный ответ сервера: отсутствует токен');
+      }
+
       toast.success('Вы успешно вошли как студент');
 
-      console.log(data);
-      localStorage.removeItem(LOCALSTORAGE_NAME_STUDENT);
+      Cookies.set(JWT_COOKIE_NAME, response.data.token);
       formStudent.reset(DEFAULT_FORM_VALUES_STUDENT);
 
       // to-do , оно пока что будет кидать в личный кабинет ибо нет данных с онлайн псу
@@ -71,8 +75,32 @@ export function LoginStudentForm({
         window.location.href = '/student/join-project';
       }, 500);
     } catch (error) {
-      console.error(error);
-      // to-do обработать ошибки
+      if (error instanceof AxiosError) {
+        if (error.response) {
+          const errorMessage =
+            error.response.data?.message ||
+            error.response.data?.error ||
+            'Произошла ошибка при входе';
+
+          if (error.response.status === 400) {
+            toast.error('Некорректные данные');
+          } else if (error.response.status >= 500) {
+            toast.error('Ошибка сервера. Пожалуйста, попробуйте позже');
+          } else {
+            toast.error(errorMessage);
+          }
+        } else if (error.request) {
+          toast.error('Не удалось подключиться к серверу. Проверьте интернет-соединение');
+        } else {
+          toast.error('Произошла ошибка при отправке запроса');
+        }
+      } else if (error instanceof Error) {
+        toast.error(error.message || 'Произошла непредвиденная ошибка');
+      } else {
+        toast.error('Произошла неизвестная ошибка');
+      }
+
+      console.error('Error during login:', error);
     } finally {
       setIsLoading(false);
     }
@@ -88,9 +116,13 @@ export function LoginStudentForm({
         <div className="flex flex-col items-center gap-2 text-center">
           <h1 className="text-2xl font-bold">Вход для студентов</h1>
           <p className="text-balance text-sm text-muted-foreground">
-            Введите свои данные для входа
+            Введите свои данные для входа от{' '}
+            <b className="text-primary-background">
+              <a href="https://test.psu.ru/">test.psu.ru</a>
+            </b>
           </p>
         </div>
+
         <div className="grid gap-6">
           <div className="grid gap-2">
             <FormField
@@ -100,13 +132,7 @@ export function LoginStudentForm({
                 <FormItem>
                   <FormLabel htmlFor="login">Логин</FormLabel>
                   <FormControl>
-                    <Input
-                      id="login"
-                      type="email"
-                      placeholder="m@example.com"
-                      {...field}
-                      required
-                    />
+                    <Input id="login" placeholder="malki3" {...field} required />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -146,6 +172,30 @@ export function LoginStudentForm({
                         <EyeOff size={20} aria-hidden="true" />
                       )}
                     </button>
+                    <FormMessage />
+                  </FormItem>
+                </div>
+              )}
+            />
+          </div>
+          <div className="grid gap-2">
+            <FormField
+              control={formStudent.control}
+              name="password"
+              render={({ field }) => (
+                <div>
+                  <FormItem className="flex gap-2 items-center">
+                    <FormControl>
+                      <Checkbox
+                        onChange={field.onChange}
+                        aria-label="remember me"
+                        id="remember-me"
+                        value={field.value}
+                      />
+                    </FormControl>
+                    <FormLabel htmlFor="remember-me" className="block">
+                      Запомнить меня
+                    </FormLabel>
                     <FormMessage />
                   </FormItem>
                 </div>

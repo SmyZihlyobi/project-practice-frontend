@@ -3,7 +3,13 @@ import { GetProjectResponse, GetProjectsResponse, Project } from '../api/dto';
 import { toast } from 'sonner';
 import { GET_PROJECT_QUERY, GET_PROJECTS_QUERY } from '../api/queries';
 import { isApolloError } from '@apollo/client';
-import { DELETE_ALL_PROJECTS_MUTATION, DELETE_PROJECT_MUTATION } from '../api/mutations';
+import {
+  ARCHIVE_PROJECT_MUTATION,
+  DELETE_ALL_PROJECTS_MUTATION,
+  DELETE_PROJECT_MUTATION,
+  UNARCHIVE_PROJECT_MUTATION,
+  VENOM_MUTATION,
+} from '../api/mutations';
 import { PRESENTATION_API, TECHNICAL_SPECIFICATION_API } from '../lib/constant';
 import { apolloClient } from '@/lib/Apollo';
 import { axiosInstance } from '@/lib/axios';
@@ -176,6 +182,75 @@ export class ProjectStore {
       axiosInstance.delete(`${TECHNICAL_SPECIFICATION_API}/clear-bucket`);
     } catch (error) {
       console.error(error);
+    } finally {
+      this.loading = false;
+    }
+  }
+
+  async archiveProject(id: string): Promise<void> {
+    try {
+      this.loading = true;
+      const projectToArchive = this.projects.find(project => project.id === id);
+
+      if (!projectToArchive) {
+        throw new Error("Project doesn't exist");
+      }
+
+      await apolloClient.mutate({
+        mutation: ARCHIVE_PROJECT_MUTATION,
+        variables: { id },
+      });
+
+      const projectToArchiveIndex = this.projects.indexOf(projectToArchive);
+
+      this.projects[projectToArchiveIndex] = {
+        ...projectToArchive,
+        active: false,
+      };
+    } catch (error) {
+      console.error(error);
+    } finally {
+      this.loading = false;
+    }
+  }
+
+  async unarchiveProject(id: string): Promise<void> {
+    try {
+      this.loading = true;
+      const projectToUnArchive = this.projects.find(project => project.id === id);
+
+      if (!projectToUnArchive) {
+        throw new Error("Project doesn't exist");
+      }
+
+      await apolloClient.mutate({
+        mutation: UNARCHIVE_PROJECT_MUTATION,
+        variables: { id },
+      });
+
+      const projectToUnArchiveIndex = this.projects.indexOf(projectToUnArchive);
+
+      this.projects[projectToUnArchiveIndex] = {
+        ...projectToUnArchive,
+        active: true,
+      };
+    } catch (error) {
+      console.error(error);
+    } finally {
+      this.loading = false;
+    }
+  }
+
+  async archiveAllProject(): Promise<void> {
+    try {
+      this.loading = true;
+      await apolloClient.mutate({ mutation: VENOM_MUTATION });
+      this.projects = this.projects.map(project => {
+        return { ...project, active: false };
+      });
+    } catch (error) {
+      console.error(error);
+      toast.error('Venom');
     } finally {
       this.loading = false;
     }

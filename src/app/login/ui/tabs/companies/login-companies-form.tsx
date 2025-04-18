@@ -1,15 +1,14 @@
 import { Input } from '@/components/ui/input';
 import cn from 'classnames';
-import { Recaptcha } from '@/components/ui/recaptсha';
+import { Recaptcha } from '@/components/ui/recaptcha';
 import { Button } from '@/components/ui/button';
 import { axiosInstance } from '@/lib/axios';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import {
   COMPANY_LOGIN_FORM_SCHEMA,
   DEFAULT_FORM_VALUES_COMPANY,
-  LOCALSTORAGE_NAME_COMPANY,
 } from '@/app/login/lib/constant';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
@@ -25,6 +24,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Eye, EyeOff } from 'lucide-react';
+import { AxiosError } from 'axios';
 
 export function LoginCompanyForm({
   className,
@@ -43,44 +43,61 @@ export function LoginCompanyForm({
     defaultValues: DEFAULT_FORM_VALUES_COMPANY,
   });
 
-  useEffect(() => {
-    const savedData = localStorage.getItem(LOCALSTORAGE_NAME_COMPANY);
-    if (savedData) {
-      formCompany.reset(JSON.parse(savedData));
-    }
-  }, [formCompany]);
-
-  useEffect(() => {
-    const subscription = formCompany.watch(value => {
-      const { ...rest } = value;
-      localStorage.setItem(LOCALSTORAGE_NAME_COMPANY, JSON.stringify(rest));
-    });
-
-    return () => subscription.unsubscribe();
-  }, [formCompany]);
-
   const onFormSubmitCOM = async (
     data: z.infer<typeof COMPANY_LOGIN_FORM_SCHEMA>,
   ): Promise<void> => {
     try {
       setIsLoading(true);
-      toast.success('Вы успешно вошли как компания');
 
       const response = await axiosInstance.post<JwtResponse>('/company/login', data);
 
+      if (!response.data.token) {
+        throw new Error('Неверный ответ сервера: отсутствует токен');
+      }
+
       Cookies.set(JWT_COOKIE_NAME, response.data.token);
-      console.log(response);
-      localStorage.removeItem(LOCALSTORAGE_NAME_COMPANY);
       formCompany.reset(DEFAULT_FORM_VALUES_COMPANY);
+      toast.success('Вы успешно вошли!');
 
       setTimeout(() => {
         window.location.href = '/company/create-project';
       }, 500);
     } catch (error) {
+      if (error instanceof AxiosError) {
+        if (error.response) {
+          const errorMessage =
+            error.response.data?.message ||
+            error.response.data?.error ||
+            'Произошла ошибка при входе';
+
+          if (error.response.status === 401) {
+            toast.error('Неверный email или пароль');
+          } else if (error.response.status === 400) {
+            toast.error('Некорректные данные');
+          } else if (error.response.status >= 500) {
+            toast.error('Ошибка сервера. Пожалуйста, попробуйте позже');
+          } else {
+            toast.error(errorMessage);
+          }
+        } else if (error.request) {
+          toast.error('Не удалось подключиться к серверу. Проверьте интернет-соединение');
+        } else {
+          toast.error('Произошла ошибка при отправке запроса');
+        }
+      } else if (error instanceof Error) {
+        toast.error(error.message || 'Произошла непредвиденная ошибка');
+      } else {
+        toast.error('Произошла неизвестная ошибка');
+      }
+
       console.error('Error during login:', error);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleRecaptchaChange = (isVerified: boolean) => {
+    setIsCompanyRecaptchaConfirmed(isVerified);
   };
 
   return (
@@ -111,6 +128,7 @@ export function LoginCompanyForm({
                       {...field}
                       placeholder="m@example.com"
                       required
+                      disabled={isLoading}
                     />
                   </FormControl>
                   <FormMessage />
@@ -141,6 +159,7 @@ export function LoginCompanyForm({
                         id="password"
                         type={isVisible ? 'text' : 'password'}
                         required
+                        disabled={isLoading}
                       />
                     </FormControl>
                     <button
@@ -150,6 +169,7 @@ export function LoginCompanyForm({
                       aria-label={isVisible ? 'Hide password' : 'Show password'}
                       aria-pressed={isVisible}
                       aria-controls="password"
+                      disabled={isLoading}
                     >
                       {isVisible ? (
                         <Eye size={20} aria-hidden="true" />
@@ -163,15 +183,15 @@ export function LoginCompanyForm({
               )}
             />
           </div>
-          <Recaptcha
-            onChange={isVerified => setIsCompanyRecaptchaConfirmed(isVerified)}
-          />
+          <div>
+            <Recaptcha onChange={handleRecaptchaChange} />
+          </div>
           <Button
             type="submit"
             disabled={isLoading || !isCompanyRecaptchaConfirmed}
             className="w-full"
           >
-            Войти
+            {isLoading ? 'Вход...' : 'Войти'}
           </Button>
           <div className="text-center text-sm">
             Нет аккаунта?{' '}

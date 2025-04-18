@@ -16,7 +16,7 @@ export default function Pages() {
 
           <div className="md:col-span-3">
             <Card className="p-4">
-              <Projects></Projects>
+              <Projects />
             </Card>
           </div>
         </div>

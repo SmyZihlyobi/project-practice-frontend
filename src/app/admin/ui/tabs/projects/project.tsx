@@ -20,6 +20,7 @@ import { useAdminStore } from '../../../store';
 import { DeleteProject } from './delete-project';
 import { Markdown } from '@/components/ui/markdown';
 import { PRESENTATION_API, TECHNICAL_SPECIFICATION_API } from '../../../lib/constant';
+import { ToggleArchiveProject } from './toggle-archive-project';
 
 export const Project = observer(({ id }: { id: string }) => {
   const { projectStore } = useAdminStore;
@@ -62,6 +63,9 @@ export const Project = observer(({ id }: { id: string }) => {
             <Skeleton className="h-6 w-1/4" />
           ) : (
             <span className="font-medium">{currentProject.name}</span>
+          )}
+          {!currentProject.active && (
+            <span className="text-sm text-muted-foreground">Архивный</span>
           )}
           {currentProject.studentProject && (
             <span className="text-sm text-muted-foreground">Студенческий проект</span>
@@ -123,6 +127,7 @@ export const Project = observer(({ id }: { id: string }) => {
         {!isLoading && (
           <div className="w-full flex gap-2 mt-4">
             <DeleteProject id={currentProject.id} />
+            <ToggleArchiveProject id={currentProject.id} active={currentProject.active} />
           </div>
         )}
       </AccordionContent>
