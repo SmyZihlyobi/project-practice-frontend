@@ -75,16 +75,16 @@ export const Projects = observer(() => {
               'before:absolute before:inset-0 before:bg-gradient-to-b before:from-red-500/10 before:to-transparent before:z-0',
           )}
         >
-          <CardHeader className="flex flex-col md:flex-row w-full items-center justify-between">
+          <CardHeader className="flex flex-col md:flex-row w-full items-start  justify-between">
             <h2 className="text-lg w-full text-center md:text-left md:w-1/3  font-semibold">
               {project.name}
             </h2>
             <h2 className="text-m !m-0">{!project.active && 'Архивный проект'}</h2>
-            <h2 className="text-m w-full md:w-1/3 text-center  !m-0 flex items-center gap-1 justify-center md:justify-end">
+            <h2 className="text-m w-full md:w-1/3 text-center  !m-0 flex items-start  gap-1 justify-center md:justify-end">
               {project.studentProject ? (
                 'Студенческий'
               ) : (
-                <div className="flex  flex-col ">
+                <div className="flex items-center flex-col ">
                   <p>От компании: {project.companyName}</p>{' '}
                   {project.active && <p>ID проекта: {project.id}</p>}
                 </div>

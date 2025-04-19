@@ -42,6 +42,7 @@ class ProjectStore {
   private dbService: IndexedDBService | null;
   private isCacheLoaded: boolean = false;
   private isProjectsFetched: boolean = false;
+  public currentStackItems: Array<string> = [];
 
   constructor() {
     makeAutoObservable(this);
@@ -252,11 +253,24 @@ class ProjectStore {
         }
         project.stack.split(', ').forEach(stackItem => {
           this.stackItems.add(stackItem.toLowerCase());
+          this.currentStackItems.push(stackItem.toLowerCase());
         });
       }
     } catch (error) {
       console.log((error as Error).message);
     }
+  };
+
+  findByStackItemName = (name: string): void => {
+    const filtredItems = Array.from(this.stackItems).filter(stackItem =>
+      stackItem.toLocaleLowerCase().startsWith(name.toLocaleLowerCase()),
+    );
+    this.currentStackItems = [];
+    filtredItems.forEach(item => {
+      this.currentStackItems.push(item);
+    });
+    this.currentPage = 1;
+    this.updatePaginatedProjects();
   };
 
   findByName = (name: string): void => {
