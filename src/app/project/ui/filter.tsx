@@ -6,8 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { observer } from 'mobx-react-lite';
-
-import { useProjectStore } from '../store/project-store';
+import { useProjectStore } from '@/store';
 
 const Filter = observer(() => {
   const store = useProjectStore;

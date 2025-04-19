@@ -16,37 +16,28 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { observer } from 'mobx-react-lite';
 import { useEffect, useState } from 'react';
-import { useAdminStore } from '../../../store';
-import { ApproveCompony } from './approve-company';
 import { DeleteCompany } from './delete-company';
+import { useCompaniesStore } from '@/store';
+import { ApproveCompany } from './approve-company';
 
 export const Company = observer(({ id }: { id: string }) => {
-  const { companiesStore } = useAdminStore;
+  const companiesStore = useCompaniesStore;
   const [isExpanded, setIsExpanded] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+
+  const { fetchCompany, getCurrentCompany } = companiesStore;
 
   useEffect(() => {
     if (isExpanded) {
-      setIsLoading(true);
-      companiesStore.getCompany(id).finally(() => setIsLoading(false));
+      fetchCompany(id);
     }
-  }, [id, companiesStore, isExpanded]);
+  }, [id, fetchCompany, isExpanded]);
 
-  const currentCompany = companiesStore.companies.find(company => company.id === id);
+  const currentCompany = getCurrentCompany(id);
   if (!currentCompany) {
     return null;
   }
-  const renderSkeletonRow = (rowsCount: number, columnsCount: number) => {
-    return Array.from({ length: rowsCount }).map((_, rowIndex) => (
-      <TableRow key={rowIndex}>
-        {Array.from({ length: columnsCount }).map((_, colIndex) => (
-          <TableCell key={colIndex} className="w-1/3">
-            <Skeleton className="h-4 w-full" />
-          </TableCell>
-        ))}
-      </TableRow>
-    ));
-  };
+
+  const renderSkeleton = () => <Skeleton className="h-4 w-full" />;
 
   return (
     <AccordionItem
@@ -56,13 +47,17 @@ export const Company = observer(({ id }: { id: string }) => {
     >
       <AccordionTrigger>
         <div className="w-full flex justify-between mr-4">
-          {isLoading ? (
-            <Skeleton className="h-6 w-1/4" />
+          {currentCompany.name ? (
+            <>
+              <span className="font-medium">{currentCompany.name}</span>
+              {currentCompany.studentCompany && (
+                <span className="text-sm text-muted-foreground">
+                  Студенческая компания
+                </span>
+              )}
+            </>
           ) : (
-            <span className="font-medium">{currentCompany.name}</span>
-          )}
-          {currentCompany.studentCompany && (
-            <span className="text-sm text-muted-foreground">Студенческая компания</span>
+            <Skeleton className="h-6 w-1/4" />
           )}
         </div>
       </AccordionTrigger>
@@ -76,23 +71,23 @@ export const Company = observer(({ id }: { id: string }) => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {isLoading ? (
-              renderSkeletonRow(1, 3)
-            ) : (
-              <TableRow>
-                <TableCell>{currentCompany.name}</TableCell>
-                <TableCell>{currentCompany.contacts}</TableCell>
-                <TableCell>{currentCompany.representative}</TableCell>
-              </TableRow>
-            )}
+            <TableRow>
+              <TableCell className="w-1/3">
+                {currentCompany.name || renderSkeleton()}
+              </TableCell>
+              <TableCell className="w-1/3">
+                {currentCompany.contacts || renderSkeleton()}
+              </TableCell>
+              <TableCell className="w-1/3">
+                {currentCompany.representative || renderSkeleton()}
+              </TableCell>
+            </TableRow>
           </TableBody>
         </Table>
-        {!isLoading && (
-          <div className="w-full flex gap-2 mt-4">
-            <DeleteCompany id={currentCompany.id} />
-            {!currentCompany.isApproved && <ApproveCompony id={currentCompany.id} />}
-          </div>
-        )}
+        <div className="w-full flex gap-2 mt-4">
+          <DeleteCompany id={currentCompany.id} />
+          {!currentCompany.isApproved && <ApproveCompany id={currentCompany.id} />}
+        </div>
       </AccordionContent>
     </AccordionItem>
   );

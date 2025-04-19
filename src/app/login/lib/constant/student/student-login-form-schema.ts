@@ -9,7 +9,7 @@ const STUDENT_LOGIN_FORM_CONFIG = {
     .string()
     .max(255, { message: 'Пароль не может превышать 256 символов' })
     .refine(val => val.trim() !== '', { message: 'Необходимо заполнить' }),
-  rememberMe: z.boolean(),
+  rememberMe: z.boolean().optional(),
 };
 
 export const STUDENT_LOGIN_FORM_SCHEMA = z.object(STUDENT_LOGIN_FORM_CONFIG);

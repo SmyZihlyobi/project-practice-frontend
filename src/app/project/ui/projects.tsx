@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { PRESENTATION_API, TECHNICAL_SPECIFICATION_API } from '@/app/admin/lib/constant';
+import { PRESENTATION_API, TECHNICAL_SPECIFICATION_API } from '@/lib/constant';
 import { Accordion } from '@/components/ui/accordion';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Markdown } from '@/components/ui/markdown';
@@ -12,20 +12,19 @@ import {
 } from '@radix-ui/react-accordion';
 import { observer } from 'mobx-react-lite';
 
-import { useProjectStore } from '../store/project-store';
 import { ProjectPagination } from './project-pagination';
 import { Search } from './search';
 import { useAuth } from '@/lib/auth/use-auth';
 import { FavoriteToggle } from './favorite-toggle';
 import { Skeleton } from '@/components/ui/skeleton';
 import classNames from 'classnames';
+import { useProjectStore } from '@/store';
 
 export const Projects = observer(() => {
   const {
     paginatedProjects,
-    getProjects,
+    fetchProjects,
     getFavoriteProjects,
-    preLoad,
     getStackItems,
     getIsCacheLoaded,
     currentProjects,
@@ -34,11 +33,10 @@ export const Projects = observer(() => {
   const { user, isAuthenticated } = useAuth();
 
   useEffect(() => {
-    preLoad();
-    getProjects().finally(() => {
+    fetchProjects().finally(() => {
       getStackItems();
     });
-  }, [getProjects, preLoad, getStackItems]);
+  }, [fetchProjects, getStackItems]);
 
   useEffect(() => {
     if (isAuthenticated && user) {

@@ -13,31 +13,28 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { axiosInstance } from '@/lib/axios';
-import { useMutation } from '@apollo/client';
 import { zodResolver } from '@hookform/resolvers/zod';
 import cn from 'classnames';
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
-import { CREATE_STUDENT } from './api/mutations';
 import {
   DEFAULT_FORM_VALUES,
   LOCALSTORAGE_NAME,
   REDIRECT_DELAY,
   REGISTER_FORM_SCHEMA,
-  RESUME_UPLOAD_URL,
-  UPLOAD_RESUME_DELAY,
 } from './lib/constant';
 import { TeamsSelect } from './ui';
 import { useAuth } from '@/lib/auth/use-auth';
+import { useTeamsStore } from '@/store';
 
 export default function JoinProject() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [createStudent] = useMutation(CREATE_STUDENT);
+  const teamStore = useTeamsStore;
+  const { createStudent } = teamStore;
   const [isCreatingTeam, setIsCreatingTeam] = useState(false);
   const { user } = useAuth();
 
@@ -63,38 +60,6 @@ export default function JoinProject() {
     return () => subscription.unsubscribe();
   }, [form]);
 
-  const delayedToast = (
-    toastMessage: string,
-    delay: number,
-    type: 'error' | 'success',
-  ) => {
-    setTimeout(() => {
-      toast[type](toastMessage);
-    }, delay);
-  };
-
-  const uploadResume = async (resumePDF: File, id: string): Promise<void> => {
-    try {
-      const formData = new FormData();
-      formData.append('userId', String(id));
-      formData.append('file', resumePDF);
-
-      await axiosInstance.post(RESUME_UPLOAD_URL, formData);
-      await delayedToast(
-        'Ваше резюме успешно доставлено',
-        UPLOAD_RESUME_DELAY,
-        'success',
-      );
-    } catch (error) {
-      console.error(error);
-      await delayedToast(
-        'Произошла ошибка при загрузке резюме',
-        UPLOAD_RESUME_DELAY,
-        'error',
-      );
-    }
-  };
-
   const onFormSubmit = async (
     data: z.infer<typeof REGISTER_FORM_SCHEMA>,
   ): Promise<void> => {
@@ -103,66 +68,32 @@ export default function JoinProject() {
       const { resumePDF, ...student } = data;
 
       let telegram = student.telegram;
-
       if (telegram.startsWith('@')) {
         telegram = `https://t.me/${telegram.slice(1)}`;
       }
 
-      let teamName: null | string | undefined = student.commandName;
+      const teamName: string | null = student.commandName?.trim() || null;
 
-      // Нам необходимо передать на бекенд именно null
-      if (!teamName?.trim() || !teamName) {
-        teamName = null;
-      }
-
-      const variables = {
-        teamName: teamName,
+      const studentData = {
+        teamName,
         groupId: student.studentGroupId,
         year: student.course,
         lastName: student.lastName,
         firstName: student.firstName,
-        patronymic: student.patronymic || '',
+        patronymic: student.patronymic || undefined,
         firstPriority: student.firstPriority,
         secondPriority: student.middlePriority,
         thirdPriority: student.lastPriority,
-        resumeLink: student.resumeLink || '',
-        resumePdf: '', // Это поле будет передаваться по id в хранилище
-        telegram: telegram,
-        otherPriorities: student.otherPriority || '',
+        resumeLink: student.resumeLink || undefined,
+        telegram,
+        otherPriorities: student.otherPriority || undefined,
         username: user?.username,
       };
 
-      const response = await createStudent({ variables });
-
-      if (response.errors) {
-        response.errors.forEach(error => {
-          if (error.extensions?.code === 'BAD_USER_INPUT') {
-            toast.error(
-              'Ошибка ввода данных. Пожалуйста, проверьте правильность заполнения всех полей.',
-            );
-          } else if (error.extensions?.code === 'INTERNAL_SERVER_ERROR') {
-            toast.error(
-              'Произошла внутренняя ошибка сервера. Пожалуйста, попробуйте позже.',
-            );
-          } else {
-            toast.error(
-              'Произошла ошибка при отправке формы. Пожалуйста, попробуйте еще раз или обратитесь в поддержку.',
-            );
-          }
-        });
-        return;
-      }
-
-      const {
-        data: { createStudent: newStudent },
-      } = response;
+      await createStudent(studentData, resumePDF);
 
       toast.success('Вы успешно прикреплены');
       setIsSuccess(true);
-
-      if (resumePDF) {
-        await uploadResume(resumePDF, newStudent.id);
-      }
 
       localStorage.removeItem(LOCALSTORAGE_NAME);
       form.reset(DEFAULT_FORM_VALUES);
@@ -177,7 +108,9 @@ export default function JoinProject() {
     } catch (error) {
       console.error(error);
       toast.error(
-        'Произошла ошибка при отправке формы. Пожалуйста, попробуйте еще раз или обратитесь в поддержку.',
+        error instanceof Error
+          ? error.message
+          : 'Произошла ошибка при отправке формы. Пожалуйста, попробуйте еще раз или обратитесь в поддержку.',
       );
     } finally {
       setIsLoading(false);

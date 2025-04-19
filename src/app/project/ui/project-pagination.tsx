@@ -21,7 +21,7 @@ import {
 import { observer } from 'mobx-react-lite';
 
 import { PAGE_SIZE_STORAGE_KEY } from '../lib/const';
-import { useProjectStore } from '../store/project-store';
+import { useProjectStore } from '@/store';
 
 export const ProjectPagination = observer(() => {
   const projectStore = useProjectStore;

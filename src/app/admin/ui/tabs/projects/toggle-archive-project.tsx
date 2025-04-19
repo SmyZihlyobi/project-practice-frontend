@@ -1,11 +1,11 @@
-import { useAdminStore } from '@/app/admin/store';
 import { ToggleArchiveProps } from '@/app/admin/types';
 import { Button } from '@/components/ui/button';
+import { useProjectStore } from '@/store';
 import { observer } from 'mobx-react-lite';
 
 export const ToggleArchiveProject = observer((props: ToggleArchiveProps) => {
   const { id, active } = props;
-  const { projectStore } = useAdminStore;
+  const projectStore = useProjectStore;
 
   const toggleHandler = (): void => {
     if (active) {

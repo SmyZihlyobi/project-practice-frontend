@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { useAdminStore } from '../store';
+import { useAdminStore } from '@/store';
 import { toast } from 'sonner';
 
 export const ExportButton = () => {

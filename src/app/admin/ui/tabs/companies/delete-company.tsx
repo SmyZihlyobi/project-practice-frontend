@@ -1,14 +1,16 @@
 'use client';
 
 import { observer } from 'mobx-react-lite';
-import { useAdminStore } from '../../../store';
+
 import { Button } from '@/components/ui/button';
 import { DeleteCompanyProps } from '../../../types';
+import { useCompaniesStore } from '@/store';
 
 export const DeleteCompany = observer((props: DeleteCompanyProps) => {
   const { id } = props;
-  const { companiesStore } = useAdminStore;
-  const { currentAdminId } = companiesStore;
+  const companiesStore = useCompaniesStore;
+  const { getCurrentAdminId } = companiesStore;
+  const currentAdminId = getCurrentAdminId();
 
   return (
     <Button

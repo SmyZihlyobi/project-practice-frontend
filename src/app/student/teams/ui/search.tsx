@@ -14,10 +14,10 @@ import { debounce } from '@/lib/utils';
 import { observer } from 'mobx-react-lite';
 
 import { SEARCH_DELAY } from '../lib/constant';
-import { useTeamStore } from '../store';
+import { useTeamsStore } from '@/store';
 
 export const Search = observer(() => {
-  const teamStore = useTeamStore;
+  const teamStore = useTeamsStore;
   const [searchType, setSearchType] = useState<
     'team' | 'lastName' | 'firstName' | 'patronymic'
   >('team');
