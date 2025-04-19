@@ -1,4 +1,4 @@
-import type { Project } from '../api/dto/project';
+import type { Project } from '@/api/dto';
 
 export const mockProjects: Project[] = [
   {

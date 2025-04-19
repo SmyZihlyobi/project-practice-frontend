@@ -5,11 +5,10 @@ import { observer } from 'mobx-react-lite';
 import { Card } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-
-import { useTeamStore } from '../store';
+import { useTeamsStore } from '@/store';
 
 export const Filter = observer(() => {
-  const teamStore = useTeamStore;
+  const teamStore = useTeamsStore;
 
   const handleStudentCountChange = (value: string) => {
     switch (value) {

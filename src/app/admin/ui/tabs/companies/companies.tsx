@@ -2,19 +2,21 @@
 
 import { Accordion } from '@/components/ui/accordion';
 import { observer } from 'mobx-react-lite';
-import { useEffect, useState } from 'react';
-import { useAdminStore } from '../../../store';
+import { useEffect } from 'react';
 import { Company } from './company';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useCompaniesStore } from '@/store';
 
 export const Companies = observer(() => {
-  const { companiesStore } = useAdminStore;
-  const { companies } = companiesStore;
-  const [isLoading, setIsLoading] = useState(true);
+  const companiesStore = useCompaniesStore;
+  const { getCompanies, fetchCompanies, getIsCacheLoaded } = companiesStore;
+
+  const companies = getCompanies();
+  const isCachedLoaded = getIsCacheLoaded();
 
   useEffect(() => {
-    companiesStore.getCompanies().finally(() => setIsLoading(false));
-  }, [companiesStore]);
+    fetchCompanies();
+  }, [fetchCompanies]);
 
   const renderSkeletonRow = (rowsCount: number, columnsCount: number) => {
     return Array.from({ length: rowsCount }).map((_, rowIndex) => (
@@ -29,7 +31,7 @@ export const Companies = observer(() => {
   return (
     <>
       <h2 className="text-lg font-semibold mb-4">Список компаний</h2>
-      {isLoading ? (
+      {isCachedLoaded ? (
         renderSkeletonRow(5, 1)
       ) : companies.length === 0 ? (
         <div className="text-center text-gray-500 py-6">

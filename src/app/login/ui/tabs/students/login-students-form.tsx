@@ -181,24 +181,16 @@ export function LoginStudentForm({
           <div className="grid gap-2">
             <FormField
               control={formStudent.control}
-              name="password"
+              name="rememberMe"
               render={({ field }) => (
-                <div>
-                  <FormItem className="flex gap-2 items-center">
-                    <FormControl>
-                      <Checkbox
-                        onChange={field.onChange}
-                        aria-label="remember me"
-                        id="remember-me"
-                        value={field.value}
-                      />
-                    </FormControl>
-                    <FormLabel htmlFor="remember-me" className="block">
-                      Запомнить меня
-                    </FormLabel>
-                    <FormMessage />
-                  </FormItem>
-                </div>
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                  <FormControl>
+                    <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                  </FormControl>
+                  <FormLabel htmlFor="remember-me" className="cursor-pointer">
+                    Запомнить меня
+                  </FormLabel>
+                </FormItem>
               )}
             />
           </div>
