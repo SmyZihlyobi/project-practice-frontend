@@ -13,7 +13,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import Cookies from 'js-cookie';
 import { JWT_COOKIE_NAME } from '@/lib/constant';
 import { ThemeChanger } from './theme-change';
-import { useAuth } from '../../lib/auth/use-auth';
+import { useAuth } from '@/lib/auth/use-auth';
 import { Roles } from '@/lib/constant/roles';
 import {
   DropdownMenu,
