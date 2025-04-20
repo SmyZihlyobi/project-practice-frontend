@@ -13,10 +13,21 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import Cookies from 'js-cookie';
 import { JWT_COOKIE_NAME } from '@/lib/constant';
 import { ThemeChanger } from './theme-change';
+import { useAuth } from '../../lib/auth/use-auth';
+import { Roles } from '@/lib/constant/roles';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { user, isAuthenticated, isLoading } = useAuth();
 
   useEffect(() => {
     const token = Cookies.get(JWT_COOKIE_NAME);
@@ -30,6 +41,22 @@ export default function Header() {
     setIsLoggedIn(false);
     window.location.href = '/';
   };
+
+  const renderUserName = () => {
+    if (!user) return 'Выйти';
+
+    if (user.roles.includes(Roles.Company)) {
+      return user.name || 'Компания';
+    }
+
+    if (user.roles.includes(Roles.Student)) {
+      return user.username;
+    }
+
+    return 'Профиль';
+  };
+
+  if (isLoading) return null;
 
   return (
     <header className="sticky top-0 z-50 border-b-2 border-dotted bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -79,14 +106,41 @@ export default function Header() {
           </Link>
         </div>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end mr-12">
-          {isLoggedIn ? (
-            <Button
-              onClick={handleLogout}
-              variant="ghost"
-              className="text-sm/6 font-semibold"
-            >
-              Выйти <span aria-hidden="true">&rarr;</span>
-            </Button>
+          {isAuthenticated ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger>{renderUserName()}</DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuLabel>Мой профиль</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
+                  <Link
+                    href={{
+                      pathname: '/me/favorite',
+                    }}
+                  >
+                    Избранное
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Link
+                    href={{
+                      pathname: '/me/settings',
+                    }}
+                  >
+                    Настройки
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Button
+                    onClick={handleLogout}
+                    variant="ghost"
+                    className="text-sm/6 font-semibold"
+                  >
+                    <span aria-hidden="true">Выйти</span>
+                  </Button>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : (
             <Link href="/login" className="text-sm/6 font-semibold">
               Вход <span aria-hidden="true">&rarr;</span>
