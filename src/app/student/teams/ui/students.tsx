@@ -1,9 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-
 import { observer } from 'mobx-react-lite';
-
 import {
   AccordionContent,
   AccordionItem,
@@ -18,23 +16,20 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-
-import { useTeamStore } from '../store';
 import { StudentsProps } from '../types';
+import { useTeamsStore } from '@/store';
 
 export const Students = observer((props: StudentsProps) => {
   const { id } = props;
-
   const [isExpanded, setIsExpanded] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const teamStore = useTeamStore;
+  const teamStore = useTeamsStore;
+  const { getTeam } = teamStore;
 
   useEffect(() => {
     if (isExpanded) {
-      setIsLoading(true);
-      teamStore.getTeam(id).finally(() => setIsLoading(false));
+      getTeam(id);
     }
-  }, [isExpanded, id, teamStore]);
+  }, [isExpanded, id, getTeam]);
 
   const currentTeam = teamStore.currentTeams.find(team => team.id === id);
   if (!currentTeam) {
@@ -43,20 +38,7 @@ export const Students = observer((props: StudentsProps) => {
 
   const { name, students } = currentTeam;
 
-  const renderSkeletonRow = (rowsCount: number, columnsCount: number) => {
-    return Array.from({ length: rowsCount }).map((_, rowIndex) => (
-      <TableRow key={rowIndex}>
-        {Array.from({ length: columnsCount }).map((_, colIndex) => (
-          <TableCell
-            key={colIndex}
-            className={colIndex === 0 ? 'w-2/6' : colIndex === 1 ? 'w-1/12' : 'w-1/6'}
-          >
-            <Skeleton className="h-4 w-full mt-3" />
-          </TableCell>
-        ))}
-      </TableRow>
-    ));
-  };
+  const renderSkeleton = () => <Skeleton className="h-4 w-full mt-3" />;
 
   return (
     <AccordionItem value={id}>
@@ -75,49 +57,53 @@ export const Students = observer((props: StudentsProps) => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {isLoading
-              ? renderSkeletonRow(1, 5)
-              : students.map(student => (
-                  <TableRow key={student.id}>
-                    <TableCell className="w-2/6">{`${student.firstName} ${student.lastName}`}</TableCell>
-                    <TableCell className="w-1/12">{student.year}</TableCell>
-                    <TableCell className="w-1/6">
-                      <a
-                        href={student.telegram}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Перейти
-                      </a>
-                    </TableCell>
-                    <TableCell className="w-1/6">
-                      {student.resumePdf ? (
-                        <a
-                          href={`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/files/resume/${student.resumePdf}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          Скачать
-                        </a>
-                      ) : (
-                        'Не прикреплено'
-                      )}
-                    </TableCell>
-                    <TableCell className="w-1/6">
-                      {student.resumeLink ? (
-                        <a
-                          href={student.resumeLink}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          Просмотреть
-                        </a>
-                      ) : (
-                        'Не прикреплено'
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
+            {students.map(student => (
+              <TableRow key={student.id}>
+                <TableCell className="w-2/6">
+                  {student.firstName && student.lastName
+                    ? `${student.firstName} ${student.lastName}`
+                    : renderSkeleton()}
+                </TableCell>
+                <TableCell className="w-1/12">
+                  {student.year ? student.year : renderSkeleton()}
+                </TableCell>
+                <TableCell className="w-1/6">
+                  {student.telegram ? (
+                    <a href={student.telegram} target="_blank" rel="noopener noreferrer">
+                      Перейти
+                    </a>
+                  ) : (
+                    renderSkeleton()
+                  )}
+                </TableCell>
+                <TableCell className="w-1/6">
+                  {student.resumePdf ? (
+                    <a
+                      href={`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/files/resume/${student.resumePdf}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Скачать
+                    </a>
+                  ) : (
+                    'Не прикреплено'
+                  )}
+                </TableCell>
+                <TableCell className="w-1/6">
+                  {student.resumeLink ? (
+                    <a
+                      href={student.resumeLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Просмотреть
+                    </a>
+                  ) : (
+                    'Не прикреплено'
+                  )}
+                </TableCell>
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </AccordionContent>

@@ -1,1 +1,1 @@
-export { axiosInstance, processAxiosQueue } from './axios';
+export { axiosInstance } from './axios';

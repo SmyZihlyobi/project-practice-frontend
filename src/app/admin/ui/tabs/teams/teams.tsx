@@ -3,19 +3,20 @@
 import { Accordion } from '@/components/ui/accordion';
 import { Students } from './students';
 import { observer } from 'mobx-react-lite';
-import { useEffect, useState } from 'react';
-import { useAdminStore } from '../../../store';
+import { useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useTeamsStore } from '@/store';
 
 export const Teams = observer(() => {
-  const { teamStore } = useAdminStore;
-  const { teams } = teamStore;
-  const [isLoading, setIsLoading] = useState(true);
+  const teamsStore = useTeamsStore;
+  const { getTeams, fetchTeams, getIsCachedLoaded } = teamsStore;
 
   useEffect(() => {
-    setIsLoading(true);
-    teamStore.getTeams().finally(() => setIsLoading(false));
-  }, [teamStore]);
+    fetchTeams();
+  }, [fetchTeams]);
+
+  const isCachedLoaded = getIsCachedLoaded();
+  const teams = getTeams();
 
   const renderSkeletonRow = (rowsCount: number, columnsCount: number) => {
     return Array.from({ length: rowsCount }).map((_, rowIndex) => (
@@ -30,7 +31,7 @@ export const Teams = observer(() => {
   return (
     <>
       <h2 className="text-lg font-semibold mb-4">Список команд</h2>
-      {isLoading ? (
+      {isCachedLoaded ? (
         renderSkeletonRow(5, 1)
       ) : teams.length === 0 ? (
         <div className="text-center text-gray-500 py-6">

@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { LOGIN_PATH } from './constant';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -21,4 +22,10 @@ export function debounce<T extends (...args: any[]) => void>(
       func(...args);
     }, wait);
   };
+}
+
+export function navigateToLogin() {
+  if (typeof window !== undefined) {
+    location.href = LOGIN_PATH;
+  }
 }

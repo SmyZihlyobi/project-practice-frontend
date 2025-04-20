@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { PRESENTATION_API, TECHNICAL_SPECIFICATION_API } from '@/app/admin/lib/constant';
+import { PRESENTATION_API, TECHNICAL_SPECIFICATION_API } from '@/lib/constant';
 import { Accordion } from '@/components/ui/accordion';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Markdown } from '@/components/ui/markdown';
@@ -12,20 +12,19 @@ import {
 } from '@radix-ui/react-accordion';
 import { observer } from 'mobx-react-lite';
 
-import { useProjectStore } from '../store/project-store';
 import { ProjectPagination } from './project-pagination';
 import { Search } from './search';
 import { useAuth } from '@/lib/auth/use-auth';
 import { FavoriteToggle } from './favorite-toggle';
 import { Skeleton } from '@/components/ui/skeleton';
 import classNames from 'classnames';
+import { useProjectStore } from '@/store';
 
 export const Projects = observer(() => {
   const {
     paginatedProjects,
-    getProjects,
+    fetchProjects,
     getFavoriteProjects,
-    preLoad,
     getStackItems,
     getIsCacheLoaded,
     currentProjects,
@@ -34,11 +33,10 @@ export const Projects = observer(() => {
   const { user, isAuthenticated } = useAuth();
 
   useEffect(() => {
-    preLoad();
-    getProjects().finally(() => {
+    fetchProjects().finally(() => {
       getStackItems();
     });
-  }, [getProjects, preLoad, getStackItems]);
+  }, [fetchProjects, getStackItems]);
 
   useEffect(() => {
     if (isAuthenticated && user) {
@@ -77,16 +75,16 @@ export const Projects = observer(() => {
               'before:absolute before:inset-0 before:bg-gradient-to-b before:from-red-500/10 before:to-transparent before:z-0',
           )}
         >
-          <CardHeader className="flex flex-col md:flex-row w-full items-center justify-between">
+          <CardHeader className="flex flex-col md:flex-row w-full items-start  justify-between">
             <h2 className="text-lg w-full text-center md:text-left md:w-1/3  font-semibold">
               {project.name}
             </h2>
             <h2 className="text-m !m-0">{!project.active && 'Архивный проект'}</h2>
-            <h2 className="text-m w-full md:w-1/3 text-center  !m-0 flex items-center gap-1 justify-center md:justify-end">
+            <h2 className="text-m w-full md:w-1/3 text-center  !m-0 flex items-start  gap-1 justify-center md:justify-end">
               {project.studentProject ? (
                 'Студенческий'
               ) : (
-                <div className="flex  flex-col ">
+                <div className="flex items-center flex-col ">
                   <p>От компании: {project.companyName}</p>{' '}
                   {project.active && <p>ID проекта: {project.id}</p>}
                 </div>

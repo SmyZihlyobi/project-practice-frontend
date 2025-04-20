@@ -3,5 +3,4 @@ export { CREATE_PROJECT_SCHEMA } from './create-project-schema';
 export { LOCALSTORAGE_NAME } from './localstorage-name';
 export { MAX_FILE_SIZE } from './max-file-size';
 export { UPLOAD_FILE_DELAY } from './upload-file-delay';
-export { TECHNICAL_SPECIFICATION_URL, PRESENTATION_URL } from './url';
 export { REDIRECT_DELAY } from './redirect-delay';

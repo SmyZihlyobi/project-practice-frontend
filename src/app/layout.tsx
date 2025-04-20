@@ -12,7 +12,6 @@ import { Fira_Code } from 'next/font/google';
 import { FeedbackDialog } from '@/components/ui/feedback';
 import Head from 'next/head';
 import './globals.css';
-import { OfflineWrapper } from '@/lib/offline-wrapper';
 
 const firaCode = Fira_Code({
   variable: '--font-fira-code-sans',
@@ -132,7 +131,7 @@ export default function RootLayout({
   children: ReactNode;
 }>) {
   return (
-    <html lang="ru" suppressHydrationWarning>
+    <html className="dark" lang="ru" suppressHydrationWarning>
       <Head>
         <meta name="apple-mobile-web-app-title" content="PP IKNT" />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
@@ -148,17 +147,15 @@ export default function RootLayout({
         >
           <AuthProvider>
             <ApolloWrapper>
-              <OfflineWrapper>
-                <Header />
-                <ReCaptchaProvider>
-                  <main>
-                    {children}
-                    <FeedbackDialog />
-                    <Toaster />
-                  </main>
-                </ReCaptchaProvider>
-                <Footer />
-              </OfflineWrapper>
+              <Header />
+              <ReCaptchaProvider>
+                <main>
+                  {children}
+                  <FeedbackDialog />
+                  <Toaster />
+                </main>
+              </ReCaptchaProvider>
+              <Footer />
             </ApolloWrapper>
           </AuthProvider>
         </ThemeProvider>

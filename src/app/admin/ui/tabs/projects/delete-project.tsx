@@ -1,13 +1,13 @@
 'use client';
 
 import { observer } from 'mobx-react-lite';
-import { useAdminStore } from '../../../store';
 import { Button } from '@/components/ui/button';
 import { DeleteProjectProps } from '../../../types';
+import { useProjectStore } from '@/store';
 
 export const DeleteProject = observer((props: DeleteProjectProps) => {
   const { id } = props;
-  const { projectStore } = useAdminStore;
+  const projectStore = useProjectStore;
 
   return (
     <Button
