@@ -1,5 +1,6 @@
 import { apolloClient } from '@/lib/Apollo';
 import { makeAutoObservable, toJS, reaction } from 'mobx';
+import { SyncService } from '@/lib/index-db/sync-service';
 
 import {
   DeleteStudentResponse,
@@ -32,10 +33,15 @@ class TeamStore {
   private dbService: IndexedDBService | null;
   private undecidedTeamId: string = '0';
   private isTeamsFetched: boolean = false;
+  private syncService: SyncService;
 
   constructor() {
     makeAutoObservable(this);
     this.dbService = null;
+    this.syncService = SyncService.getInstance();
+    if (typeof window !== 'undefined') {
+      this.syncService.init();
+    }
     reaction(
       () => this.teams.slice(),
       async () => {
@@ -93,8 +99,17 @@ class TeamStore {
       formData.append('userId', userId);
       formData.append('file', resumePDF);
 
-      await axiosInstance.post(RESUME_UPLOAD_URL, formData);
-      toast.success('Резюме успешно загружено');
+      if (this.syncService.isSyncOnline) {
+        await axiosInstance.post(RESUME_UPLOAD_URL, formData);
+        toast.success('Резюме успешно загружено');
+      } else {
+        await this.syncService.addAxiosRequest({
+          url: RESUME_UPLOAD_URL,
+          method: 'POST',
+          data: formData,
+        });
+        toast.info('Резюме будет загружено при восстановлении соединения');
+      }
     } catch (error) {
       console.error(error);
       toast.error('Ошибка при загрузке резюме');
@@ -123,39 +138,62 @@ class TeamStore {
     try {
       this.loading = true;
 
-      const response = await apolloClient.mutate({
-        mutation: CREATE_STUDENT_MUTATION,
-        variables: {
+      if (this.syncService.isSyncOnline) {
+        const response = await apolloClient.mutate({
+          mutation: CREATE_STUDENT_MUTATION,
+          variables: {
+            ...studentData,
+            resumePdf: '',
+          },
+        });
+
+        if (response.errors) {
+          const errorMessages = response.errors.map(error => {
+            if (error.extensions?.code === 'BAD_USER_INPUT') {
+              return 'Ошибка ввода данных. Проверьте правильность заполнения полей.';
+            } else if (error.extensions?.code === 'INTERNAL_SERVER_ERROR') {
+              return 'Внутренняя ошибка сервера. Попробуйте позже.';
+            }
+            return error.message;
+          });
+          throw new Error(errorMessages.join('\n'));
+        }
+
+        if (!response.data?.createStudent) {
+          throw new Error('Не удалось создать студента');
+        }
+
+        const newStudent = response.data.createStudent;
+
+        if (resumePDF) {
+          await this.uploadResume(resumePDF, newStudent.id);
+        }
+
+        await this.fetchTeams();
+        return newStudent;
+      } else {
+        const offlineStudent = {
+          id: `offline-${Date.now()}`,
+          ...studentData,
+        };
+
+        await this.syncService.addApolloMutation(CREATE_STUDENT_MUTATION, {
           ...studentData,
           resumePdf: '',
-        },
-      });
-
-      if (response.errors) {
-        const errorMessages = response.errors.map(error => {
-          if (error.extensions?.code === 'BAD_USER_INPUT') {
-            return 'Ошибка ввода данных. Проверьте правильность заполнения полей.';
-          } else if (error.extensions?.code === 'INTERNAL_SERVER_ERROR') {
-            return 'Внутренняя ошибка сервера. Попробуйте позже.';
-          }
-          return error.message;
         });
-        throw new Error(errorMessages.join('\n'));
+
+        if (resumePDF) {
+          await this.uploadResume(resumePDF, offlineStudent.id);
+        }
+
+        const undecidedTeam = this.teams.find(team => team.id === this.undecidedTeamId);
+        if (undecidedTeam) {
+          undecidedTeam.students.push(offlineStudent);
+        }
+
+        toast.info('Студент будет создан при восстановлении соединения');
+        return offlineStudent;
       }
-
-      if (!response.data?.createStudent) {
-        throw new Error('Не удалось создать студента');
-      }
-
-      const newStudent = response.data.createStudent;
-
-      if (resumePDF) {
-        await this.uploadResume(resumePDF, newStudent.id);
-      }
-
-      await this.fetchTeams();
-
-      return newStudent;
     } catch (error) {
       console.error('Student creation error:', error);
       throw error;
@@ -379,18 +417,32 @@ class TeamStore {
     try {
       this.loading = true;
 
-      await apolloClient.mutate({
-        mutation: DELETE_TEAM_MUTATION,
-        variables: { id },
-      });
+      if (this.syncService.isSyncOnline) {
+        await apolloClient.mutate({
+          mutation: DELETE_TEAM_MUTATION,
+          variables: { id },
+        });
 
-      await this.getTeam(this.undecidedTeamId);
+        await this.getTeam(this.undecidedTeamId);
+        this.teams = this.teams.filter(team => team.id !== id);
+        toast.success('Команда успешно расформирована');
+      } else {
+        const teamToDelete = this.teams.find(team => team.id === id);
+        if (teamToDelete) {
+          const undecidedTeam = this.teams.find(team => team.id === this.undecidedTeamId);
+          if (undecidedTeam) {
+            undecidedTeam.students.push(...teamToDelete.students);
+          }
 
-      this.teams = this.teams.filter(team => team.id !== id);
+          this.teams = this.teams.filter(team => team.id !== id);
 
-      toast.success('Команда успешно расформирована');
+          await this.syncService.addApolloMutation(DELETE_TEAM_MUTATION, { id });
+
+          toast.info('Команда будет расформирована при восстановлении соединения');
+        }
+      }
     } catch (error) {
-      console.error('ERROR while delete student', error);
+      console.error('ERROR while delete team', error);
       if (error instanceof Error && isApolloError(error)) {
         if (
           error.graphQLErrors.some(
@@ -427,22 +479,40 @@ class TeamStore {
         throw new Error('Студент не найден');
       }
 
-      const deletedStudent: DeleteStudentResponse = await apolloClient.mutate({
-        mutation: DELETE_STUDENT_MUTATION,
-        variables: { id },
-      });
+      if (this.syncService.isSyncOnline) {
+        const deletedStudent: DeleteStudentResponse = await apolloClient.mutate({
+          mutation: DELETE_STUDENT_MUTATION,
+          variables: { id },
+        });
 
-      if (deletedStudent.data?.deleteStudent?.resumePdf) {
-        await this.deleteStudentResume(deletedStudent.data.deleteStudent.resumePdf);
+        if (deletedStudent.data?.deleteStudent?.resumePdf) {
+          await this.deleteStudentResume(deletedStudent.data.deleteStudent.resumePdf);
+        }
+
+        if (teamWithStudent) {
+          teamWithStudent.students = teamWithStudent.students.filter(
+            student => student.id !== id,
+          );
+        }
+
+        toast.success('Студент успешно удалён');
+      } else {
+        if (teamWithStudent) {
+          teamWithStudent.students = teamWithStudent.students.filter(
+            student => student.id !== id,
+          );
+        }
+        await this.syncService.addApolloMutation(DELETE_STUDENT_MUTATION, { id });
+
+        if (studentToDelete.resumePdf) {
+          await this.syncService.addAxiosRequest({
+            url: `${RESUME_API}/${studentToDelete.resumePdf}`,
+            method: 'DELETE',
+          });
+        }
+
+        toast.info('Студент будет удален при восстановлении соединения');
       }
-
-      if (teamWithStudent) {
-        teamWithStudent.students = teamWithStudent.students.filter(
-          student => student.id !== id,
-        );
-      }
-
-      toast.success('Студент успешно удалён');
     } catch (error) {
       console.error('ERROR while delete student', error);
       if (error instanceof Error && isApolloError(error)) {
