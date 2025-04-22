@@ -25,7 +25,7 @@ export function debounce<T extends (...args: any[]) => void>(
 }
 
 export function navigateToLogin() {
-  if (typeof window !== undefined) {
+  if (typeof window !== undefined && location.href !== LOGIN_PATH) {
     location.href = LOGIN_PATH;
   }
 }

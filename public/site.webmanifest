@@ -4,6 +4,7 @@
   "description": "Сайт для управления проектами и командами по проектной деятельности ПГНИУ ИКНТ.",
   "start_url": "/",
   "display": "standalone",
+  "orientation": "any",
   "icons": [
     {
       "src": "/favicon.png",
@@ -24,5 +25,8 @@
     }
   ],
   "theme_color": "#ffffff",
-  "background_color": "#ffffff"
+  "background_color": "#ffffff",
+  "scope": "/",
+  "lang": "ru",
+  "categories": ["education", "productivity"]
 }

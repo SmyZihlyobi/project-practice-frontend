@@ -1,5 +1,4 @@
 import { makeAutoObservable, toJS, reaction } from 'mobx';
-import { Company, GetCompaniesResponse, GetCompanyResponse } from '@/api/dto';
 import { apolloClient } from '@/lib/Apollo';
 import { axiosInstance } from '@/lib/axios';
 import { GET_COMPANIES_QUERY, GET_COMPANY_QUERY } from '@/api/queries';
@@ -9,6 +8,7 @@ import { isAxiosError } from 'axios';
 import { isApolloError } from '@apollo/client';
 import { APPROVE_API } from '@/lib/constant';
 import { IndexedDBService } from '@/lib/index-db/index-db-service';
+import { Company, GetCompaniesResponse, GetCompanyResponse } from '../api/dto';
 
 export class CompaniesStore {
   private companies: Company[] = [];
@@ -21,6 +21,7 @@ export class CompaniesStore {
   constructor() {
     makeAutoObservable(this);
     this.dbService = null;
+
     reaction(
       () => this.companies.slice(),
       async () => {
@@ -41,11 +42,13 @@ export class CompaniesStore {
 
   private setCompanies = (companies: Company[]): void => {
     this.companies = companies;
+    this.saveToCache();
   };
 
   fetchCompanies = async (): Promise<void> => {
     try {
       this.isLoading = true;
+      await this.loadFromCache();
       const response: GetCompaniesResponse = await apolloClient.query({
         query: GET_COMPANIES_QUERY,
       });
