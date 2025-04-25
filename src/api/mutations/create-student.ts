@@ -14,7 +14,7 @@ export const CREATE_STUDENT_MUTATION = gql`
     $resumeLink: String
     $resumePdf: String
     $telegram: String!
-    $otherPriorities: String!
+    $otherPriorities: String
     $username: String!
   ) {
     createStudent(

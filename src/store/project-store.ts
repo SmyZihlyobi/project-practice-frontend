@@ -1,5 +1,6 @@
 import { apolloClient } from '@/lib/Apollo';
 import { makeAutoObservable, toJS, reaction } from 'mobx';
+import { ApolloError } from '@apollo/client';
 
 import { GET_FAVORITE_PROJECT_QUERY, GET_PROJECTS_QUERY } from '@/api/queries';
 import type {
@@ -28,6 +29,7 @@ import {
   TECHNICAL_SPECIFICATION_URL,
 } from '@/lib/constant';
 import { isApolloError } from '@apollo/client/errors';
+import { SyncService } from '@/lib/index-db';
 
 class ProjectStore {
   private projects: Project[] = [];
@@ -43,10 +45,15 @@ class ProjectStore {
   private isCacheLoaded: boolean = false;
   private isProjectsFetched: boolean = false;
   public currentStackItems: Array<string> = [];
+  private syncService: SyncService;
 
   constructor() {
     makeAutoObservable(this);
     this.dbService = null;
+    this.syncService = SyncService.getInstance();
+    if (typeof window !== 'undefined') {
+      this.syncService.init();
+    }
 
     reaction(
       () => this.projects.slice(),
@@ -113,7 +120,17 @@ class ProjectStore {
       const formData = new FormData();
       formData.append('projectId', id);
       formData.append('file', presentation);
-      axiosInstance.post(PRESENTATION_URL, formData);
+
+      if (typeof window !== undefined && !this.syncService.isSyncOnline) {
+        await this.syncService.addAxiosRequest({
+          url: PRESENTATION_URL,
+          method: 'POST',
+          data: formData as never,
+        });
+        toast.info('Файл будет загружен при восстановлении соединения');
+      } else {
+        await axiosInstance.post(PRESENTATION_URL, formData);
+      }
     } catch (error) {
       console.error(error);
     }
@@ -128,7 +145,17 @@ class ProjectStore {
       const formData = new FormData();
       formData.append('projectId', id);
       formData.append('file', technicalSpecification);
-      axiosInstance.post(TECHNICAL_SPECIFICATION_URL, formData);
+
+      if (typeof window !== undefined && !this.syncService.isSyncOnline) {
+        await this.syncService.addAxiosRequest({
+          url: TECHNICAL_SPECIFICATION_URL,
+          method: 'POST',
+          data: formData as never,
+        });
+        toast.info('Файл будет загружен при восстановлении соединения');
+      } else {
+        await axiosInstance.post(TECHNICAL_SPECIFICATION_URL, formData);
+      }
     } catch (error) {
       console.error(error);
     }
@@ -138,41 +165,44 @@ class ProjectStore {
     project: Omit<Project, 'id' | 'active' | 'companyName'>,
   ): Promise<Project> => {
     try {
-      const response = await apolloClient.mutate({
-        mutation: CREATE_PROJECT,
-        variables: {
+      if (navigator.onLine) {
+        const response = await apolloClient.mutate({
+          mutation: CREATE_PROJECT,
+          variables: {
+            ...project,
+            teamsAmount: Number(project.teamsAmount),
+          },
+        });
+
+        if (response.errors) {
+          this.handleCreateProjectErrors(response.errors);
+          throw new Error();
+        }
+
+        toast.success('Проект успешно создан');
+        const {
+          data: { createProject: newProject },
+        } = response;
+        this.setProjects([...this.projects, newProject]);
+        return newProject;
+      } else {
+        const offlineProject: Project = {
+          ...project,
+          id: `offline-${Date.now()}`,
+          active: true,
+          companyName: '',
+        };
+
+        this.setProjects([...this.projects, offlineProject]);
+
+        await this.syncService.addApolloMutation(CREATE_PROJECT, {
           ...project,
           teamsAmount: Number(project.teamsAmount),
-        },
-      });
-
-      if (response.errors) {
-        response.errors.forEach(error => {
-          if (error.extensions?.code === 'BAD_USER_INPUT') {
-            toast.error(
-              'Ошибка ввода данных. Пожалуйста, проверьте правильность заполнения всех полей.',
-            );
-          } else if (error.extensions?.code === 'INTERNAL_SERVER_ERROR') {
-            toast.error(
-              'Произошла внутренняя ошибка сервера. Пожалуйста, попробуйте позже.',
-            );
-          } else {
-            toast.error(
-              'Произошла ошибка при отправке формы. Пожалуйста, попробуйте еще раз или обратитесь в поддержку.',
-            );
-          }
         });
-        throw new Error();
+
+        toast.info('Проект будет создан при восстановлении соединения');
+        return offlineProject;
       }
-
-      toast.success('Проект успешно создан');
-
-      const {
-        data: { createProject: newProject },
-      } = response;
-
-      this.setProjects([...this.projects, newProject]);
-      return newProject;
     } catch (error) {
       console.error(error);
       toast.error('Произошла ошибка при создании проекта');
@@ -203,16 +233,29 @@ class ProjectStore {
     try {
       if (!projectId || !studentId) return;
 
-      await apolloClient.mutate({
-        mutation: SER_FAVORITE_MUTATION,
-        variables: {
+      if (navigator.onLine) {
+        await apolloClient.mutate({
+          mutation: SER_FAVORITE_MUTATION,
+          variables: {
+            input: {
+              studentId,
+              projectId,
+            },
+          },
+        });
+        this.favoriteProject.push({ projectId });
+      } else {
+        this.favoriteProject.push({ projectId });
+
+        await this.syncService.addApolloMutation(SER_FAVORITE_MUTATION, {
           input: {
             studentId,
             projectId,
           },
-        },
-      });
-      this.favoriteProject.push({ projectId });
+        });
+
+        toast.info('Проект будет добавлен в избранное при восстановлении соединения');
+      }
     } catch (error) {
       console.error(
         `ERROR while setting project with id=${projectId} by student with id=${studentId}`,
@@ -226,13 +269,26 @@ class ProjectStore {
 
   setUnfavoriteProject = async (projectId: string, studentId: string): Promise<void> => {
     try {
-      await apolloClient.mutate({
-        mutation: SER_UNFAVORITE_MUTATION,
-        variables: { studentId, projectId },
-      });
-      this.favoriteProject = this.favoriteProject.filter(
-        project => project.projectId !== projectId,
-      );
+      if (navigator.onLine) {
+        await apolloClient.mutate({
+          mutation: SER_UNFAVORITE_MUTATION,
+          variables: { studentId, projectId },
+        });
+        this.favoriteProject = this.favoriteProject.filter(
+          project => project.projectId !== projectId,
+        );
+      } else {
+        this.favoriteProject = this.favoriteProject.filter(
+          project => project.projectId !== projectId,
+        );
+
+        await this.syncService.addApolloMutation(SER_UNFAVORITE_MUTATION, {
+          studentId,
+          projectId,
+        });
+
+        toast.info('Проект будет удален из избранного при восстановлении соединения');
+      }
     } catch (error) {
       console.error(
         `ERROR while deleting project with id=${projectId} by student with id=${studentId} from favorites`,
@@ -622,6 +678,22 @@ class ProjectStore {
   private saveToCache = async (): Promise<void> => {
     if (!this.dbService) return;
     await this.dbService.saveAll(toJS(this.projects.filter(project => !!project.active)));
+  };
+
+  private handleCreateProjectErrors = (errors: ApolloError['graphQLErrors']): void => {
+    errors.forEach(error => {
+      if (error.extensions?.code === 'BAD_USER_INPUT') {
+        toast.error(
+          'Ошибка ввода данных. Пожалуйста, проверьте правильность заполнения всех полей.',
+        );
+      } else if (error.extensions?.code === 'INTERNAL_SERVER_ERROR') {
+        toast.error('Произошла внутренняя ошибка сервера. Пожалуйста, попробуйте позже.');
+      } else {
+        toast.error(
+          'Произошла ошибка при отправке формы. Пожалуйста, попробуйте еще раз или обратитесь в поддержку.',
+        );
+      }
+    });
   };
 }
 
