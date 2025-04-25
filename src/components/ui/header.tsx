@@ -56,6 +56,13 @@ export default function Header() {
     return 'Профиль';
   };
 
+  const showStudentLinks = !isAuthenticated || user?.roles.includes(Roles.Student);
+
+  const showCompanyLinks =
+    !isAuthenticated ||
+    user?.roles.includes(Roles.Admin) ||
+    user?.roles.includes(Roles.Company);
+
   if (isLoading) return null;
 
   return (
@@ -88,22 +95,26 @@ export default function Header() {
           >
             Команды
           </Link>
-          <Link
-            href={{
-              pathname: '/student/join-project',
-            }}
-            className="text-sm/6 font-semibold"
-          >
-            Регистрация на проект
-          </Link>
-          <Link
-            href={{
-              pathname: '/company/create-project',
-            }}
-            className="text-sm/6 font-semibold"
-          >
-            Создать проект
-          </Link>
+          {showStudentLinks && (
+            <Link
+              href={{
+                pathname: '/student/join-project',
+              }}
+              className="text-sm/6 font-semibold"
+            >
+              Регистрация на проект
+            </Link>
+          )}
+          {showCompanyLinks && (
+            <Link
+              href={{
+                pathname: '/company/create-project',
+              }}
+              className="text-sm/6 font-semibold"
+            >
+              Создать проект
+            </Link>
+          )}
         </div>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end mr-12">
           {isAuthenticated ? (
@@ -112,15 +123,17 @@ export default function Header() {
               <DropdownMenuContent>
                 <DropdownMenuLabel>Мой профиль</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <Link
-                    href={{
-                      pathname: '/me/favorite',
-                    }}
-                  >
-                    Избранное
-                  </Link>
-                </DropdownMenuItem>
+                {showStudentLinks && (
+                  <DropdownMenuItem>
+                    <Link
+                      href={{
+                        pathname: '/me/favorite',
+                      }}
+                    >
+                      Избранное
+                    </Link>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem>
                   <Link
                     href={{
@@ -217,23 +230,25 @@ export default function Header() {
                   >
                     Команды
                   </Link>
-                  <Link
-                    href="/student/join-project"
-                    className="block px-3 py-3 text-base font-semibold  w-full text-center md:text-left border-b-2"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    Регистрация на проект
-                  </Link>
-                  {/* to-do только для роли компания */}
-                  <Link
-                    href="/company/create-project"
-                    className="block px-3 py-3 text-base font-semibold w-full text-center md:text-left border-b-2"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    Создать проект
-                  </Link>
+                  {showStudentLinks && (
+                    <Link
+                      href="/student/join-project"
+                      className="block px-3 py-3 text-base font-semibold  w-full text-center md:text-left border-b-2"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Регистрация на проект
+                    </Link>
+                  )}
+                  {showCompanyLinks && (
+                    <Link
+                      href="/company/create-project"
+                      className="block px-3 py-3 text-base font-semibold w-full text-center md:text-left border-b-2"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Создать проект
+                    </Link>
+                  )}
                   <div>
-                    {/* to-do Сделать dropdown menu после входа*/}
                     {isLoggedIn ? (
                       <Button
                         onClick={handleLogout}

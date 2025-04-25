@@ -47,6 +47,12 @@ class ProjectStore {
   public currentStackItems: Array<string> = [];
   private syncService: SyncService;
 
+  public get favoriteProjectsList(): Project[] {
+    return this.projects.filter(project =>
+      this.favoriteProject.some(fp => fp.projectId === project.id),
+    );
+  }
+
   constructor() {
     makeAutoObservable(this);
     this.dbService = null;
