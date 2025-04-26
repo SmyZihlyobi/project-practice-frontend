@@ -11,6 +11,9 @@ export interface Project {
   active: boolean;
   id: string;
   companyName: string;
+  direction?: string;
+  requiredRoles?: string;
+  companyLink?: string;
 }
 
 interface ProjectQueryResponse {

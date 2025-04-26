@@ -8,6 +8,7 @@ export interface Company {
   studentCompany?: string;
   contacts?: string;
   isApproved?: boolean;
+  website?: string;
 }
 
 export interface GetCompany {

@@ -7,6 +7,7 @@ export const CREATE_COMPANY_MUTATION = gql`
     $email: String!
     $contacts: String!
     $studentProject: Boolean!
+    $website: String
   ) {
     createCompany(
       input: {
@@ -15,6 +16,7 @@ export const CREATE_COMPANY_MUTATION = gql`
         email: $email
         contacts: $contacts
         studentCompany: $studentProject
+        website: $website
       }
     ) {
       id

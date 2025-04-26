@@ -19,6 +19,11 @@ const REGISTRATION_COMPANY_FORM_CONFIG = {
     .max(255, { message: 'Почта не может превышать 256 символов' })
     .refine(val => val.trim() !== '', { message: 'Необходимо заполнить' }),
   studentProject: z.boolean(),
+  website: z
+    .string()
+    .max(255, { message: 'Ссылка не может превышать 256 символов' })
+    .url({ message: 'Неверный формат ссылки' })
+    .optional(),
 };
 
 export const REGISTRATION_COMPANY_FORM_SCHEMA = z.object(
