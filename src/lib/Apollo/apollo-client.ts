@@ -3,9 +3,8 @@
 import { ApolloClient, InMemoryCache, from, HttpLink, ApolloLink } from '@apollo/client';
 import Cookies from 'js-cookie';
 import { JWT_COOKIE_NAME } from '../constant';
-import { toast } from 'sonner';
 import { onError } from '@apollo/client/link/error';
-import { navigateToLogin } from '../utils';
+import { permissionError } from '../utils';
 
 const httpLink = new HttpLink({
   uri: process.env.NEXT_PUBLIC_BACKEND_URL + '/graphql',
@@ -44,8 +43,7 @@ const errorLink = onError(({ graphQLErrors, networkError, operation }) => {
         message.includes('Authentication failed');
 
       if (isAuthError) {
-        toast.error('У тебя здесь нет власти! 😈');
-        navigateToLogin();
+        permissionError();
       }
 
       if (message.includes('NetworkError')) {
@@ -56,8 +54,7 @@ const errorLink = onError(({ graphQLErrors, networkError, operation }) => {
 
   if (networkError && 'statusCode' in networkError) {
     if (networkError.statusCode === 401 || networkError.statusCode === 403) {
-      toast.error('У тебя здесь нет власти! 😈');
-      navigateToLogin();
+      permissionError();
     }
   }
 });
