@@ -44,8 +44,9 @@ class ProjectStore {
   private dbService: IndexedDBService | null;
   private isCacheLoaded: boolean = false;
   private isProjectsFetched: boolean = false;
-  public currentStackItems: Array<string> = [];
+  public currentStackItems: Set<string> = new Set();
   private syncService: SyncService;
+  private isFilteredByActive: boolean = true;
 
   constructor() {
     makeAutoObservable(this);
@@ -309,7 +310,7 @@ class ProjectStore {
         }
         project.stack.split(', ').forEach(stackItem => {
           this.stackItems.add(stackItem.toLowerCase());
-          this.currentStackItems.push(stackItem.toLowerCase());
+          this.currentStackItems.add(stackItem.toLowerCase());
         });
       }
     } catch (error) {
@@ -321,9 +322,9 @@ class ProjectStore {
     const filtredItems = Array.from(this.stackItems).filter(stackItem =>
       stackItem.toLocaleLowerCase().startsWith(name.toLocaleLowerCase()),
     );
-    this.currentStackItems = [];
+    this.currentStackItems = new Set();
     filtredItems.forEach(item => {
-      this.currentStackItems.push(item);
+      this.currentStackItems.add(item);
     });
     this.currentPage = 1;
     this.updatePaginatedProjects();
@@ -338,7 +339,7 @@ class ProjectStore {
   };
 
   filterByPresentation = (isFiltered: boolean): void => {
-    if (isFiltered) this.currentProjects = this.projects;
+    if (isFiltered) this.currentProjects = this.getBaseProjects();
     else
       this.currentProjects = this.currentProjects.filter(
         project =>
@@ -351,7 +352,7 @@ class ProjectStore {
   };
 
   filterByFavorite = (isFiltered: boolean): void => {
-    if (isFiltered) this.currentProjects = this.projects;
+    if (isFiltered) this.currentProjects = this.getBaseProjects();
     else
       this.currentProjects = this.currentProjects.filter(project =>
         this.isFavoriteProject(project.id),
@@ -361,7 +362,7 @@ class ProjectStore {
   };
 
   filterByCompany = (isFiltered: boolean): void => {
-    if (isFiltered) this.currentProjects = this.projects;
+    if (isFiltered) this.currentProjects = this.getBaseProjects();
     else
       this.currentProjects = this.currentProjects.filter(
         project => !project.studentProject,
@@ -371,6 +372,7 @@ class ProjectStore {
   };
 
   filterByActive = (isFiltered: boolean): void => {
+    this.isFilteredByActive = isFiltered;
     if (isFiltered) {
       this.currentProjects = this.projects.filter(project => !!project.active);
     } else {
@@ -381,7 +383,7 @@ class ProjectStore {
   };
 
   filterByTechnicalSpecifications = (isFiltered: boolean): void => {
-    if (isFiltered) this.currentProjects = this.projects;
+    if (isFiltered) this.currentProjects = this.getBaseProjects();
     else
       this.currentProjects = this.currentProjects.filter(
         project =>
@@ -412,7 +414,7 @@ class ProjectStore {
 
   filterProjects = (): void => {
     if (this.selectedStackItems.size === 0) {
-      this.currentProjects = this.projects;
+      this.currentProjects = this.getBaseProjects();
     } else {
       this.currentProjects = this.projects.filter(project => {
         if (!project.stack) return false;
@@ -632,6 +634,12 @@ class ProjectStore {
       this.loading = false;
     }
   };
+
+  private getBaseProjects(): Project[] {
+    return this.isFilteredByActive
+      ? this.projects.filter(project => !!project.active)
+      : this.projects;
+  }
 
   deleteAllTechnicalSpecification = async () => {
     try {

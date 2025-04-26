@@ -11,6 +11,7 @@ import { StackSearch } from './stack-search';
 
 const Filter = observer(() => {
   const store = useProjectStore;
+
   const [isToggledList, setIsToggledList] = useState<boolean>(true);
   const [isFilteredByCompany, setIsFilteredByCompany] = useState<boolean>(false);
   const [isFilteredByPresentation, setIsFilteredByPresentation] =
@@ -24,25 +25,38 @@ const Filter = observer(() => {
     store.getStackItems();
   }, [store]);
 
-  let stackItems = store.currentStackItems.slice(0, 3);
+  let stackItems = Array.from(store.currentStackItems).slice(0, 3);
   if (!isToggledList) {
-    stackItems = store.currentStackItems;
+    stackItems = Array.from(store.currentStackItems);
   }
+
   const handleResetFilters = () => {
     store.resetFilters();
-
+    setIsFilteredByCompany(false);
     setIsFilteredByPresentation(false);
     setIsFilteredByTechnicalSpecifications(false);
     setIsFilteredByFavorite(false);
     setIsFilteredByActive(true);
   };
 
+  const renderCheckbox = (
+    label: string,
+    checked: boolean,
+    onChange: (checked: boolean) => void,
+  ) => (
+    <span className="flex items-center gap-3">
+      <Checkbox checked={checked} onCheckedChange={onChange} />
+      <h2>{label}</h2>
+    </span>
+  );
+
   return (
     <div className="mt-2">
       <h2 className="text-lg font-semibold mb-4">Фильтры</h2>
       <div className="w-full h-fit flex flex-col gap-2">
-        <h2 className="text-lg">Технический стек </h2>
-        <StackSearch></StackSearch>
+        <h2 className="text-lg">Технический стек</h2>
+        <StackSearch />
+
         {stackItems.map((item, index) => (
           <div className="w-full flex items-center gap-3" key={index}>
             <Checkbox
@@ -53,76 +67,53 @@ const Filter = observer(() => {
             <Label htmlFor={`stack-${index}`}>{item}</Label>
           </div>
         ))}
+
         <span
           className="cursor-pointer text-muted-foreground"
-          onClick={() => {
-            if (isToggledList) setIsToggledList(false);
-            else setIsToggledList(true);
-          }}
+          onClick={() => setIsToggledList(!isToggledList)}
         >
           {isToggledList ? 'Посмотреть все' : 'Свернуть'}
         </span>
-        <span className="flex items-center gap-3">
-          <Checkbox
-            checked={isFilteredByFavorite}
-            onCheckedChange={() => {
-              store.filterByFavorite(isFilteredByFavorite);
-              if (isFilteredByFavorite) setIsFilteredByFavorite(false);
-              else setIsFilteredByFavorite(true);
-            }}
-          />
-          <h2>Избранное</h2>
-        </span>
-        <span className="flex items-center gap-3">
-          <Checkbox
-            checked={isFilteredByCompany}
-            onCheckedChange={() => {
-              store.filterByCompany(isFilteredByCompany);
-              if (isFilteredByCompany) setIsFilteredByCompany(false);
-              else setIsFilteredByCompany(true);
-            }}
-          />
-          <h2>Проект от компании</h2>
-        </span>
-        <span className="flex items-center gap-3">
-          <Checkbox
-            checked={isFilteredByActive}
-            onCheckedChange={checked => {
-              const newValue = Boolean(checked);
-              setIsFilteredByActive(newValue);
-              store.filterByActive(newValue);
-            }}
-          />
-          <h2>Скрыть архивные</h2>
-        </span>
-        <span className="flex items-center gap-3">
-          <Checkbox
-            checked={isFilteredByPresentation}
-            onCheckedChange={() => {
-              store.filterByPresentation(isFilteredByPresentation);
-              if (isFilteredByPresentation) setIsFilteredByPresentation(false);
-              else setIsFilteredByPresentation(true);
-            }}
-          />
-          <h2>Презентация</h2>
-        </span>
-        <span className="flex items-center gap-3">
-          <Checkbox
-            checked={isFilteredByTechnicalSpecifications}
-            onCheckedChange={() => {
-              store.filterByTechnicalSpecifications(isFilteredByTechnicalSpecifications);
-              if (isFilteredByPresentation) setIsFilteredByTechnicalSpecifications(false);
-              else setIsFilteredByTechnicalSpecifications(true);
-            }}
-          />
-          <h2>Техническое заданиe</h2>
-        </span>
-        <Button className="mt-3" onClick={() => handleResetFilters()}>
+
+        {renderCheckbox('Избранное', isFilteredByFavorite, () => {
+          const newValue = !isFilteredByFavorite;
+          setIsFilteredByFavorite(newValue);
+          store.filterByFavorite(!newValue);
+        })}
+
+        {renderCheckbox('Проект от компании', isFilteredByCompany, () => {
+          const newValue = !isFilteredByCompany;
+          setIsFilteredByCompany(newValue);
+          store.filterByCompany(!newValue);
+        })}
+
+        {renderCheckbox('Скрыть архивные', isFilteredByActive, (checked: boolean) => {
+          const newValue = Boolean(checked);
+          setIsFilteredByActive(newValue);
+          store.filterByActive(newValue);
+        })}
+
+        {renderCheckbox('Презентация', isFilteredByPresentation, () => {
+          const newValue = !isFilteredByPresentation;
+          setIsFilteredByPresentation(newValue);
+          store.filterByPresentation(!newValue);
+        })}
+
+        {renderCheckbox(
+          'Техническое задание',
+          isFilteredByTechnicalSpecifications,
+          () => {
+            const newValue = !isFilteredByTechnicalSpecifications;
+            setIsFilteredByTechnicalSpecifications(newValue);
+            store.filterByTechnicalSpecifications(!newValue);
+          },
+        )}
+
+        <Button className="mt-3" onClick={handleResetFilters}>
           Сбросить фильтры
         </Button>
       </div>
     </div>
   );
 });
-
 export default Filter;

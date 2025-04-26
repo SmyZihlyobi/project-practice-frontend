@@ -64,23 +64,21 @@ export const Projects = observer(() => {
   }
 
   return (
-    <div className="gap-2 md:gap-3 flex-col flex">
-      <Search></Search>
+    <div className="gap-2 md:gap-3 flex-col flex ">
       {paginatedProjects.map(project => (
         <Card
           key={project.id}
           className={classNames(
-            'relative overflow-hidden',
-            !project.active &&
-              'before:absolute before:inset-0 before:bg-gradient-to-b before:from-red-500/10 before:to-transparent before:z-0',
+            'relative overflow-hidden border border-muted bg-card transition-all duration-300 hover:shadow-lg hover:scale-[1.01]',
+            !project.active && 'bg-gradient-to-b from-red-500/10 to-transparent',
           )}
         >
-          <CardHeader className="flex flex-col md:flex-row w-full items-start  justify-between">
-            <h2 className="text-lg w-full text-center md:text-left md:w-1/3  font-semibold">
+          <CardHeader className="flex flex-col text-center md:flex-row w-full items-start  justify-between">
+            <h2 className="text-lg w-full md:text-left md:w-1/3  font-semibold">
               {project.name}
             </h2>
-            <h2 className="text-m !m-0">{!project.active && 'Архивный проект'}</h2>
-            <h2 className="text-m w-full md:w-1/3 text-center  !m-0 flex items-start  gap-1 justify-center md:justify-end">
+            <h2 className="text-m">{!project.active && 'Архивный проект'}</h2>
+            <h2 className="text-m w-full md:w-1/3  !m-0 flex items-start  gap-1 justify-center md:justify-end md:items-center">
               {project.studentProject ? (
                 'Студенческий'
               ) : (
@@ -97,7 +95,7 @@ export const Projects = observer(() => {
             <Accordion type="multiple" className="w-full">
               <AccordionItem value="text">
                 <AccordionTrigger>Описание проекта ↓</AccordionTrigger>
-                <AccordionContent className="mt-3">
+                <AccordionContent className="mt-3 text-muted-foreground text-sm leading-relaxed">
                   <Markdown text={project.description || ' '}></Markdown>
                 </AccordionContent>
               </AccordionItem>
