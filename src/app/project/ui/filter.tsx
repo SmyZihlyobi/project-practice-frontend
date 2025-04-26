@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
@@ -13,6 +12,7 @@ const Filter = observer(() => {
   const store = useProjectStore;
 
   const [isToggledList, setIsToggledList] = useState<boolean>(true);
+  const [isToggledRolesList, setIsToggledRolesList] = useState<boolean>(true);
   const [isFilteredByCompany, setIsFilteredByCompany] = useState<boolean>(false);
   const [isFilteredByPresentation, setIsFilteredByPresentation] =
     useState<boolean>(false);
@@ -28,6 +28,11 @@ const Filter = observer(() => {
   let stackItems = Array.from(store.currentStackItems).slice(0, 3);
   if (!isToggledList) {
     stackItems = Array.from(store.currentStackItems);
+  }
+
+  let rolesItems = Array.from(store.getRoles()).slice(0, 3);
+  if (!isToggledRolesList) {
+    rolesItems = Array.from(store.getRoles());
   }
 
   const handleResetFilters = () => {
@@ -58,7 +63,7 @@ const Filter = observer(() => {
         <StackSearch />
 
         {stackItems.map((item, index) => (
-          <div className="w-full flex items-center gap-3" key={index}>
+          <div className="w-full flex items-center gap-3" key={`stack-${index}`}>
             <Checkbox
               id={`stack-${index}`}
               checked={store.selectedStackItems.has(item)}
@@ -74,6 +79,28 @@ const Filter = observer(() => {
         >
           {isToggledList ? 'Посмотреть все' : 'Свернуть'}
         </span>
+
+        <h2 className="text-lg mt-4">Роли в проекте</h2>
+
+        {rolesItems.map((role, index) => (
+          <div className="w-full flex items-center gap-3" key={`role-${index}`}>
+            <Checkbox
+              id={`role-${index}`}
+              checked={store.selectedRoles.has(role)}
+              onCheckedChange={() => store.filterByRole(role)}
+            />
+            <Label htmlFor={`role-${index}`}>{role}</Label>
+          </div>
+        ))}
+
+        {rolesItems.length > 0 && (
+          <span
+            className="cursor-pointer text-muted-foreground"
+            onClick={() => setIsToggledRolesList(!isToggledRolesList)}
+          >
+            {isToggledRolesList ? 'Посмотреть все' : 'Свернуть'}
+          </span>
+        )}
 
         {renderCheckbox('Избранное', isFilteredByFavorite, () => {
           const newValue = !isFilteredByFavorite;
@@ -116,4 +143,5 @@ const Filter = observer(() => {
     </div>
   );
 });
+
 export default Filter;

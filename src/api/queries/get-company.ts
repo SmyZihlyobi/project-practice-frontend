@@ -8,6 +8,7 @@ export const GET_COMPANY_QUERY = gql`
       id
       representative
       studentCompany
+      website
     }
   }
 `;

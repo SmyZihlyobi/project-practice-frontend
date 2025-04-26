@@ -6,11 +6,13 @@ export const GET_COMPANIES_QUERY = gql`
       id
       name
       studentCompany
+      website
     }
     companies {
       id
       name
       studentCompany
+      website
     }
   }
 `;

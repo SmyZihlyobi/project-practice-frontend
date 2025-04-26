@@ -47,6 +47,8 @@ class ProjectStore {
   public currentStackItems: Set<string> = new Set();
   private syncService: SyncService;
   private isFilteredByActive: boolean = true;
+  private roles: Set<string> = new Set();
+  public selectedRoles: Set<string> = new Set();
 
   constructor() {
     makeAutoObservable(this);
@@ -86,6 +88,21 @@ class ProjectStore {
     return this.isCacheLoaded;
   };
 
+  getRoles = (): Set<string> => {
+    return this.roles;
+  };
+
+  private loadRoles = (): void => {
+    for (const project of this.projects) {
+      if (!project.requiredRoles) {
+        continue;
+      }
+      project.requiredRoles.split(', ').forEach(role => {
+        this.roles.add(role.toLowerCase());
+      });
+    }
+  };
+
   fetchProjects = async (): Promise<void> => {
     try {
       await this.preLoad();
@@ -96,6 +113,7 @@ class ProjectStore {
 
       this.setProjects(response.data.projects);
       this.saveToCache();
+      this.loadRoles();
     } catch (error) {
       console.error('ERROR while fetching teams', error);
     } finally {
@@ -351,6 +369,29 @@ class ProjectStore {
     this.updatePaginatedProjects();
   };
 
+  filterByRole = (role: string): void => {
+    if (this.selectedRoles.has(role)) {
+      this.selectedRoles.delete(role);
+    } else {
+      this.selectedRoles.add(role);
+    }
+
+    if (this.selectedRoles.size === 0) {
+      this.currentProjects = this.getBaseProjects();
+    } else {
+      this.currentProjects = this.projects.filter(project => {
+        if (!project.requiredRoles) return false;
+
+        const projectRoles = project.requiredRoles.toLowerCase().split(', ');
+        return Array.from(this.selectedRoles).some(selectedRole =>
+          projectRoles.includes(selectedRole.toLowerCase()),
+        );
+      });
+    }
+    this.currentPage = 1;
+    this.updatePaginatedProjects();
+  };
+
   filterByFavorite = (isFiltered: boolean): void => {
     if (isFiltered) this.currentProjects = this.getBaseProjects();
     else
@@ -397,6 +438,7 @@ class ProjectStore {
 
   resetFilters = () => {
     this.selectedStackItems = new Set();
+    this.selectedRoles = new Set();
     this.currentProjects = this.projects;
     this.currentPage = 1;
     this.updatePaginatedProjects();
