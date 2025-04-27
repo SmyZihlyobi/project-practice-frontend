@@ -182,6 +182,19 @@ export default function Page() {
               />
               <FormField
                 control={form.control}
+                name="website"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Ссылка на сайт вашей компании</FormLabel>
+                    <FormControl>
+                      <Input {...field} className="w-full" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
                 name="studentProject"
                 render={({ field }) => (
                   <FormItem>

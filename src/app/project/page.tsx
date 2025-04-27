@@ -2,6 +2,7 @@ import { Card } from '@/components/ui/card';
 
 import Filter from './ui/filter';
 import { Projects } from './ui/projects';
+import { Search } from './ui/search';
 
 export default function Pages() {
   return (
@@ -16,6 +17,7 @@ export default function Pages() {
 
           <div className="md:col-span-3">
             <Card className="p-4">
+              <Search />
               <Projects />
             </Card>
           </div>

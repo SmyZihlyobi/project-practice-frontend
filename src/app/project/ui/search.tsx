@@ -26,6 +26,10 @@ export const Search = observer(() => {
   );
 
   return (
-    <Input placeholder="Найти проект" onChange={e => handleSearch(e.target.value)} />
+    <Input
+      placeholder="Найти проект"
+      className="mb-2"
+      onChange={e => handleSearch(e.target.value)}
+    />
   );
 });

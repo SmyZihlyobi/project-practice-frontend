@@ -49,6 +49,17 @@ const CREATE_PROJECT_CONFIG = {
       message: 'Размер файла технического задания не должен превышать 10 МБ',
     })
     .optional(),
+  requiredRoles: z
+    .string()
+    .max(500, { message: 'Роль не может превышать 500 символов' })
+    .refine(val => STACK_REGEX.test(val), {
+      message: 'Роли должны быть в формате: "frontend, backend, ml engineer"',
+    })
+    .optional(),
+  direction: z
+    .string()
+    .max(100, { message: 'Направление не может превышать 100 символов' })
+    .optional(),
 };
 
 export const CREATE_PROJECT_SCHEMA = z.object(CREATE_PROJECT_CONFIG);

@@ -170,6 +170,42 @@ export default function CreateProjectPage() {
 
               <FormField
                 control={form.control}
+                name="requiredRoles"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Необходимые роли</FormLabel>
+                    <FormControl>
+                      <Input {...field} className="w-full" />
+                    </FormControl>
+                    <FormDescription>
+                      Укажите необходимые роли через запятую, например: frontend, backend,
+                      designer
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="direction"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Направление проекта</FormLabel>
+                    <FormControl>
+                      <Input {...field} className="w-full" />
+                    </FormControl>
+                    <FormDescription>
+                      Укажите направление проекта, например: веб-разработка, мобильные
+                      приложения
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
                 name="teamsAmount"
                 render={({ field }) => (
                   <FormItem>

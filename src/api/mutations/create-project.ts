@@ -7,6 +7,8 @@ export const CREATE_PROJECT = gql`
     $stack: String!
     $teamsAmount: Int!
     $studentProject: Boolean!
+    $direction: String
+    $requiredRoles: String
   ) {
     createProject(
       input: {
@@ -15,6 +17,8 @@ export const CREATE_PROJECT = gql`
         stack: $stack
         teamsAmount: $teamsAmount
         studentProject: $studentProject
+        direction: $direction
+        requiredRoles: $requiredRoles
       }
     ) {
       description
@@ -27,6 +31,8 @@ export const CREATE_PROJECT = gql`
       active
       id
       companyName
+      direction
+      requiredRoles
     }
   }
 `;

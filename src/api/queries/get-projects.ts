@@ -13,6 +13,9 @@ export const GET_PROJECTS_QUERY = gql`
       active
       id
       companyName
+      requiredRoles
+      direction
+      companyLink
     }
   }
 `;
