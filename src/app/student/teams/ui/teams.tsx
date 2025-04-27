@@ -33,7 +33,7 @@ export const Teams = observer(() => {
   return (
     <Card className="p-4 mt-4">
       <h2 className="text-lg font-semibold mb-4">Список команд</h2>
-      {isCachedLoaded ? (
+      {!isCachedLoaded ? (
         renderSkeletonRow(5, 1)
       ) : currentTeamsPage.length === 0 ? (
         <div className="text-center py-6">

@@ -90,8 +90,6 @@ export const Search = observer(() => {
         <SelectContent>
           <SelectItem value="team">По названию команды</SelectItem>
           <SelectItem value="lastName">По фамилии студента</SelectItem>
-          <SelectItem value="firstName">По имени студента</SelectItem>
-          <SelectItem value="patronymic">По отчеству студента</SelectItem>
         </SelectContent>
       </Select>
 

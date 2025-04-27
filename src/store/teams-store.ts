@@ -210,6 +210,7 @@ class TeamStore {
 
   fetchTeams = async (): Promise<void> => {
     try {
+      await this.preLoad();
       this.loading = true;
       const response: GetTeamsResponse = await apolloClient.query({
         query: GET_TEAMS_QUERY,
@@ -217,6 +218,7 @@ class TeamStore {
 
       this.setTeams(response.data.teams);
       this.saveToCache();
+      this.isTeamsFetched = true;
     } catch (error) {
       console.error('ERROR while fetching teams', error);
     } finally {
@@ -229,6 +231,7 @@ class TeamStore {
     this.teams = teams;
     this.currentTeams = teams;
     this.setCurrentPage(1);
+    this.saveToCache();
   };
 
   get currentTeamsPagesCount(): number {
