@@ -12,6 +12,7 @@ import { Fira_Code } from 'next/font/google';
 import { FeedbackDialog } from '@/components/ui/feedback';
 import Head from 'next/head';
 import './globals.css';
+import { ServiceWorkerRegistration } from '@/components/ui/service-worker-registration';
 
 const firaCode = Fira_Code({
   variable: '--font-fira-code-sans',
@@ -159,6 +160,7 @@ export default function RootLayout({
             </ApolloWrapper>
           </AuthProvider>
         </ThemeProvider>
+        <ServiceWorkerRegistration />
       </body>
     </html>
   );
