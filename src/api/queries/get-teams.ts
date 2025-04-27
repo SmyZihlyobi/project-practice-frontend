@@ -7,6 +7,8 @@ export const GET_TEAMS_QUERY = gql`
       name
       students {
         id
+        lastName
+        year
       }
     }
   }

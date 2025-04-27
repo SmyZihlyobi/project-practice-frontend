@@ -15,6 +15,7 @@ export const GET_TEAM_QUERY = gql`
         secondPriority
         thirdPriority
         resumeLink
+        resumePdf
         telegram
         year
       }
