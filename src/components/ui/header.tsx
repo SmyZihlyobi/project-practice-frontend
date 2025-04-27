@@ -57,6 +57,7 @@ export default function Header() {
   };
 
   const showStudentLinks = !isAuthenticated || user?.roles.includes(Roles.Student);
+  const showAdminLinks = !isAuthenticated || user?.roles.includes(Roles.Admin);
 
   const showCompanyLinks =
     !isAuthenticated ||
@@ -132,6 +133,11 @@ export default function Header() {
                     >
                       Избранное
                     </Link>
+                  </DropdownMenuItem>
+                )}
+                {showAdminLinks && (
+                  <DropdownMenuItem>
+                    <Link href={{ pathname: '/admin' }}>Админка</Link>
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuItem>
