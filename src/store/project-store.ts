@@ -1,5 +1,5 @@
 import { apolloClient } from '@/lib/Apollo';
-import { makeAutoObservable, toJS, reaction } from 'mobx';
+import { makeAutoObservable, toJS, reaction, runInAction } from 'mobx';
 import { ApolloError } from '@apollo/client';
 
 import { GET_FAVORITE_PROJECT_QUERY, GET_PROJECTS_QUERY } from '@/api/queries';
@@ -49,12 +49,6 @@ class ProjectStore {
   private isFilteredByActive: boolean = true;
   private roles: Set<string> = new Set();
   public selectedRoles: Set<string> = new Set();
-
-  public get favoriteProjectsList(): Project[] {
-    return this.projects.filter(project =>
-      this.favoriteProject.some(fp => fp.projectId === project.id),
-    );
-  }
 
   constructor() {
     makeAutoObservable(this);
@@ -258,72 +252,118 @@ class ProjectStore {
     try {
       if (!projectId || !studentId) return;
 
+      runInAction(() => {
+        this.projects = this.projects.map(project =>
+          project.id === projectId ? { ...project, isFavorite: true } : project,
+        );
+        if (!this.favoriteProject.some(fp => fp.projectId === projectId)) {
+          this.favoriteProject.push({ projectId, studentId });
+        }
+      });
+
       if (navigator.onLine) {
         await apolloClient.mutate({
           mutation: SER_FAVORITE_MUTATION,
-          variables: {
-            input: {
-              studentId,
-              projectId,
-            },
-          },
+          variables: { input: { studentId, projectId } },
+          refetchQueries: [
+            { query: GET_PROJECTS_QUERY },
+            { query: GET_FAVORITE_PROJECT_QUERY, variables: { id: studentId } },
+          ],
+          awaitRefetchQueries: true,
         });
-        this.favoriteProject.push({ projectId });
       } else {
-        this.favoriteProject.push({ projectId });
-
         await this.syncService.addApolloMutation(SER_FAVORITE_MUTATION, {
-          input: {
-            studentId,
-            projectId,
-          },
+          input: { studentId, projectId },
         });
 
-        toast.info('Проект будет добавлен в избранное при восстановлении соединения');
+        await Promise.all([
+          this.saveToCache(),
+          this.dbService?.updateItem(projectId, { isFavorite: true } as Partial<Project>),
+        ]);
+
+        toast.info('Изменения применятся после восстановления связи');
       }
     } catch (error) {
-      console.error(
-        `ERROR while setting project with id=${projectId} by student with id=${studentId}`,
-        error,
-      );
-      toast.error(
-        'Произошла ошибка при добавлении проект в избранные, повторите ещё раз',
-      );
+      console.error(`Ошибка добавления в избранное: ${error}`);
+
+      runInAction(() => {
+        this.projects = this.projects.map(project =>
+          project.id === projectId ? { ...project, isFavorite: false } : project,
+        );
+        this.favoriteProject = this.favoriteProject.filter(
+          fp => fp.projectId !== projectId,
+        );
+      });
+
+      toast.error('Не удалось добавить проект в избранное');
     }
   };
 
   setUnfavoriteProject = async (projectId: string, studentId: string): Promise<void> => {
+    const originalProjects: Project[] = [];
+    const originalFavorites: FavoriteProject[] = [];
+
     try {
+      if (!projectId || !studentId) return;
+
+      runInAction(() => {
+        this.projects = this.projects.map(project =>
+          project.id === projectId ? { ...project, isFavorite: false } : project,
+        );
+
+        this.favoriteProject = this.favoriteProject.filter(
+          fp => fp.projectId !== projectId,
+        );
+        this.currentProjects = this.currentProjects.map(project =>
+          project.id === projectId ? { ...project, isFavorite: false } : project,
+        );
+      });
       if (navigator.onLine) {
         await apolloClient.mutate({
           mutation: SER_UNFAVORITE_MUTATION,
           variables: { studentId, projectId },
+          refetchQueries: [
+            { query: GET_PROJECTS_QUERY },
+            { query: GET_FAVORITE_PROJECT_QUERY, variables: { id: studentId } },
+          ],
+          awaitRefetchQueries: true,
         });
-        this.favoriteProject = this.favoriteProject.filter(
-          project => project.projectId !== projectId,
-        );
-      } else {
-        this.favoriteProject = this.favoriteProject.filter(
-          project => project.projectId !== projectId,
-        );
 
+        toast.success('Проект удалён из избранного');
+      } else {
         await this.syncService.addApolloMutation(SER_UNFAVORITE_MUTATION, {
           studentId,
           projectId,
         });
 
-        toast.info('Проект будет удален из избранного при восстановлении соединения');
+        await Promise.all([
+          this.saveToCache(),
+          this.dbService?.updateItem(projectId, {
+            isFavorite: false,
+          } as Partial<Project>),
+        ]);
+
+        toast.info('Изменения будут применены при восстановлении соединения');
       }
     } catch (error) {
-      console.error(
-        `ERROR while deleting project with id=${projectId} by student with id=${studentId} from favorites`,
-        error,
-      );
-      toast.error(
-        'Произошла ошибка при удаления проекта из избранных, повторите ещё раз',
-      );
+      console.error('Ошибка удаления из избранного:', error);
+      runInAction(() => {
+        this.projects = originalProjects;
+        this.favoriteProject = originalFavorites;
+        this.currentProjects = originalProjects.filter(p => !!p.active);
+      });
+
+      toast.error('Не удалось удалить проект из избранного');
     }
   };
+
+  resetFiltersForFavorites() {
+    this.selectedStackItems = new Set();
+    this.selectedRoles = new Set();
+    this.currentPage = 1;
+    this.pageSize = 10;
+    this.updatePaginatedProjects();
+  }
 
   getStackItems = (): void => {
     try {

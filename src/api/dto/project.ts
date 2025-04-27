@@ -14,6 +14,7 @@ export interface Project {
   direction?: string;
   requiredRoles?: string;
   companyLink?: string;
+  isFavorite?: boolean;
 }
 
 interface ProjectQueryResponse {
