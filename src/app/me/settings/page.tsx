@@ -1,6 +1,7 @@
 'use client';
-import { SettingsPage } from '@/app/me/settings/ui';
+
+import { Settings } from '@/app/me/settings/ui';
 
 export default function Page() {
-  return <SettingsPage />;
+  return <Settings />;
 }
