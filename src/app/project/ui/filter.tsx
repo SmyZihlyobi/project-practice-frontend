@@ -8,7 +8,11 @@ import { observer } from 'mobx-react-lite';
 import { useProjectStore } from '@/store';
 import { StackSearch } from './stack-search';
 
-const Filter = observer(() => {
+interface FilterProps {
+  isFavoritePage?: boolean;
+}
+
+const Filter = observer(({ isFavoritePage = false }: FilterProps) => {
   const store = useProjectStore;
 
   const [isToggledList, setIsToggledList] = useState<boolean>(true);
@@ -24,6 +28,13 @@ const Filter = observer(() => {
   useEffect(() => {
     store.getStackItems();
   }, [store]);
+
+  useEffect(() => {
+    if (isFavoritePage) {
+      store.resetFilters();
+      store.filterByActive(true);
+    }
+  }, [isFavoritePage, store]);
 
   let stackItems = Array.from(store.currentStackItems).slice(0, 3);
   if (!isToggledList) {
@@ -41,7 +52,10 @@ const Filter = observer(() => {
     setIsFilteredByPresentation(false);
     setIsFilteredByTechnicalSpecifications(false);
     setIsFilteredByFavorite(false);
-    setIsFilteredByActive(true);
+    setIsFilteredByActive(!isFavoritePage);
+    if (isFavoritePage) {
+      store.filterByActive(true);
+    }
   };
 
   const renderCheckbox = (

@@ -104,7 +104,7 @@ export default function Page() {
                 href={{
                   pathname: '/login',
                 }}
-                className="mt-4 w-1/2 flex justify-center"
+                className="mt-4 w-full flex justify-center"
               >
                 Назад
               </Link>
