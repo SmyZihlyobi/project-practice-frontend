@@ -31,7 +31,7 @@ export const Companies = observer(() => {
   return (
     <>
       <h2 className="text-lg font-semibold mb-4">Список компаний</h2>
-      {isCachedLoaded ? (
+      {!isCachedLoaded ? (
         renderSkeletonRow(5, 1)
       ) : companies.length === 0 ? (
         <div className="text-center text-gray-500 py-6">

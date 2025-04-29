@@ -42,8 +42,8 @@ const REGISTER_FORM_CONFIG = {
     .optional(),
   course: z
     .number()
-    .min(1, { message: 'Допустимы только 1 и 2 курсы' })
-    .max(2, { message: 'Допустимы только 1 и 2 курсы' }),
+    .min(1, { message: 'Допустимы только 1, 2, 3 и 4 курсы' })
+    .max(4, { message: 'Допустимы только 1, 2, 3 и 4 курсы' }),
   firstPriority: z
     .number({
       invalid_type_error: 'ID проекта должен быть числом',

@@ -9,19 +9,18 @@ import {
 } from '@/components/ui/select';
 import { useEffect } from 'react';
 
-import { Skeleton } from '@/components/ui/skeleton';
 import { useTeamsStore } from '@/store';
+import { observer } from 'mobx-react-lite';
 
-export const TeamsSelect = (props: React.ComponentProps<typeof Select>) => {
+export const TeamsSelect = observer((props: React.ComponentProps<typeof Select>) => {
   const teamStore = useTeamsStore;
-  const { fetchTeams, getTeams, getUndecidedTeamId, getIsCachedLoaded } = teamStore;
+  const { fetchTeams, getTeams, getUndecidedTeamId } = teamStore;
 
   useEffect(() => {
     fetchTeams();
   }, [fetchTeams]);
 
   const teams = getTeams();
-  const isCachedLoaded = getIsCachedLoaded();
 
   if (teams.length < 1) {
     teams.push({
@@ -36,18 +35,12 @@ export const TeamsSelect = (props: React.ComponentProps<typeof Select>) => {
         <SelectValue placeholder="Выбери команду" />
       </SelectTrigger>
       <SelectContent>
-        {isCachedLoaded ? (
-          <SelectItem value="loading" disabled>
-            <Skeleton className="h-4 w-full" />
+        {teams.map(team => (
+          <SelectItem key={team.name} value={team.name}>
+            {team.name}
           </SelectItem>
-        ) : (
-          teams.map(team => (
-            <SelectItem key={team.name} value={team.name}>
-              {team.name}
-            </SelectItem>
-          ))
-        )}
+        ))}
       </SelectContent>
     </Select>
   );
-};
+});

@@ -118,9 +118,7 @@ export const Students = observer((props: StudentsProps) => {
                 <TableCell className="w-1/12 border-r">
                   {student.thirdPriority ?? renderSkeleton()}
                 </TableCell>
-                <TableCell className="w-1/12">
-                  {student.otherPriorities ?? renderSkeleton()}
-                </TableCell>
+                <TableCell className="w-1/12">{student.otherPriorities}</TableCell>
                 <TableCell className="w-1/12">
                   <DeleteStudent
                     fio={fio(student.firstName, student.lastName, student.patronymic)}

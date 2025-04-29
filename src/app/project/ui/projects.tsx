@@ -20,6 +20,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import classNames from 'classnames';
 import { useProjectStore } from '@/store';
 import { Compass, Users } from 'lucide-react';
+import { Roles } from '@/lib/constant/roles';
 
 export const Projects = observer(() => {
   const {
@@ -40,7 +41,7 @@ export const Projects = observer(() => {
   }, [fetchProjects, getStackItems]);
 
   useEffect(() => {
-    if (isAuthenticated && user) {
+    if (isAuthenticated && user && user.roles.includes(Roles.Student)) {
       getFavoriteProjects(user.id);
     }
   }, [getFavoriteProjects, isAuthenticated, user]);

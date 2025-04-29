@@ -48,6 +48,7 @@ export class CompaniesStore {
   fetchCompanies = async (): Promise<void> => {
     try {
       this.isLoading = true;
+      await this.preLoad();
       await this.loadFromCache();
       const response: GetCompaniesResponse = await apolloClient.query({
         query: GET_COMPANIES_QUERY,
