@@ -13,6 +13,7 @@ import { FeedbackDialog } from '@/components/ui/feedback';
 import Head from 'next/head';
 import './globals.css';
 import { ServiceWorkerRegistration } from '@/components/ui/service-worker-registration';
+import { ScrollToTopButton } from '@/components/ui/scroll-up';
 
 const firaCode = Fira_Code({
   variable: '--font-fira-code-sans',
@@ -157,6 +158,7 @@ export default function RootLayout({
                 </main>
               </ReCaptchaProvider>
               <Footer />
+              <ScrollToTopButton />
             </ApolloWrapper>
           </AuthProvider>
         </ThemeProvider>
