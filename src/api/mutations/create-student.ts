@@ -7,7 +7,7 @@ export const CREATE_STUDENT_MUTATION = gql`
     $year: Int!
     $lastName: String!
     $firstName: String!
-    $patronymic: String!
+    $patronymic: String
     $firstPriority: Int!
     $secondPriority: Int!
     $thirdPriority: Int!
@@ -16,6 +16,7 @@ export const CREATE_STUDENT_MUTATION = gql`
     $telegram: String!
     $otherPriorities: String
     $username: String!
+    $desiredRole: String
   ) {
     createStudent(
       input: {
@@ -33,6 +34,7 @@ export const CREATE_STUDENT_MUTATION = gql`
         telegram: $telegram
         otherPriorities: $otherPriorities
         username: $username
+        desiredRole: $desiredRole
       }
     ) {
       id

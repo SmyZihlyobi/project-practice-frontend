@@ -96,6 +96,10 @@ const REGISTER_FORM_CONFIG = {
       message: 'Формат должен быть в виде: https://hh.ru/resume/...',
     })
     .optional(),
+  desiredRole: z
+    .string()
+    .max(256, { message: 'Роль не может превышать 256 символов' })
+    .optional(),
 };
 
 export const REGISTER_FORM_SCHEMA = z.object(REGISTER_FORM_CONFIG);
