@@ -12,7 +12,6 @@ import {
 } from '@radix-ui/react-accordion';
 import { observer } from 'mobx-react-lite';
 
-import { ProjectPagination } from './project-pagination';
 import { Search } from './search';
 import { useAuth } from '@/lib/auth/use-auth';
 import { FavoriteToggle } from './favorite-toggle';
@@ -90,9 +89,8 @@ export const Projects = observer(() => {
                       href={project.companyLink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="underline-offset-1 decoration-sky-500"
                     >
-                      <p>От компании: {project.companyName}</p>
+                      <p className="text-blue-700">От компании: {project.companyName}</p>
                     </a>
                   ) : (
                     <p>От компании: {project.companyName}</p>
@@ -108,7 +106,7 @@ export const Projects = observer(() => {
               <div className="flex flex-col gap-2">
                 <div className="flex items-center gap-2">
                   <Users className="h-4 w-4 text-muted-foreground" />
-                  <span className="font-medium">Количество команд:</span>
+                  <span className="font-medium">Количество мест:</span>
                   <span>{project.teamsAmount}</span>
                 </div>
 
@@ -123,7 +121,6 @@ export const Projects = observer(() => {
 
               {project.requiredRoles && (
                 <div className="flex gap-2">
-                  <Users className="h-4 w-4 text-muted-foreground" />
                   <span className="font-medium">Ищем:</span>
                   <div className="flex flex-wrap gap-1">
                     {project.requiredRoles.split(',').map((role, index) => (
@@ -176,7 +173,6 @@ export const Projects = observer(() => {
           </CardContent>
         </Card>
       ))}
-      <ProjectPagination></ProjectPagination>
     </div>
   );
 });

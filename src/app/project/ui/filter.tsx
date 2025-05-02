@@ -63,7 +63,7 @@ const Filter = observer(({ isFavoritePage = false }: FilterProps) => {
     checked: boolean,
     onChange: (checked: boolean) => void,
   ) => (
-    <span className="flex items-center gap-3">
+    <span className="flex items-center gap-2">
       <Checkbox checked={checked} onCheckedChange={onChange} />
       <h2>{label}</h2>
     </span>
@@ -93,8 +93,8 @@ const Filter = observer(({ isFavoritePage = false }: FilterProps) => {
         >
           {isToggledList ? 'Посмотреть все' : 'Свернуть'}
         </span>
-
-        <h2 className="text-lg mt-4">Роли в проекте</h2>
+        <hr className="my-1 border-t border-gray-400" />
+        <h2 className="text-lg">Роли в проекте</h2>
 
         {rolesItems.map((role, index) => (
           <div className="w-full flex items-center gap-3" key={`role-${index}`}>
@@ -115,41 +115,43 @@ const Filter = observer(({ isFavoritePage = false }: FilterProps) => {
             {isToggledRolesList ? 'Посмотреть все' : 'Свернуть'}
           </span>
         )}
+        <hr className="my-1 border-t border-gray-400" />
 
-        {renderCheckbox('Избранное', isFilteredByFavorite, () => {
-          const newValue = !isFilteredByFavorite;
-          setIsFilteredByFavorite(newValue);
-          store.filterByFavorite(!newValue);
-        })}
+        <div className="flex flex-col gap-0.5">
+          {renderCheckbox('Избранное', isFilteredByFavorite, () => {
+            const newValue = !isFilteredByFavorite;
+            setIsFilteredByFavorite(newValue);
+            store.filterByFavorite(!newValue);
+          })}
 
-        {renderCheckbox('Проект от компании', isFilteredByCompany, () => {
-          const newValue = !isFilteredByCompany;
-          setIsFilteredByCompany(newValue);
-          store.filterByCompany(!newValue);
-        })}
+          {renderCheckbox('Проект от компании', isFilteredByCompany, () => {
+            const newValue = !isFilteredByCompany;
+            setIsFilteredByCompany(newValue);
+            store.filterByCompany(!newValue);
+          })}
 
-        {renderCheckbox('Скрыть архивные', isFilteredByActive, (checked: boolean) => {
-          const newValue = Boolean(checked);
-          setIsFilteredByActive(newValue);
-          store.filterByActive(newValue);
-        })}
+          {renderCheckbox('Есть презентация', isFilteredByPresentation, () => {
+            const newValue = !isFilteredByPresentation;
+            setIsFilteredByPresentation(newValue);
+            store.filterByPresentation(!newValue);
+          })}
 
-        {renderCheckbox('Презентация', isFilteredByPresentation, () => {
-          const newValue = !isFilteredByPresentation;
-          setIsFilteredByPresentation(newValue);
-          store.filterByPresentation(!newValue);
-        })}
+          {renderCheckbox(
+            'Есть тех. задание',
+            isFilteredByTechnicalSpecifications,
+            () => {
+              const newValue = !isFilteredByTechnicalSpecifications;
+              setIsFilteredByTechnicalSpecifications(newValue);
+              store.filterByTechnicalSpecifications(!newValue);
+            },
+          )}
 
-        {renderCheckbox(
-          'Техническое задание',
-          isFilteredByTechnicalSpecifications,
-          () => {
-            const newValue = !isFilteredByTechnicalSpecifications;
-            setIsFilteredByTechnicalSpecifications(newValue);
-            store.filterByTechnicalSpecifications(!newValue);
-          },
-        )}
-
+          {renderCheckbox('Скрыть архивные', isFilteredByActive, (checked: boolean) => {
+            const newValue = Boolean(checked);
+            setIsFilteredByActive(newValue);
+            store.filterByActive(newValue);
+          })}
+        </div>
         <Button className="mt-3" onClick={handleResetFilters}>
           Сбросить фильтры
         </Button>

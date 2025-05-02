@@ -67,7 +67,7 @@ function Footer() {
               rel="noopener noreferrer"
               className="text-blue-500 hover:underline block"
             >
-              Владимир - покоритель кубернетиса
+              Владимир - покоритель кубиков
             </a>
             <a
               href="https://t.me/astrozzzz"
