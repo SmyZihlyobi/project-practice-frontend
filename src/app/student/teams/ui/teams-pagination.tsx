@@ -61,11 +61,9 @@ export const TeamsPagination = observer(() => {
 
     const pages = [1, currentTeamsPagesCount];
     const pagesToAdd = [
-      currentTeamPageIndex - 2,
       currentTeamPageIndex - 1,
       currentTeamPageIndex,
       currentTeamPageIndex + 1,
-      currentTeamPageIndex + 2,
     ].filter(p => p > 1 && p < currentTeamsPagesCount);
 
     pages.push(...pagesToAdd);

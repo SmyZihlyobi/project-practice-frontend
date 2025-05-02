@@ -15,15 +15,12 @@ services:
       - NEXT_PUBLIC_YANDEX_VERIFICATION=${NEXT_PUBLIC_YANDEX_VERIFICATION}
     ports:
       - '${FRONTEND_PORT}:80'
-      # Port 81 is only needed internally for Telegraf, no need to expose it to host
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro # Mount updated Nginx config (read-only)
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
       - nginx_logs:/var/log/nginx
     restart: always
-    # Override the default command to fix permissions before starting nginx
     command: /bin/sh -c "touch /var/log/nginx/access.log && chmod -R 777 /var/log/nginx && nginx -g 'daemon off;'"
-    # depends_on: # Not needed unless telegraf relies on web starting first completely
-    #   - telegraf
+
 
   nginx-exporter:
     image: nginx/nginx-prometheus-exporter:latest
@@ -39,31 +36,21 @@ services:
 
   telegraf:
     image: telegraf:latest
-    ports: # Expose the Prometheus metrics port to the host
+    ports:
       - "9273:9273"
     volumes:
-      - ./telegraf.conf:/etc/telegraf/telegraf.conf:ro # Mount Telegraf config
-      - nginx_logs:/var/log/nginx:ro # Mount Nginx logs volume (read-only)
-      # Mount system directories for host metrics (required by cpu, mem, disk plugins)
+      - ./telegraf.conf:/etc/telegraf/telegraf.conf:ro
+      - nginx_logs:/var/log/nginx:ro
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
-      - /etc/os-release:/etc/os-release:ro # Helps Telegraf identify OS
-      # Needed for some system metrics depending on OS/Telegraf version
-      # - /var/run/docker.sock:/var/run/docker.sock:ro # If using docker input plugin
+      - /etc/os-release:/etc/os-release:ro
     environment:
-      # Pass environment variables if needed by telegraf.conf (e.g., for InfluxDB output)
-      # - INFLUX_TOKEN=your_token
-      HOST_PROC: /host/proc # Tell Telegraf where to find host /proc
-      HOST_SYS: /host/sys   # Tell Telegraf where to find host /sys
+      HOST_PROC: /host/proc
+      HOST_SYS: /host/sys
     depends_on:
-      - web # Ensure web service (nginx) is started before Telegraf tries to connect
+      - web
       - nginx-exporter
     restart: unless-stopped
-    # user: telegraf:$(stat -c '%g' /var/log/nginx) # Potentially adjust user/group if log read permission issues arise
 
 volumes:
   nginx_logs:
-
-# Add networks if you want more control, otherwise default bridge network is used
-# networks:
-#  monitor-net:

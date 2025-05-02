@@ -21,10 +21,8 @@ export function useSync() {
     window.addEventListener('online', updateOnlineStatus);
     window.addEventListener('offline', updateOnlineStatus);
 
-    // Обновляем длину очереди каждые 5 секунд
     const interval = setInterval(updateQueueLength, 5000);
 
-    // Первоначальное обновление
     updateQueueLength();
 
     return () => {

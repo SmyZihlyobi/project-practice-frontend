@@ -16,7 +16,6 @@ const ThemeChanger = () => {
   const [mounted, setMounted] = useState(false);
   const [currentThemeIndex, setCurrentThemeIndex] = useState<number>(0);
 
-  // Определяем текущий индекс темы при монтировании
   useEffect(() => {
     setMounted(true);
     const index = THEMES.indexOf(theme as Theme);
@@ -43,7 +42,6 @@ const ThemeChanger = () => {
   };
 
   if (!mounted) {
-    // Показываем заглушку во время SSR и первоначальной гидратации
     return (
       <Button
         variant="ghost"
