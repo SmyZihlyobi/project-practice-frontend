@@ -357,14 +357,6 @@ class ProjectStore {
     }
   };
 
-  resetFiltersForFavorites() {
-    this.selectedStackItems = new Set();
-    this.selectedRoles = new Set();
-    this.currentPage = 1;
-    this.pageSize = 10;
-    this.updatePaginatedProjects();
-  }
-
   getStackItems = (): void => {
     try {
       this.stackItems.clear();

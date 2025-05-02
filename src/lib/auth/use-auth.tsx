@@ -38,6 +38,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             roles: decoded.roles as Roles[],
             is_student_company: decoded.is_student_company,
             userExpire: decoded.exp,
+            companyName: decoded.companyName,
           });
         }
       } catch (error) {
