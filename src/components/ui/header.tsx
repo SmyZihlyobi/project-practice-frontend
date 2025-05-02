@@ -67,7 +67,7 @@ export default function Header() {
   if (isLoading) return null;
 
   return (
-    <header className="sticky top-0 z-50 border-b-2 border-dotted bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="fixed w-full top-0 z-50 border-b-2 border-dotted bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <nav
         aria-label="Global"
         className="mx-auto flex items-center justify-between p-6 lg:px-8 max-w-screen-2xl"
