@@ -21,7 +21,7 @@ import {
 import { observer } from 'mobx-react-lite';
 
 import { PAGE_SIZE_STORAGE_KEY } from '../lib/const';
-import { useProjectStore } from '../store/project-store';
+import { useProjectStore } from '@/store';
 
 export const ProjectPagination = observer(() => {
   const projectStore = useProjectStore;
@@ -46,13 +46,9 @@ export const ProjectPagination = observer(() => {
 
     const pages = [1, totalPages];
 
-    const pagesToAdd = [
-      currentPage - 2,
-      currentPage - 1,
-      currentPage,
-      currentPage + 1,
-      currentPage + 2,
-    ].filter(p => p > 1 && p < totalPages);
+    const pagesToAdd = [currentPage - 1, currentPage, currentPage + 1].filter(
+      p => p > 1 && p < totalPages,
+    );
 
     pages.push(...pagesToAdd);
 

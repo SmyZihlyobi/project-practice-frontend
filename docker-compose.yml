@@ -15,4 +15,42 @@ services:
       - NEXT_PUBLIC_YANDEX_VERIFICATION=${NEXT_PUBLIC_YANDEX_VERIFICATION}
     ports:
       - '${FRONTEND_PORT}:80'
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - nginx_logs:/var/log/nginx
     restart: always
+    command: /bin/sh -c "touch /var/log/nginx/access.log && chmod -R 777 /var/log/nginx && nginx -g 'daemon off;'"
+
+
+  nginx-exporter:
+    image: nginx/nginx-prometheus-exporter:latest
+    command:
+      - -nginx.scrape-uri=http://web:81/metrics
+      - -web.listen-address=:9113
+      - -web.telemetry-path=/metrics
+    ports:
+      - "9113:9113"
+    depends_on:
+      - web
+    restart: unless-stopped
+
+  telegraf:
+    image: telegraf:latest
+    ports:
+      - "9273:9273"
+    volumes:
+      - ./telegraf.conf:/etc/telegraf/telegraf.conf:ro
+      - nginx_logs:/var/log/nginx:ro
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /etc/os-release:/etc/os-release:ro
+    environment:
+      HOST_PROC: /host/proc
+      HOST_SYS: /host/sys
+    depends_on:
+      - web
+      - nginx-exporter
+    restart: unless-stopped
+
+volumes:
+  nginx_logs:

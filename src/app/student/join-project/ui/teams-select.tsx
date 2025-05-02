@@ -7,46 +7,40 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useQuery } from '@apollo/client';
 import { useEffect } from 'react';
-import { GET_TEAMS } from '../api/queries';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Team } from '../api/dto/teams';
 
-export const TeamsSelect = (props: React.ComponentProps<typeof Select>) => {
-  const {
-    data,
-    loading,
-    error,
-    refetch: getTeams,
-  } = useQuery<{ teams: Team[] }>(GET_TEAMS);
+import { useTeamsStore } from '@/store';
+import { observer } from 'mobx-react-lite';
+
+export const TeamsSelect = observer((props: React.ComponentProps<typeof Select>) => {
+  const teamStore = useTeamsStore;
+  const { fetchTeams, getTeams, getUndecidedTeamId } = teamStore;
 
   useEffect(() => {
-    getTeams();
-  }, [getTeams]);
+    fetchTeams();
+  }, [fetchTeams]);
 
-  if (error) {
-    return <div>Error: {error.message}</div>;
+  const teams = getTeams();
+
+  if (teams.length < 1) {
+    teams.push({
+      id: getUndecidedTeamId(),
+      name: 'Не выбрана',
+      students: [],
+    });
   }
-
   return (
     <Select {...props}>
       <SelectTrigger>
         <SelectValue placeholder="Выбери команду" />
       </SelectTrigger>
       <SelectContent>
-        {loading ? (
-          <SelectItem value="loading" disabled>
-            <Skeleton className="h-4 w-full" />
+        {teams.map(team => (
+          <SelectItem key={team.name} value={team.name}>
+            {team.name}
           </SelectItem>
-        ) : (
-          data?.teams.map(team => (
-            <SelectItem key={team.name} value={team.name}>
-              {team.name}
-            </SelectItem>
-          ))
-        )}
+        ))}
       </SelectContent>
     </Select>
   );
-};
+});

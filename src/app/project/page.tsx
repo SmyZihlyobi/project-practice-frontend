@@ -1,6 +1,9 @@
 import { Card } from '@/components/ui/card';
+
 import Filter from './ui/filter';
 import { Projects } from './ui/projects';
+import { Search } from './ui/search';
+import { ProjectPagination } from './ui/project-pagination';
 
 export default function Pages() {
   return (
@@ -15,7 +18,9 @@ export default function Pages() {
 
           <div className="md:col-span-3">
             <Card className="p-4">
+              <Search />
               <Projects />
+              <ProjectPagination />
             </Card>
           </div>
         </div>

@@ -6,4 +6,6 @@ export const DEFAULT_FORM_VALUES = {
   studentProject: false,
   presentation: undefined,
   technicalSpecifications: undefined,
+  requiredRoles: undefined,
+  direction: undefined,
 };

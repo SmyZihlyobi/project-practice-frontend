@@ -42,8 +42,8 @@ const REGISTER_FORM_CONFIG = {
     .optional(),
   course: z
     .number()
-    .min(1, { message: 'Допустимы только 1 и 2 курсы' })
-    .max(2, { message: 'Допустимы только 1 и 2 курсы' }),
+    .min(1, { message: 'Допустимы только 1, 2, 3 и 4 курсы' })
+    .max(4, { message: 'Допустимы только 1, 2, 3 и 4 курсы' }),
   firstPriority: z
     .number({
       invalid_type_error: 'ID проекта должен быть числом',
@@ -95,6 +95,10 @@ const REGISTER_FORM_CONFIG = {
     .refine(val => !val || HH_URL_REGEX.test(val), {
       message: 'Формат должен быть в виде: https://hh.ru/resume/...',
     })
+    .optional(),
+  desiredRole: z
+    .string()
+    .max(256, { message: 'Роль не может превышать 256 символов' })
     .optional(),
 };
 

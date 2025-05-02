@@ -17,25 +17,24 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { StudentsProps } from '../../../types';
 import { observer } from 'mobx-react-lite';
 import { useEffect, useState } from 'react';
-import { useAdminStore } from '../../../store';
 import { DeleteStudent } from './delete-student';
 import { DeleteTeam } from './delete-team';
+import { useTeamsStore } from '@/store';
 
 export const Students = observer((props: StudentsProps) => {
   const { id } = props;
 
   const [isExpanded, setIsExpanded] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const { teamStore } = useAdminStore;
+  const teamStore = useTeamsStore;
+  const { getCurrentTeam, getTeam } = teamStore;
 
   useEffect(() => {
     if (isExpanded) {
-      setIsLoading(true);
-      teamStore.getTeam(id).finally(() => setIsLoading(false));
+      getTeam(id);
     }
-  }, [isExpanded, id, teamStore]);
+  }, [isExpanded, id, getTeam]);
 
-  const currentTeam = teamStore.teams.find(team => team.id === id);
+  const currentTeam = getCurrentTeam(id);
   if (!currentTeam) {
     return null;
   }
@@ -43,35 +42,21 @@ export const Students = observer((props: StudentsProps) => {
   const { name, students } = currentTeam;
 
   const fio = (firstName?: string, lastName?: string, patronymic?: string): string => {
-    return [firstName, lastName, patronymic].join(' ');
+    return [firstName, lastName, patronymic].filter(Boolean).join(' ') || '';
   };
 
-  const renderSkeletonRow = (rowsCount: number, columnsCount: number) => {
-    return Array.from({ length: rowsCount }).map((_, rowIndex) => (
-      <TableRow key={rowIndex}>
-        {Array.from({ length: columnsCount }).map((_, colIndex) => (
-          <TableCell
-            key={colIndex}
-            className={colIndex === 0 ? 'w-2/6 border-r' : 'w-1/12 border-r'}
-          >
-            <Skeleton className="h-4 w-full" />
-          </TableCell>
-        ))}
-        <TableCell className="w-1/12">
-          <Skeleton className="h-4 w-full" />
-        </TableCell>
-      </TableRow>
-    ));
-  };
+  const renderSkeleton = () => <Skeleton className="h-4 w-full" />;
+
+  const renderLinkSkeleton = () => <Skeleton className="h-4 w-16" />;
 
   return (
     <AccordionItem value={id}>
       <AccordionTrigger onClick={() => setIsExpanded(!isExpanded)}>
         <div className="w-full flex justify-between mr-4">
-          {isLoading ? (
-            <Skeleton className="h-6 w-1/4" />
-          ) : (
+          {name ? (
             <span className="font-medium">{name}</span>
+          ) : (
+            <Skeleton className="h-6 w-1/4" />
           )}
         </div>
       </AccordionTrigger>
@@ -103,45 +88,48 @@ export const Students = observer((props: StudentsProps) => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {isLoading
-              ? renderSkeletonRow(1, 7)
-              : students.map(student => (
-                  <TableRow key={student.id}>
-                    <TableCell className="w-2/6 border-r">
-                      {fio(student.firstName, student.lastName, student.patronymic)}
-                    </TableCell>
-                    <TableCell className="w-1/12 border-r">{student.year}</TableCell>
-                    <TableCell className="w-1/6 border-r">{student.groupId}</TableCell>
-                    <TableCell className="w-1/6 border-r">
-                      <a
-                        href={student.telegram}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Перейти
-                      </a>
-                    </TableCell>
-                    <TableCell className="w-1/12 border-r">
-                      {student.firstPriority}
-                    </TableCell>
-                    <TableCell className="w-1/12 border-r">
-                      {student.secondPriority}
-                    </TableCell>
-                    <TableCell className="w-1/12 border-r">
-                      {student.thirdPriority}
-                    </TableCell>
-                    <TableCell className="w-1/12">{student.otherPriorities}</TableCell>
-                    <TableCell className="w-1/12">
-                      <DeleteStudent
-                        fio={fio(student.firstName, student.lastName, student.patronymic)}
-                        id={student.id}
-                      />
-                    </TableCell>
-                  </TableRow>
-                ))}
+            {students.map(student => (
+              <TableRow key={student.id}>
+                <TableCell className="w-2/6 border-r">
+                  {fio(student.firstName, student.lastName, student.patronymic) ||
+                    renderSkeleton()}
+                </TableCell>
+                <TableCell className="w-1/12 border-r">
+                  {student.year ?? renderSkeleton()}
+                </TableCell>
+                <TableCell className="w-1/6 border-r">
+                  {student.groupId ?? renderSkeleton()}
+                </TableCell>
+                <TableCell className="w-1/6 border-r">
+                  {student.telegram ? (
+                    <a href={student.telegram} target="_blank" rel="noopener noreferrer">
+                      Перейти
+                    </a>
+                  ) : (
+                    renderLinkSkeleton()
+                  )}
+                </TableCell>
+                <TableCell className="w-1/12 border-r">
+                  {student.firstPriority ?? renderSkeleton()}
+                </TableCell>
+                <TableCell className="w-1/12 border-r">
+                  {student.secondPriority ?? renderSkeleton()}
+                </TableCell>
+                <TableCell className="w-1/12 border-r">
+                  {student.thirdPriority ?? renderSkeleton()}
+                </TableCell>
+                <TableCell className="w-1/12">{student.otherPriorities}</TableCell>
+                <TableCell className="w-1/12">
+                  <DeleteStudent
+                    fio={fio(student.firstName, student.lastName, student.patronymic)}
+                    id={student.id}
+                  />
+                </TableCell>
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
-        {!isLoading && <DeleteTeam id={id} />}
+        <DeleteTeam id={id} />
       </AccordionContent>
     </AccordionItem>
   );

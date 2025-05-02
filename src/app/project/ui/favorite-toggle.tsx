@@ -1,13 +1,13 @@
 'use client';
 
 import { Star } from 'lucide-react';
-import { useProjectStore } from '../store/project-store';
 import { FavoriteToggleProps } from '../types';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/lib/auth/use-auth';
 import { observer } from 'mobx-react-lite';
 import { Roles } from '@/lib/constant/roles';
 import { isArray } from '@apollo/client/utilities';
+import { useProjectStore } from '@/store';
 
 export const FavoriteToggle = observer((props: FavoriteToggleProps) => {
   const { projectId } = props;

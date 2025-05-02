@@ -3,9 +3,9 @@
 import { Input } from '@/components/ui/input';
 import { debounce } from '@/lib/utils';
 import { observer } from 'mobx-react-lite';
-import { useProjectStore } from '../store/project-store';
 import { useCallback, useMemo } from 'react';
 import { SEARCH_DELAY } from '@/app/student/teams/lib/constant';
+import { useProjectStore } from '@/store';
 
 export const Search = observer(() => {
   const projectStore = useProjectStore;
@@ -26,6 +26,10 @@ export const Search = observer(() => {
   );
 
   return (
-    <Input placeholder="Найти проект" onChange={e => handleSearch(e.target.value)} />
+    <Input
+      placeholder="Найти проект"
+      className="mb-2"
+      onChange={e => handleSearch(e.target.value)}
+    />
   );
 });

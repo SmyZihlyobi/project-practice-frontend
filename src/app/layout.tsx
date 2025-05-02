@@ -9,10 +9,11 @@ import { AuthProvider } from '@/lib/auth/use-auth';
 import type { Metadata } from 'next';
 import { ReCaptchaProvider } from 'next-recaptcha-v3';
 import { Fira_Code } from 'next/font/google';
+import { FeedbackDialog } from '@/components/ui/feedback';
 import Head from 'next/head';
-
 import './globals.css';
-import { OfflineWrapper } from '@/lib/offline-wrapper';
+import { ServiceWorkerRegistration } from '@/components/ui/service-worker-registration';
+import { ScrollToTopButton } from '@/components/ui/scroll-up';
 
 const firaCode = Fira_Code({
   variable: '--font-fira-code-sans',
@@ -132,7 +133,7 @@ export default function RootLayout({
   children: ReactNode;
 }>) {
   return (
-    <html lang="ru" suppressHydrationWarning>
+    <html className="dark" lang="ru" suppressHydrationWarning>
       <Head>
         <meta name="apple-mobile-web-app-title" content="PP IKNT" />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
@@ -148,19 +149,20 @@ export default function RootLayout({
         >
           <AuthProvider>
             <ApolloWrapper>
-              <OfflineWrapper>
-                <Header />
-                <ReCaptchaProvider>
-                  <main>
-                    {children}
-                    <Toaster />
-                  </main>
-                </ReCaptchaProvider>
-                <Footer />
-              </OfflineWrapper>
+              <Header />
+              <ReCaptchaProvider>
+                <main>
+                  {children}
+                  <FeedbackDialog />
+                  <Toaster />
+                </main>
+              </ReCaptchaProvider>
+              <Footer />
+              <ScrollToTopButton />
             </ApolloWrapper>
           </AuthProvider>
         </ThemeProvider>
+        <ServiceWorkerRegistration />
       </body>
     </html>
   );

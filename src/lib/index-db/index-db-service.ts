@@ -149,43 +149,6 @@ export class IndexedDBService {
     });
   }
 
-  async updateByField<T extends { id: string }>(
-    fieldName: string,
-    fieldValue: never,
-    updates: Partial<T>,
-  ): Promise<void> {
-    if (!this.db) await this.init();
-
-    return new Promise(async (resolve, reject) => {
-      try {
-        const item = await this.getItemByField<T>(fieldName, fieldValue);
-
-        if (!item) {
-          throw new Error(`Item with ${fieldName}=${fieldValue} not found`);
-        }
-
-        await this.updateItem(item.id, updates);
-        resolve();
-      } catch (error) {
-        reject(error);
-      }
-    });
-  }
-
-  async getAllByField<T>(fieldName: string, value: never): Promise<T[]> {
-    if (!this.db) await this.init();
-
-    return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction(this.storeName, 'readonly');
-      const store = transaction.objectStore(this.storeName);
-      const index = store.index(`by_${fieldName}`);
-      const request = index.getAll(value);
-
-      request.onsuccess = () => resolve(request.result || []);
-      request.onerror = () => reject(request.error);
-    });
-  }
-
   async getItemByField<T>(fieldName: string, value: string): Promise<T | undefined> {
     if (!this.db) await this.init();
 

@@ -9,13 +9,25 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { useCompaniesStore, useProjectStore, useTeamsStore } from '@/store';
 import { useState } from 'react';
-import { useAdminStore } from '../store';
 
 export const AllDeleteButton = () => {
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
   const [selectedAction, setSelectedAction] = useState<string | null>(null);
-  const { projectStore, teamStore, companiesStore } = useAdminStore;
+
+  const projectStore = useProjectStore;
+  const teamsStore = useTeamsStore;
+  const companiesStore = useCompaniesStore;
+
+  const { deleteAllStudents, deleteAllTeams, deleteAllResume } = teamsStore;
+  const { deleteAllCompanies } = companiesStore;
+  const {
+    deleteAllProjects,
+    deleteAllPresentations,
+    deleteAllTechnicalSpecification,
+    archiveAllProject,
+  } = projectStore;
 
   const handleDeleteClick = (action: string) => {
     setSelectedAction(action);
@@ -27,28 +39,28 @@ export const AllDeleteButton = () => {
 
     switch (selectedAction) {
       case 'студентов':
-        teamStore.deleteAllStudents();
+        deleteAllStudents();
         break;
       case 'компаний':
-        companiesStore.deleteAllCompanies();
+        deleteAllCompanies();
         break;
       case 'проектов':
-        projectStore.deleteAllProjects();
+        deleteAllProjects();
         break;
       case 'команд':
-        teamStore.deleteAllTeams();
+        deleteAllTeams();
         break;
       case 'презентаций':
-        projectStore.deleteAllPresentations();
+        deleteAllPresentations();
         break;
       case 'резюме':
-        teamStore.deleteAllResume();
+        deleteAllResume();
         break;
       case 'тех. спецификаций':
-        projectStore.deleteAllTechnicalSpecification();
+        deleteAllTechnicalSpecification();
         break;
       case 'архив':
-        projectStore.archiveAllProject();
+        archiveAllProject();
         break;
       default:
         console.error('Не выбрано действие');

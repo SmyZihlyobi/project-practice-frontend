@@ -18,40 +18,28 @@ import {
 import { Input } from '@/components/ui/input';
 import { Markdown } from '@/components/ui/markdown';
 import { Textarea } from '@/components/ui/textarea';
-import { axiosInstance } from '@/lib/axios';
-import { useMutation } from '@apollo/client';
 import { zodResolver } from '@hookform/resolvers/zod';
 import cn from 'classnames';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
-import { CREATE_PROJECT } from './api/mutations';
 import {
   CREATE_PROJECT_SCHEMA,
   DEFAULT_FORM_VALUES,
   LOCALSTORAGE_NAME,
-  PRESENTATION_URL,
   REDIRECT_DELAY,
-  TECHNICAL_SPECIFICATION_URL,
-  UPLOAD_FILE_DELAY,
 } from './lib/constant';
+import { useProjectStore } from '@/store';
+import { Project } from '@/api/dto';
 
 export default function CreateProjectPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const presentationInputRef = useRef<HTMLInputElement>(null);
   const technicalSpecificationsInputRef = useRef<HTMLInputElement>(null);
-  const [createProject] = useMutation(CREATE_PROJECT);
-
-  const delayedToast = (
-    toastMessage: string,
-    delay: number,
-    type: 'error' | 'success',
-  ) => {
-    setTimeout(() => {
-      toast[type](toastMessage);
-    }, delay);
-  };
+  const projectStore = useProjectStore;
+  const { createProject, uploadPresentation, uploadTechnicalSpecification } =
+    projectStore;
 
   const form = useForm<z.infer<typeof CREATE_PROJECT_SCHEMA>>({
     resolver: zodResolver(CREATE_PROJECT_SCHEMA),
@@ -80,53 +68,6 @@ export default function CreateProjectPage() {
     return () => subscription.unsubscribe();
   }, [form]);
 
-  const uploadPresentation = async (id: string, presentation?: Blob) => {
-    if (!presentation) {
-      return;
-    }
-
-    try {
-      setIsLoading(true);
-      const formData = new FormData();
-      formData.append('projectId', id);
-      formData.append('file', presentation);
-      axiosInstance.post(PRESENTATION_URL, formData);
-      delayedToast('Презентация успешно доставлена', UPLOAD_FILE_DELAY, 'success');
-    } catch (error) {
-      delayedToast(
-        'Произошла ошибка при доставке презентации',
-        UPLOAD_FILE_DELAY,
-        'error',
-      );
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const uploadTechnicalSpecification = async (
-    id: string,
-    technicalSpecification?: Blob,
-  ) => {
-    if (!technicalSpecification) {
-      return;
-    }
-
-    try {
-      setIsLoading(true);
-      const formData = new FormData();
-      formData.append('projectId', id);
-      formData.append('file', technicalSpecification);
-      axiosInstance.post(TECHNICAL_SPECIFICATION_URL, formData);
-      delayedToast('ТЗ успешно доставлено', UPLOAD_FILE_DELAY, 'success');
-    } catch (error) {
-      delayedToast('Произошла ошибка при доставке ТЗ', UPLOAD_FILE_DELAY, 'error');
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const onFormSubmit = async (
     data: z.infer<typeof CREATE_PROJECT_SCHEMA>,
   ): Promise<void> => {
@@ -134,43 +75,19 @@ export default function CreateProjectPage() {
       setIsLoading(true);
       const { presentation, technicalSpecifications, ...project } = data;
 
-      const response = await createProject({
-        variables: {
-          ...project,
-          teamsAmount: Number(project.teamsAmount),
-        },
-      });
-
-      if (response.errors) {
-        response.errors.forEach(error => {
-          if (error.extensions?.code === 'BAD_USER_INPUT') {
-            toast.error(
-              'Ошибка ввода данных. Пожалуйста, проверьте правильность заполнения всех полей.',
-            );
-          } else if (error.extensions?.code === 'INTERNAL_SERVER_ERROR') {
-            toast.error(
-              'Произошла внутренняя ошибка сервера. Пожалуйста, попробуйте позже.',
-            );
-          } else {
-            toast.error(
-              'Произошла ошибка при отправке формы. Пожалуйста, попробуйте еще раз или обратитесь в поддержку.',
-            );
-          }
-        });
-        return;
-      }
+      const newProject: Project = await createProject(project);
 
       toast.success('Проект успешно создан');
       setIsSuccess(true);
 
-      const {
-        data: { createProject: newProject },
-      } = response;
-
-      if (!!newProject.id && typeof newProject.id === 'string') {
-        await uploadPresentation(newProject.id, presentation);
-        await uploadTechnicalSpecification(newProject.id, technicalSpecifications);
+      if (!newProject?.id) {
+        throw new Error('Project creation failed - no ID returned');
       }
+
+      await Promise.all([
+        uploadPresentation(newProject.id, presentation),
+        uploadTechnicalSpecification(newProject.id, technicalSpecifications),
+      ]);
 
       localStorage.removeItem(LOCALSTORAGE_NAME);
       form.reset(DEFAULT_FORM_VALUES);
@@ -245,6 +162,42 @@ export default function CreateProjectPage() {
                     </FormControl>
                     <FormDescription>
                       Укажите технологии через запятую, например: reactjs, npm, nodejs
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="requiredRoles"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Необходимые роли</FormLabel>
+                    <FormControl>
+                      <Input {...field} className="w-full" />
+                    </FormControl>
+                    <FormDescription>
+                      Укажите необходимые роли через запятую, например: frontend, backend,
+                      designer
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="direction"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Направление проекта</FormLabel>
+                    <FormControl>
+                      <Input {...field} className="w-full" />
+                    </FormControl>
+                    <FormDescription>
+                      Укажите направление проекта, например: веб-разработка, мобильные
+                      приложения
                     </FormDescription>
                     <FormMessage />
                   </FormItem>

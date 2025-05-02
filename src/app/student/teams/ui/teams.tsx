@@ -8,16 +8,17 @@ import { Accordion } from '@/components/ui/accordion';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
-import { useTeamStore } from '../store';
 import { Students } from './students';
+import { useTeamsStore } from '@/store';
 
 export const Teams = observer(() => {
-  const { getTeams, currentTeamsPage, preLoad, isCachedLoaded } = useTeamStore;
+  const { fetchTeams, currentTeamsPage, getIsCachedLoaded } = useTeamsStore;
 
   useEffect(() => {
-    preLoad();
-    getTeams();
-  }, [getTeams, preLoad]);
+    fetchTeams();
+  }, [fetchTeams]);
+
+  const isCachedLoaded = getIsCachedLoaded();
 
   const renderSkeletonRow = (rowsCount: number, columnsCount: number) => {
     return Array.from({ length: rowsCount }).map((_, rowIndex) => (

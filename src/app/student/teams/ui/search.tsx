@@ -14,10 +14,10 @@ import { debounce } from '@/lib/utils';
 import { observer } from 'mobx-react-lite';
 
 import { SEARCH_DELAY } from '../lib/constant';
-import { useTeamStore } from '../store';
+import { useTeamsStore } from '@/store';
 
 export const Search = observer(() => {
-  const teamStore = useTeamStore;
+  const teamStore = useTeamsStore;
   const [searchType, setSearchType] = useState<
     'team' | 'lastName' | 'firstName' | 'patronymic'
   >('team');
@@ -90,8 +90,6 @@ export const Search = observer(() => {
         <SelectContent>
           <SelectItem value="team">По названию команды</SelectItem>
           <SelectItem value="lastName">По фамилии студента</SelectItem>
-          <SelectItem value="firstName">По имени студента</SelectItem>
-          <SelectItem value="patronymic">По отчеству студента</SelectItem>
         </SelectContent>
       </Select>
 

@@ -1,11 +1,7 @@
 #!/bin/bash
 
-# Перейти в директорию скрипта (на всякий случай, если запускается из другого места)
-# cd "$(dirname "$0")"
-
 echo "===== Starting Frontend Deployment ====="
 
-# 1. Получить последние изменения из Git
 echo ">>> Pulling latest changes from Git..."
 if ! git pull; then
     echo "!!! Git pull failed. Aborting deployment."
@@ -13,7 +9,6 @@ if ! git pull; then
 fi
 echo ">>> Git pull successful."
 
-# 2. Пересобрать и перезапустить контейнеры Docker Compose
 echo ">>> Rebuilding and restarting Docker containers..."
 if ! docker compose up --build -d; then
     echo "!!! Docker Compose failed. Aborting deployment."
