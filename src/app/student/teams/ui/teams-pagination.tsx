@@ -157,8 +157,9 @@ export const TeamsPagination = observer(() => {
             </PaginationContent>
           </Pagination>
 
-          <div className="text-sm text-muted-foreground">
-            Страница {currentTeamPageIndex} из {currentTeamsPagesCount}
+          <div className="text-sm text-muted-foreground w-max">
+            Страница
+            <br /> {currentTeamPageIndex} из {currentTeamsPagesCount}
           </div>
         </>
       )}
