@@ -134,6 +134,7 @@ export default function Header() {
                       href={{
                         pathname: '/me/favorite',
                       }}
+                      className="w-full"
                     >
                       Избранное
                     </Link>
@@ -141,31 +142,41 @@ export default function Header() {
                 )}
                 {showAdminLinks && (
                   <DropdownMenuItem>
-                    <Link href={{ pathname: '/admin' }}>Админка</Link>
+                    <Link href={{ pathname: '/admin' }} className="w-full">
+                      Админка
+                    </Link>
                   </DropdownMenuItem>
                 )}
                 {showCompanyLinks && (
                   <DropdownMenuItem>
-                    <Link href={{ pathname: '/me/projects' }}>Мои проекты</Link>
+                    <Link href={{ pathname: '/me/projects' }} className="w-full">
+                      Мои проекты
+                    </Link>
+                  </DropdownMenuItem>
+                )}
+                {showCompanyLinks && (
+                  <DropdownMenuItem>
+                    <Link
+                      href={{
+                        pathname: '/me/settings',
+                      }}
+                      className="w-full"
+                    >
+                      Настройки
+                    </Link>
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuItem>
                   <Link
-                    href={{
-                      pathname: '/me/settings',
+                    href="/"
+                    onClick={e => {
+                      e.preventDefault();
+                      handleLogout();
                     }}
+                    className="w-full "
                   >
-                    Настройки
+                    Выйти
                   </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Button
-                    onClick={handleLogout}
-                    variant="ghost"
-                    className="text-sm/6 font-semibold"
-                  >
-                    <span aria-hidden="true">Выйти</span>
-                  </Button>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

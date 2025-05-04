@@ -3,7 +3,6 @@ import { ApolloQueryResult } from '@apollo/client';
 export interface Company {
   id: string;
   name: string;
-  email?: string;
   representative?: string;
   studentCompany?: string;
   contacts?: string;
@@ -13,6 +12,18 @@ export interface Company {
 
 export interface GetCompany {
   company: Company;
+}
+
+export interface CompanyInput {
+  name: string;
+  representative: string;
+  website?: string;
+  contacts: string;
+  studentCompany: boolean;
+}
+
+export interface UpdateCompanyResponse {
+  updateCompany: Company;
 }
 
 export interface GetCompanies {
