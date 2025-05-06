@@ -151,7 +151,7 @@ export default function RootLayout({
             <ApolloWrapper>
               <Header />
               <ReCaptchaProvider>
-                <main>
+                <main className="mt-24">
                   {children}
                   <FeedbackDialog />
                   <Toaster />

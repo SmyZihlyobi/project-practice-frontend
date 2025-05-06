@@ -9,6 +9,23 @@ export const GET_COMPANY_QUERY = gql`
       representative
       studentCompany
       website
+      projects {
+        active
+        companyLink
+        createdAt
+        companyName
+        description
+        id
+        name
+        direction
+        presentation
+        requiredRoles
+        stack
+        teamsAmount
+        updatedAt
+        technicalSpecifications
+        studentProject
+      }
     }
   }
 `;

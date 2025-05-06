@@ -9,6 +9,9 @@ import { isApolloError } from '@apollo/client';
 import { APPROVE_API } from '@/lib/constant';
 import { IndexedDBService } from '@/lib/index-db/index-db-service';
 import { Company, GetCompaniesResponse, GetCompanyResponse } from '../api/dto';
+import { useProjectStore } from '@/store/project-store';
+
+const projectStore = useProjectStore;
 
 export class CompaniesStore {
   private companies: Company[] = [];
@@ -86,19 +89,22 @@ export class CompaniesStore {
 
       const companyIndex = this.companies.findIndex(company => company.id === id);
 
-      if (companyIndex === -1) {
-        throw new Error('Company not found');
-      }
-
       const response: GetCompanyResponse = await apolloClient.query({
         query: GET_COMPANY_QUERY,
         variables: { id },
       });
 
+      if (companyIndex === -1) {
+        this.companies.push(response.data.company);
+        projectStore.addProjects(response.data.company.projects);
+        return;
+      }
+
       this.companies[companyIndex] = {
         ...response.data.company,
         isApproved: this.companies[companyIndex].isApproved,
       };
+      projectStore.addProjects(response.data.company.projects);
     } catch (error) {
       console.error('ERROR while getting company', error);
       toast.error('Ошибка при получении компании, перезагрузите страницу');

@@ -357,14 +357,6 @@ class ProjectStore {
     }
   };
 
-  resetFiltersForFavorites() {
-    this.selectedStackItems = new Set();
-    this.selectedRoles = new Set();
-    this.currentPage = 1;
-    this.pageSize = 10;
-    this.updatePaginatedProjects();
-  }
-
   getStackItems = (): void => {
     try {
       this.stackItems.clear();
@@ -638,6 +630,18 @@ class ProjectStore {
     } finally {
       this.loading = false;
     }
+  };
+
+  addProjects = (projects: Project[]) => {
+    projects.forEach((project: Project) => {
+      const isExists = this.projects.find(
+        currentProject => currentProject.id === project.id,
+      );
+      if (isExists) {
+        return;
+      }
+      this.projects.push(project);
+    });
   };
 
   archiveProject = async (id: string): Promise<void> => {

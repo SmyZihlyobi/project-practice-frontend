@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Drawer,
@@ -67,7 +67,7 @@ export default function Header() {
   if (isLoading) return null;
 
   return (
-    <header className="sticky top-0 z-50 border-b-2 border-dotted bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="fixed w-full top-0 z-50 border-b-2 border-dotted bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <nav
         aria-label="Global"
         className="mx-auto flex items-center justify-between p-6 lg:px-8 max-w-screen-2xl"
@@ -84,39 +84,43 @@ export default function Header() {
         </div>
 
         {/* Desktop Navigation */}
-        <div className="hidden lg:flex lg:gap-x-12">
-          <Link href="/project" className="text-sm/6 font-semibold">
-            Проекты
-          </Link>
-          <Link
-            href={{
-              pathname: '/student/teams',
-            }}
-            className="text-sm/6 font-semibold"
-          >
-            Команды
-          </Link>
-          {showStudentLinks && (
+        {isAuthenticated ? (
+          <div className="hidden lg:flex lg:gap-x-12">
+            <Link href="/project" className="text-sm/6 font-semibold">
+              Проекты
+            </Link>
             <Link
               href={{
-                pathname: '/student/join-project',
+                pathname: '/student/teams',
               }}
               className="text-sm/6 font-semibold"
             >
-              Регистрация на проект
+              Команды
             </Link>
-          )}
-          {showCompanyLinks && (
-            <Link
-              href={{
-                pathname: '/company/create-project',
-              }}
-              className="text-sm/6 font-semibold"
-            >
-              Создать проект
-            </Link>
-          )}
-        </div>
+            {showStudentLinks && (
+              <Link
+                href={{
+                  pathname: '/student/join-project',
+                }}
+                className="text-sm/6 font-semibold"
+              >
+                Регистрация на проект
+              </Link>
+            )}
+            {showCompanyLinks && (
+              <Link
+                href={{
+                  pathname: '/company/create-project',
+                }}
+                className="text-sm/6 font-semibold"
+              >
+                Создать проект
+              </Link>
+            )}
+          </div>
+        ) : (
+          <div></div>
+        )}
         <div className="hidden lg:flex lg:flex-1 lg:justify-end mr-12">
           {isAuthenticated ? (
             <DropdownMenu>
@@ -130,6 +134,7 @@ export default function Header() {
                       href={{
                         pathname: '/me/favorite',
                       }}
+                      className="w-full"
                     >
                       Избранное
                     </Link>
@@ -137,26 +142,41 @@ export default function Header() {
                 )}
                 {showAdminLinks && (
                   <DropdownMenuItem>
-                    <Link href={{ pathname: '/admin' }}>Админка</Link>
+                    <Link href={{ pathname: '/admin' }} className="w-full">
+                      Админка
+                    </Link>
+                  </DropdownMenuItem>
+                )}
+                {showCompanyLinks && (
+                  <DropdownMenuItem>
+                    <Link href={{ pathname: '/me/projects' }} className="w-full">
+                      Мои проекты
+                    </Link>
+                  </DropdownMenuItem>
+                )}
+                {showCompanyLinks && (
+                  <DropdownMenuItem>
+                    <Link
+                      href={{
+                        pathname: '/me/settings',
+                      }}
+                      className="w-full"
+                    >
+                      Настройки
+                    </Link>
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuItem>
                   <Link
-                    href={{
-                      pathname: '/me/settings',
+                    href="/"
+                    onClick={e => {
+                      e.preventDefault();
+                      handleLogout();
                     }}
+                    className="w-full "
                   >
-                    Настройки
+                    Выйти
                   </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Button
-                    onClick={handleLogout}
-                    variant="ghost"
-                    className="text-sm/6 font-semibold"
-                  >
-                    <span aria-hidden="true">Выйти</span>
-                  </Button>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

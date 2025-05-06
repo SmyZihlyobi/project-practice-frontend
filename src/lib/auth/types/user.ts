@@ -8,4 +8,5 @@ export interface User {
   username?: string;
   is_student_company?: boolean;
   userExpire: number;
+  companyName?: string;
 }
