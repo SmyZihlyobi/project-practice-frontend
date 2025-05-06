@@ -7,6 +7,7 @@ export const UPDATE_COMPANY_MUTATION = gql`
       representative
       website
       contacts
+      studentCompany
     }
   }
 `;

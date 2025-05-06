@@ -60,7 +60,7 @@ export function CompanySettings() {
         input: {
           ...input,
           email: user.email,
-          studentCompany: false, // исправить
+          studentCompany: user.is_student_company,
         },
       },
     });
