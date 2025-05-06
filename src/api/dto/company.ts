@@ -1,4 +1,5 @@
 import { ApolloQueryResult } from '@apollo/client';
+import { Project } from '@/api/dto/project';
 
 export interface Company {
   id: string;
@@ -8,6 +9,7 @@ export interface Company {
   contacts?: string;
   isApproved?: boolean;
   website?: string;
+  projects: Project[];
 }
 
 export interface GetCompany {

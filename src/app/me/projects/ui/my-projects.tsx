@@ -1,5 +1,4 @@
 'use client';
-import { useQuery } from '@apollo/client';
 import { useAuth } from '@/lib/auth/use-auth';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Compass, Users } from 'lucide-react';
@@ -10,49 +9,44 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { Skeleton } from '@/components/ui/skeleton';
-import { GET_COMPANY_PROJECTS_QUERY } from '@/api/queries';
 import { Project } from '@/api/dto';
 import { PRESENTATION_API, TECHNICAL_SPECIFICATION_API } from '@/lib/constant';
 import { FavoriteToggle } from '@/app/project/ui/favorite-toggle';
 import classNames from 'classnames';
+import { DeleteProject } from '@/app/me/projects/ui/delete-project';
+import { ToggleArchiveProject } from '@/app/admin/ui/tabs/projects/toggle-archive-project';
+import { observer } from 'mobx-react-lite';
+import { useEffect } from 'react';
+import { useCompaniesStore } from '@/store';
 
-export function CompanyProjects() {
+export const CompanyProjects = observer(() => {
   const { user } = useAuth();
   const companyId = user?.id;
+  const companyStore = useCompaniesStore;
 
-  const { loading, error, data } = useQuery(GET_COMPANY_PROJECTS_QUERY, {
-    variables: { id: companyId },
-    skip: !companyId,
-  });
-
-  if (loading) {
-    return (
-      <div className="gap-3 flex-col flex">
-        {[...Array(5)].map((_, index) => (
-          <Skeleton key={index} className="h-[282px] w-full rounded-xl" />
-        ))}
-      </div>
-    );
+  if (!companyId) {
+    return null;
   }
 
-  if (error) {
-    return (
-      <div className="p-4 text-destructive">
-        Ошибка загрузки проектов: {error.message}
-      </div>
-    );
+  useEffect(() => {
+    companyStore.fetchCompany(companyId);
+  }, [companyId]);
+
+  const companies = companyStore.getCompanies();
+  const currentCompany = companies.find(company => company.id === companyId);
+  if (!currentCompany) {
+    return null;
   }
 
-  const projects = data?.company?.projects?.filter((p: Project) => p.active) || [];
+  const companyProjects = currentCompany.projects || [];
 
-  if (!projects.length) {
+  if (!companyProjects.length) {
     return <div className="p-4 text-muted-foreground">Нет активных проектов</div>;
   }
 
   return (
     <div className="gap-2 md:gap-3 flex-col flex">
-      {projects.map((project: Project) => (
+      {companyProjects.map((project: Project) => (
         <Card
           key={project.id}
           className={classNames(
@@ -60,16 +54,16 @@ export function CompanyProjects() {
             !project.active && 'bg-gradient-to-b from-red-500/10 to-transparent',
           )}
         >
-          <CardHeader className="flex flex-col text-center md:flex-row w-full items-start  justify-between">
-            <h2 className="text-lg w-full md:text-left md:w-1/3  font-semibold">
+          <CardHeader className="flex flex-col text-center md:flex-row w-full items-start justify-between">
+            <h2 className="text-lg w-full md:text-left md:w-1/3 font-semibold">
               {project.name}
             </h2>
             <h2 className="text-m">{!project.active && 'Архивный проект'}</h2>
-            <h2 className="text-m w-full md:w-1/3  !m-0 flex items-start  gap-1 justify-center md:justify-end md:items-center">
+            <h2 className="text-m w-full md:w-1/3 !m-0 flex items-start gap-1 justify-center md:justify-end md:items-center">
               {project.studentProject ? (
                 'Студенческий'
               ) : (
-                <div className="flex items-center flex-col ">
+                <div className="flex items-center flex-col">
                   {project.companyLink ? (
                     <a
                       href={project.companyLink}
@@ -127,7 +121,7 @@ export function CompanyProjects() {
               <AccordionItem value="text">
                 <AccordionTrigger>Описание проекта ↓</AccordionTrigger>
                 <AccordionContent className="mt-3 text-muted-foreground text-sm leading-relaxed">
-                  <Markdown text={project.description || ' '}></Markdown>
+                  <Markdown text={project.description || ' '} />
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
@@ -135,32 +129,36 @@ export function CompanyProjects() {
               {'Технический стек: ' + project.stack.toLowerCase()}
             </span>
             {project.technicalSpecifications || project.presentation ? (
-              <div className="w-full flex flex-col gap-2 text-center sm:flex-row justify-between border-dashed border-2 p-3 rounded-xl l">
-                {project.technicalSpecifications ? (
+              <div className="w-full flex flex-col gap-2 text-center sm:flex-row justify-between border-dashed border-2 p-3 rounded-xl">
+                {project.technicalSpecifications && (
                   <a
-                    className='class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2 sm:w-5/12 w-full sm:text-m"'
+                    className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2 sm:w-5/12 w-full sm:text-m"
                     href={`${process.env.NEXT_PUBLIC_BACKEND_URL}${TECHNICAL_SPECIFICATION_API}/${project.technicalSpecifications}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
                     Скачать тех. задание
                   </a>
-                ) : null}
-                {project.presentation ? (
+                )}
+                {project.presentation && (
                   <a
-                    className='class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2 sm:w-5/12 w-full sm:text-m"'
+                    className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2 sm:w-5/12 w-full sm:text-m"
                     href={`${process.env.NEXT_PUBLIC_BACKEND_URL}${PRESENTATION_API}/${project.presentation}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
                     Скачать презентацию
                   </a>
-                ) : null}
+                )}
               </div>
             ) : null}
+            <div className="w-full flex gap-3 mt-4">
+              <DeleteProject id={project.id} />
+              <ToggleArchiveProject id={project.id} active={project.active} />
+            </div>
           </CardContent>
         </Card>
       ))}
     </div>
   );
-}
+});

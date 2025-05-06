@@ -632,6 +632,18 @@ class ProjectStore {
     }
   };
 
+  addProjects = (projects: Project[]) => {
+    projects.forEach((project: Project) => {
+      const isExists = this.projects.find(
+        currentProject => currentProject.id === project.id,
+      );
+      if (isExists) {
+        return;
+      }
+      this.projects.push(project);
+    });
+  };
+
   archiveProject = async (id: string): Promise<void> => {
     try {
       this.loading = true;
