@@ -27,7 +27,7 @@ PaginationContent.displayName = 'PaginationContent';
 
 const PaginationItem = React.forwardRef<HTMLLIElement, React.ComponentProps<'li'>>(
   ({ className, ...props }, ref) => (
-    <li ref={ref} className={cn('', className)} {...props} />
+    <li ref={ref} className={cn('cursor-pointer', className)} {...props} />
   ),
 );
 PaginationItem.displayName = 'PaginationItem';
@@ -64,11 +64,11 @@ const PaginationPrevious = ({
   <PaginationLink
     aria-label="Перейти на страницу назад"
     size="default"
-    className={cn('gap-1 pl-2.5', className)}
+    className={cn('gap-1 pl-2.5 cursor-pointer', className)}
     {...props}
   >
     <ChevronLeft className="h-4 w-4" />
-    <span className="hidden">Назад</span>
+    <span className="hidden lg:block">Назад</span>
   </PaginationLink>
 );
 PaginationPrevious.displayName = 'PaginationPrevious';
@@ -80,10 +80,10 @@ const PaginationNext = ({
   <PaginationLink
     aria-label="Перейти на страницу вперёд"
     size="default"
-    className={cn('gap-1 pr-2.5', className)}
+    className={cn('gap-1 pr-2.5 cursor-pointer', className)}
     {...props}
   >
-    <span className="hidden">Вперёд</span>
+    <span className="hidden lg:block">Вперёд</span>
     <ChevronRight className="h-4 w-4" />
   </PaginationLink>
 );

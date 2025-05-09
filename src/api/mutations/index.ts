@@ -13,3 +13,4 @@ export { ARCHIVE_PROJECT_MUTATION } from './archive-project';
 export { ARCHIVE_ALL_PROJECTS_MUTATION } from './archive-all-projects';
 export { CREATE_PROJECT } from './create-project';
 export { CREATE_STUDENT_MUTATION } from './create-student';
+export { UPDATE_COMPANY_MUTATION } from './update-company';

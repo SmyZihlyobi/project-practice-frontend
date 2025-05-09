@@ -28,7 +28,7 @@ export const Filter = observer(() => {
         teamStore.sortByStudentCount(6, true, false);
         break;
       default:
-        teamStore.resetFilters();
+        teamStore.clearStudentCountFilter();
         break;
     }
   };
@@ -42,7 +42,7 @@ export const Filter = observer(() => {
         teamStore.sortByCourse(2);
         break;
       default:
-        teamStore.resetFilters();
+        teamStore.clearCourseFilter();
         break;
     }
   };

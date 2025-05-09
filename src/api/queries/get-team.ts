@@ -18,6 +18,7 @@ export const GET_TEAM_QUERY = gql`
         resumePdf
         telegram
         year
+        desiredRole
       }
     }
   }

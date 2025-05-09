@@ -14,6 +14,7 @@ export interface Student {
   thirdPriority?: number;
   otherPriorities?: string;
   resumeLink?: string;
+  desiredRole?: string;
 }
 
 interface DeleteStudent {

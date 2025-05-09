@@ -53,10 +53,24 @@ const Filter = observer(({ isFavoritePage = false }: FilterProps) => {
     setIsFilteredByTechnicalSpecifications(false);
     setIsFilteredByFavorite(false);
     setIsFilteredByActive(!isFavoritePage);
-    if (isFavoritePage) {
-      store.filterByActive(true);
-    }
+    store.filterProjects();
   };
+
+  {
+    rolesItems.map((role, index) => (
+      <div className="w-full flex items-center gap-3" key={`role-${index}`}>
+        <Checkbox
+          id={`role-${index}`}
+          checked={store.selectedRoles.has(role)}
+          onCheckedChange={() => {
+            store.filterByRole(role);
+            store.filterProjects();
+          }}
+        />
+        <Label htmlFor={`role-${index}`}>{role}</Label>
+      </div>
+    ));
+  }
 
   const renderCheckbox = (
     label: string,
@@ -81,7 +95,10 @@ const Filter = observer(({ isFavoritePage = false }: FilterProps) => {
             <Checkbox
               id={`stack-${index}`}
               checked={store.selectedStackItems.has(item)}
-              onCheckedChange={() => store.toggleStackItem(item)}
+              onCheckedChange={() => {
+                store.toggleStackItem(item);
+                store.filterProjects();
+              }}
             />
             <Label htmlFor={`stack-${index}`}>{item}</Label>
           </div>
@@ -101,7 +118,10 @@ const Filter = observer(({ isFavoritePage = false }: FilterProps) => {
             <Checkbox
               id={`role-${index}`}
               checked={store.selectedRoles.has(role)}
-              onCheckedChange={() => store.filterByRole(role)}
+              onCheckedChange={() => {
+                store.filterByRole(role);
+                store.filterProjects();
+              }}
             />
             <Label htmlFor={`role-${index}`}>{role}</Label>
           </div>
