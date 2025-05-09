@@ -45,7 +45,7 @@ export const Students = observer((props: StudentsProps) => {
     <AccordionItem value={id} className="border rounded-lg overflow-hidden mb-4">
       <AccordionTrigger
         onClick={() => setIsExpanded(!isExpanded)}
-        className="px-4 hover:no-underline hover:bg-gray-50 transition-colors"
+        className="px-4 hover:no-underline transition-colors"
       >
         <span className="font-medium ">{name}</span>
       </AccordionTrigger>
@@ -76,10 +76,7 @@ export const Students = observer((props: StudentsProps) => {
             </TableHeader>
             <TableBody>
               {students.map(student => (
-                <TableRow
-                  key={student.id}
-                  className="border-b hover:bg-gray-50 transition-colors"
-                >
+                <TableRow key={student.id} className="border-b transition-colors">
                   <TableCell className="w-2/6 border-r px-4 py-3">
                     {student.firstName && student.lastName
                       ? `${student.firstName} ${student.lastName}`
