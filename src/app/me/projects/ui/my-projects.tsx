@@ -58,7 +58,9 @@ export const CompanyProjects = observer(() => {
             <h2 className="text-lg w-full md:text-left md:w-1/3 font-semibold">
               {project.name}
             </h2>
-            <h2 className="text-m">{!project.active && 'Архивный проект'}</h2>
+            <h2 className="text-m  w-full md:w-1/3 !m-0 flex items-start gap-1 justify-center  md:items-center">
+              {!project.active && 'Архивный проект'}
+            </h2>
             <h2 className="text-m w-full md:w-1/3 !m-0 flex items-start gap-1 justify-center md:justify-end md:items-center">
               {project.studentProject ? (
                 'Студенческий'

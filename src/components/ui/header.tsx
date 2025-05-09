@@ -23,6 +23,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { User } from 'lucide-react';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -43,10 +44,10 @@ export default function Header() {
   };
 
   const renderUserName = () => {
-    if (!user) return 'Выйти';
+    if (!user) return 'IKNT PROJECTS';
 
     if (user.roles.includes(Roles.Company)) {
-      return user.name || 'Компания';
+      return user.name;
     }
 
     if (user.roles.includes(Roles.Student)) {
@@ -56,13 +57,11 @@ export default function Header() {
     return 'Профиль';
   };
 
-  const showStudentLinks = !isAuthenticated || user?.roles.includes(Roles.Student);
-  const showAdminLinks = !isAuthenticated || user?.roles.includes(Roles.Admin);
+  const showStudentLinks = user?.roles.includes(Roles.Student);
+  const showAdminLinks = user?.roles.includes(Roles.Admin);
 
   const showCompanyLinks =
-    !isAuthenticated ||
-    user?.roles.includes(Roles.Admin) ||
-    user?.roles.includes(Roles.Company);
+    user?.roles.includes(Roles.Admin) || user?.roles.includes(Roles.Company);
 
   if (isLoading) return null;
 
@@ -124,7 +123,12 @@ export default function Header() {
         <div className="hidden lg:flex lg:flex-1 lg:justify-end mr-12">
           {isAuthenticated ? (
             <DropdownMenu>
-              <DropdownMenuTrigger>{renderUserName()}</DropdownMenuTrigger>
+              <DropdownMenuTrigger>
+                <div className="relative">
+                  <User className="absolute -left-5 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                  {renderUserName()}
+                </div>
+              </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuLabel>Мой профиль</DropdownMenuLabel>
                 <DropdownMenuSeparator />
@@ -216,9 +220,7 @@ export default function Header() {
             </DrawerTrigger>
             <DrawerContent>
               <DrawerHeader className="flex items-center justify-between px-6 py-6">
-                <Link href="/project" className="-m-1.5 p-1.5 font-bold text-lg">
-                  IKNT PROJECTS
-                </Link>
+                <div className="-m-1.5 p-1.5 font-bold text-lg">{renderUserName()}</div>
                 <button
                   type="button"
                   className="-m-2.5 rounded-md p-2.5 text-gray-700"
@@ -242,6 +244,15 @@ export default function Header() {
               </DrawerHeader>
               <ScrollArea className="h-[calc(100vh-350px)] px-6">
                 <div className="flex flex-col gap-0">
+                  {showAdminLinks && (
+                    <Link
+                      href="/admin"
+                      className="block px-3 py-3 text-base font-semibold w-full text-center md:text-left border-t-2"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Админка
+                    </Link>
+                  )}
                   <Link
                     href="/project"
                     className="block px-3 py-3 text-base font-semibold w-full text-center md:text-left border-t-2 border-b-2"
@@ -249,29 +260,61 @@ export default function Header() {
                   >
                     Проекты
                   </Link>
-                  <Link
-                    href="/student/teams"
-                    className="block px-3 py-3 text-base font-semibold w-full text-center md:text-left border-b-2"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    Команды
-                  </Link>
+                  {showStudentLinks ||
+                    (showCompanyLinks && (
+                      <Link
+                        href="/student/teams"
+                        className="block px-3 py-3 text-base font-semibold w-full text-center md:text-left border-b-2"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        Команды
+                      </Link>
+                    ))}
                   {showStudentLinks && (
                     <Link
-                      href="/student/join-project"
+                      href={{ pathname: '/student/join-project' }}
                       className="block px-3 py-3 text-base font-semibold  w-full text-center md:text-left border-b-2"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       Регистрация на проект
                     </Link>
                   )}
+                  {showStudentLinks && (
+                    <Link
+                      href={{
+                        pathname: '/me/favorite',
+                      }}
+                      className="block px-3 py-3 text-base font-semibold  w-full text-center md:text-left border-b-2"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Избранное
+                    </Link>
+                  )}
                   {showCompanyLinks && (
                     <Link
-                      href="/company/create-project"
+                      href={{ pathname: '/company/create-project' }}
                       className="block px-3 py-3 text-base font-semibold w-full text-center md:text-left border-b-2"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       Создать проект
+                    </Link>
+                  )}
+                  {showCompanyLinks && (
+                    <Link
+                      href={{ pathname: '/me/projects' }}
+                      className="block px-3 py-3 text-base font-semibold w-full text-center md:text-left border-b-2"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Мои проекты
+                    </Link>
+                  )}
+                  {showCompanyLinks && (
+                    <Link
+                      href={{ pathname: '/me/settings' }}
+                      className="block px-3 py-3 text-base font-semibold w-full text-center md:text-left border-b-2"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Настройки
                     </Link>
                   )}
                   <div>
@@ -279,7 +322,7 @@ export default function Header() {
                       <Button
                         onClick={handleLogout}
                         variant="ghost"
-                        className="w-full block border-b-2 px-3 py-3 h-auto opacity-100 md:text-left text-inherit"
+                        className="w-full block border-b-2 px-3 py-3 h-auto opacity-100 md:text-left text-base font-semibold"
                       >
                         Выйти
                       </Button>
