@@ -493,19 +493,31 @@ class ProjectStore {
   };
 
   filterProjects = (): void => {
-    if (this.selectedStackItems.size === 0) {
-      this.currentProjects = this.getBaseProjects();
-    } else {
-      this.currentProjects = this.projects.filter(project => {
+    let baseProjects = this.getBaseProjects();
+
+    if (this.selectedStackItems.size > 0) {
+      baseProjects = baseProjects.filter(project => {
         if (!project.stack) return false;
 
         const projectStackItems = project.stack.toLowerCase().split(', ');
-
         return Array.from(this.selectedStackItems).some(selectedItem =>
           projectStackItems.includes(selectedItem),
         );
       });
     }
+
+    if (this.selectedRoles.size > 0) {
+      baseProjects = baseProjects.filter(project => {
+        if (!project.requiredRoles) return false;
+
+        const projectRoles = project.requiredRoles.toLowerCase().split(', ');
+        return Array.from(this.selectedRoles).some(selectedRole =>
+          projectRoles.includes(selectedRole.toLowerCase()),
+        );
+      });
+    }
+
+    this.currentProjects = baseProjects;
     this.currentPage = 1;
     this.updatePaginatedProjects();
   };
