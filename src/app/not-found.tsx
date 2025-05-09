@@ -17,9 +17,11 @@ const NotFound: React.FC = () => {
       >
         На главную
       </Link>
-      <h2 className="mt-20">
-        Если вы уверены, что произошла ошибка, свяжитесь с администратором
-      </h2>
+      <div className="flex items-center">
+        <h2 className="mt-20 text-center">
+          Если вы уверены, что произошла ошибка, свяжитесь с администратором
+        </h2>
+      </div>
     </div>
   );
 };

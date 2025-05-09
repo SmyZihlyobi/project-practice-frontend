@@ -99,7 +99,7 @@ export const FavoriteProjects = observer(() => {
                       rel="noopener noreferrer"
                       className="underline-offset-1 decoration-sky-500"
                     >
-                      <p>От компании: {project.companyName}</p>
+                      <p className="text-blue-700">От компании: {project.companyName}</p>
                     </a>
                   ) : (
                     <p>От компании: {project.companyName}</p>
