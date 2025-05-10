@@ -59,7 +59,6 @@ export default function Header() {
 
   const showStudentLinks = user?.roles.includes(Roles.Student);
   const showAdminLinks = user?.roles.includes(Roles.Admin);
-
   const showCompanyLinks =
     user?.roles.includes(Roles.Admin) || user?.roles.includes(Roles.Company);
 
@@ -83,43 +82,44 @@ export default function Header() {
         </div>
 
         {/* Desktop Navigation */}
-        {isAuthenticated ? (
-          <div className="hidden lg:flex lg:gap-x-12">
-            <Link href="/project" className="text-sm/6 font-semibold">
-              Проекты
-            </Link>
-            <Link
-              href={{
-                pathname: '/student/teams',
-              }}
-              className="text-sm/6 font-semibold"
-            >
-              Команды
-            </Link>
-            {showStudentLinks && (
+        <div className="hidden lg:flex lg:gap-x-12">
+          <Link href="/project" className="text-sm/6 font-semibold">
+            Проекты
+          </Link>
+          {isAuthenticated && (
+            <>
               <Link
                 href={{
-                  pathname: '/student/join-project',
+                  pathname: '/student/teams',
                 }}
                 className="text-sm/6 font-semibold"
               >
-                Регистрация на проект
+                Команды
               </Link>
-            )}
-            {showCompanyLinks && (
-              <Link
-                href={{
-                  pathname: '/company/create-project',
-                }}
-                className="text-sm/6 font-semibold"
-              >
-                Создать проект
-              </Link>
-            )}
-          </div>
-        ) : (
-          <div></div>
-        )}
+              {showStudentLinks && (
+                <Link
+                  href={{
+                    pathname: '/student/join-project',
+                  }}
+                  className="text-sm/6 font-semibold"
+                >
+                  Регистрация на проект
+                </Link>
+              )}
+              {showCompanyLinks && (
+                <Link
+                  href={{
+                    pathname: '/company/create-project',
+                  }}
+                  className="text-sm/6 font-semibold"
+                >
+                  Создать проект
+                </Link>
+              )}
+            </>
+          )}
+        </div>
+
         <div className="hidden lg:flex lg:flex-1 lg:justify-end mr-12">
           {isAuthenticated ? (
             <DropdownMenu>
@@ -244,24 +244,24 @@ export default function Header() {
               </DrawerHeader>
               <ScrollArea className="h-[calc(100vh-350px)] px-6">
                 <div className="flex flex-col gap-0">
-                  {showAdminLinks && (
-                    <Link
-                      href="/admin"
-                      className="block px-3 py-3 text-base font-semibold w-full text-center md:text-left border-t-2"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Админка
-                    </Link>
-                  )}
                   <Link
                     href="/project"
-                    className="block px-3 py-3 text-base font-semibold w-full text-center md:text-left border-t-2 border-b-2"
+                    className="block px-3 py-3 text-base font-semibold w-full text-center md:text-left border-t-2"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Проекты
                   </Link>
-                  {showStudentLinks ||
-                    (showCompanyLinks && (
+                  {isAuthenticated && (
+                    <>
+                      {showAdminLinks && (
+                        <Link
+                          href="/admin"
+                          className="block px-3 py-3 text-base font-semibold w-full text-center md:text-left border-t-2"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          Админка
+                        </Link>
+                      )}
                       <Link
                         href="/student/teams"
                         className="block px-3 py-3 text-base font-semibold w-full text-center md:text-left border-b-2"
@@ -269,53 +269,54 @@ export default function Header() {
                       >
                         Команды
                       </Link>
-                    ))}
-                  {showStudentLinks && (
-                    <Link
-                      href={{ pathname: '/student/join-project' }}
-                      className="block px-3 py-3 text-base font-semibold  w-full text-center md:text-left border-b-2"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Регистрация на проект
-                    </Link>
-                  )}
-                  {showStudentLinks && (
-                    <Link
-                      href={{
-                        pathname: '/me/favorite',
-                      }}
-                      className="block px-3 py-3 text-base font-semibold  w-full text-center md:text-left border-b-2"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Избранное
-                    </Link>
-                  )}
-                  {showCompanyLinks && (
-                    <Link
-                      href={{ pathname: '/company/create-project' }}
-                      className="block px-3 py-3 text-base font-semibold w-full text-center md:text-left border-b-2"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Создать проект
-                    </Link>
-                  )}
-                  {showCompanyLinks && (
-                    <Link
-                      href={{ pathname: '/me/projects' }}
-                      className="block px-3 py-3 text-base font-semibold w-full text-center md:text-left border-b-2"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Мои проекты
-                    </Link>
-                  )}
-                  {showCompanyLinks && (
-                    <Link
-                      href={{ pathname: '/me/settings' }}
-                      className="block px-3 py-3 text-base font-semibold w-full text-center md:text-left border-b-2"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Настройки
-                    </Link>
+                      {showStudentLinks && (
+                        <Link
+                          href={{ pathname: '/student/join-project' }}
+                          className="block px-3 py-3 text-base font-semibold w-full text-center md:text-left border-b-2"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          Регистрация на проект
+                        </Link>
+                      )}
+                      {showStudentLinks && (
+                        <Link
+                          href={{
+                            pathname: '/me/favorite',
+                          }}
+                          className="block px-3 py-3 text-base font-semibold w-full text-center md:text-left border-b-2"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          Избранное
+                        </Link>
+                      )}
+                      {showCompanyLinks && (
+                        <Link
+                          href={{ pathname: '/company/create-project' }}
+                          className="block px-3 py-3 text-base font-semibold w-full text-center md:text-left border-b-2"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          Создать проект
+                        </Link>
+                      )}
+                      {showCompanyLinks && (
+                        <Link
+                          href={{ pathname: '/me/projects' }}
+                          className="block px-3 py-3 text-base font-semibold w-full text-center md:text-left border-b-2"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          Мои проекты
+                        </Link>
+                      )}
+                      {showCompanyLinks && (
+                        <Link
+                          href={{ pathname: '/me/settings' }}
+                          className="block px-3 py-3 text-base font-semibold w-full text-center md:text-left border-b-2"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          Настройки
+                        </Link>
+                      )}
+                    </>
                   )}
                   <div>
                     {isLoggedIn ? (
