@@ -60,6 +60,15 @@ class TeamStore {
     }
   };
 
+  private currentFilters: {
+    course?: number;
+    studentCount?: { count: number; moreExpected: boolean; lessExpected: boolean };
+    name?: string;
+    lastName?: string;
+    firstName?: string;
+    patronymic?: string;
+  } = {};
+
   preLoad = async (): Promise<void> => {
     if (this.isCacheLoaded) return;
     try {
@@ -301,92 +310,86 @@ class TeamStore {
       this.loading = false;
     }
   };
+  private applyAllFilters = (): void => {
+    let filteredTeams = [...this.teams];
 
-  sortByCourse = (course: number): void => {
-    this.currentTeams = this.teams.filter(team => {
-      const courseCounts: { [key: number]: number } = {};
+    if (this.currentFilters.course !== undefined) {
+      filteredTeams = filteredTeams.filter(team => {
+        const courseCounts: { [key: number]: number } = {};
 
-      team.students.forEach(student => {
-        if (courseCounts[student.year]) {
-          courseCounts[student.year]++;
+        team.students.forEach(student => {
+          if (courseCounts[student.year]) {
+            courseCounts[student.year]++;
+          } else {
+            courseCounts[student.year] = 1;
+          }
+        });
+
+        let predominantCourse = -1;
+        let maxCount = 0;
+
+        for (const [year, count] of Object.entries(courseCounts)) {
+          if (count > maxCount) {
+            maxCount = count;
+            predominantCourse = parseInt(year, 10);
+          }
+        }
+
+        return predominantCourse === this.currentFilters.course;
+      });
+    }
+
+    if (this.currentFilters.studentCount !== undefined) {
+      const { count, moreExpected, lessExpected } = this.currentFilters.studentCount;
+      filteredTeams = filteredTeams.filter(team => {
+        if (!moreExpected && !lessExpected) {
+          return team.students.length === count;
+        } else if (moreExpected) {
+          return team.students.length >= count;
         } else {
-          courseCounts[student.year] = 1;
+          return team.students.length <= count;
         }
       });
-
-      let predominantCourse = -1;
-      let maxCount = 0;
-
-      for (const [year, count] of Object.entries(courseCounts)) {
-        if (count > maxCount) {
-          maxCount = count;
-          predominantCourse = parseInt(year, 10);
-        }
-      }
-
-      return predominantCourse === course;
-    });
-    this.setCurrentPage(1);
-  };
-
-  sortByStudentCount = (
-    count: number,
-    moreExpected: boolean,
-    lessExpected: boolean,
-  ): void => {
-    if (!moreExpected && !lessExpected) {
-      this.currentTeams = this.teams.filter(team => team.students.length === count);
-    } else if (moreExpected) {
-      this.currentTeams = this.teams.filter(team => team.students.length >= count);
-    } else {
-      this.currentTeams = this.teams.filter(team => team.students.length <= count);
     }
+
+    if (this.currentFilters.name) {
+      filteredTeams = filteredTeams.filter(team =>
+        team.name.startsWith(this.currentFilters.name!),
+      );
+    }
+
+    if (
+      this.currentFilters.lastName ||
+      this.currentFilters.firstName ||
+      this.currentFilters.patronymic
+    ) {
+      filteredTeams = this.filterStudentsByCriteria(
+        {
+          lastName: this.currentFilters.lastName,
+          firstName: this.currentFilters.firstName,
+          patronymic: this.currentFilters.patronymic,
+        },
+        filteredTeams,
+      );
+    }
+
+    this.currentTeams = filteredTeams;
     this.setCurrentPage(1);
   };
 
-  findByName = (name: string): void => {
-    this.currentTeams = this.teams.filter(team => team.name.startsWith(name));
-    this.setCurrentPage(1);
-  };
-
-  findByStudentLastName = (lastName: string): void => {
-    this.currentTeams = this.filterStudentsByCriteria({ lastName });
-    this.setCurrentPage(1);
-  };
-
-  findByStudentFirstName = (firstName: string): void => {
-    this.currentTeams = this.filterStudentsByCriteria({ firstName });
-    this.setCurrentPage(1);
-  };
-
-  findByPatronymic = (patronymic: string): void => {
-    this.currentTeams = this.filterStudentsByCriteria({ patronymic });
-    this.setCurrentPage(1);
-  };
-
-  findByStudentFullName = (
-    lastName?: string,
-    firstName?: string,
-    patronymic?: string,
-  ): void => {
-    this.currentTeams = this.filterStudentsByCriteria({
-      lastName,
-      firstName,
-      patronymic,
-    });
-    this.setCurrentPage(1);
-  };
-
-  private filterStudentsByCriteria = (criteria: {
-    lastName?: string;
-    firstName?: string;
-    patronymic?: string;
-  }): Team[] => {
+  private filterStudentsByCriteria = (
+    criteria: {
+      lastName?: string;
+      firstName?: string;
+      patronymic?: string;
+    },
+    teamsToFilter: Team[] = this.teams,
+  ): Team[] => {
     if (!Object.values(criteria).some(Boolean)) {
-      return this.teams;
+      return teamsToFilter;
     }
 
-    return this.teams.filter(team =>
+    return teamsToFilter.filter(team =>
       team.students.some(student => {
         const matchesLastName = criteria.lastName
           ? (student.lastName || '')
@@ -411,7 +414,53 @@ class TeamStore {
     );
   };
 
+  sortByCourse = (course: number): void => {
+    this.currentFilters.course = course;
+    this.applyAllFilters();
+  };
+
+  sortByStudentCount = (
+    count: number,
+    moreExpected: boolean,
+    lessExpected: boolean,
+  ): void => {
+    this.currentFilters.studentCount = { count, moreExpected, lessExpected };
+    this.applyAllFilters();
+  };
+
+  findByName = (name: string): void => {
+    this.currentFilters.name = name;
+    this.applyAllFilters();
+  };
+
+  findByStudentLastName = (lastName: string): void => {
+    this.currentFilters.lastName = lastName;
+    this.applyAllFilters();
+  };
+
+  findByStudentFirstName = (firstName: string): void => {
+    this.currentFilters.firstName = firstName;
+    this.applyAllFilters();
+  };
+
+  findByPatronymic = (patronymic: string): void => {
+    this.currentFilters.patronymic = patronymic;
+    this.applyAllFilters();
+  };
+
+  findByStudentFullName = (
+    lastName?: string,
+    firstName?: string,
+    patronymic?: string,
+  ): void => {
+    this.currentFilters.lastName = lastName;
+    this.currentFilters.firstName = firstName;
+    this.currentFilters.patronymic = patronymic;
+    this.applyAllFilters();
+  };
+
   resetFilters = (): void => {
+    this.currentFilters = {};
     this.currentTeams = this.teams;
     this.setCurrentPage(1);
   };
@@ -625,6 +674,20 @@ class TeamStore {
 
   getCurrentTeam = (id: string) => {
     return this.teams.find(team => team.id === id);
+  };
+
+  clearStudentCountFilter = (): void => {
+    if (this.currentFilters.studentCount) {
+      delete this.currentFilters.studentCount;
+      this.applyAllFilters();
+    }
+  };
+
+  clearCourseFilter = (): void => {
+    if (this.currentFilters.course !== undefined) {
+      delete this.currentFilters.course;
+      this.applyAllFilters();
+    }
   };
 
   private deleteStudentResume = async (resumePdf?: string): Promise<void> => {
