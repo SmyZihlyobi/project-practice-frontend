@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { DeleteProjectProps } from '../types';
 import { useProjectStore } from '@/store';
 
-export const DeleteProject = observer((props: DeleteProjectProps) => {
+export const DeleteProjectButton = observer((props: DeleteProjectProps) => {
   const { id } = props;
   const projectStore = useProjectStore;
 

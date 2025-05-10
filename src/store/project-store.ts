@@ -1,5 +1,5 @@
 import { apolloClient } from '@/lib/Apollo';
-import { makeAutoObservable, toJS, reaction, runInAction } from 'mobx';
+import { makeAutoObservable, toJS, runInAction } from 'mobx';
 import { ApolloError } from '@apollo/client';
 
 import { GET_FAVORITE_PROJECT_QUERY, GET_PROJECTS_QUERY } from '@/api/queries';
@@ -57,15 +57,6 @@ class ProjectStore {
     if (typeof window !== 'undefined') {
       this.syncService.init();
     }
-
-    reaction(
-      () => this.projects.slice(),
-      async () => {
-        if (this.isProjectsFetched) {
-          await this.saveToCache();
-        }
-      },
-    );
   }
 
   private preLoad = async (): Promise<void> => {
@@ -552,6 +543,10 @@ class ProjectStore {
       this.currentPage = this.totalPages || 1;
     }
     this.updatePaginatedProjects();
+  };
+
+  getProjectById = (id: string): Project | undefined => {
+    return this.projects.find(project => project.id === id);
   };
 
   deleteProject = async (id: string): Promise<void> => {

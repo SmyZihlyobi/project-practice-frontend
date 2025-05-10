@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { useAdminStore } from '@/store';
 import { toast } from 'sonner';
+import { Download } from 'lucide-react';
 
 export const ExportButton = () => {
   const { isLoading } = useAdminStore;
@@ -39,6 +40,7 @@ export const ExportButton = () => {
   return (
     <Button variant="positive" onClick={handleDownload} disabled={isLoading}>
       {isLoading ? 'Скачивание...' : 'Скачать данные студентов'}
+      <Download />
     </Button>
   );
 };

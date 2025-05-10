@@ -13,11 +13,12 @@ import { Project } from '@/api/dto';
 import { PRESENTATION_API, TECHNICAL_SPECIFICATION_API } from '@/lib/constant';
 import { FavoriteToggle } from '@/app/project/ui/favorite-toggle';
 import classNames from 'classnames';
-import { DeleteProject } from '@/app/me/projects/ui/delete-project';
+import { DeleteProjectButton } from '@/app/me/projects/ui/delete-project-button';
 import { ToggleArchiveProject } from '@/app/admin/ui/tabs/projects/toggle-archive-project';
 import { observer } from 'mobx-react-lite';
 import { useEffect } from 'react';
 import { useCompaniesStore } from '@/store';
+import { UpdateProjectButton } from '@/app/me/projects/ui/update-project-button';
 
 export const CompanyProjects = observer(() => {
   const { user } = useAuth();
@@ -154,9 +155,22 @@ export const CompanyProjects = observer(() => {
                 )}
               </div>
             ) : null}
-            <div className="w-full flex gap-3 mt-4">
-              <DeleteProject id={project.id} />
-              <ToggleArchiveProject id={project.id} active={project.active} />
+            <div className="w-full mt-4">
+              <div className="hidden sm:block">
+                <div className="flex gap-3">
+                  <DeleteProjectButton id={project.id} />
+                  <ToggleArchiveProject id={project.id} active={project.active} />
+                  <UpdateProjectButton id={project.id} />
+                </div>
+              </div>
+
+              <div className="sm:hidden flex flex-col">
+                <div className="flex gap-3 w-full">
+                  <DeleteProjectButton id={project.id} />
+                  <ToggleArchiveProject id={project.id} active={project.active} />
+                </div>
+                <UpdateProjectButton id={project.id} />
+              </div>
             </div>
           </CardContent>
         </Card>

@@ -10,12 +10,11 @@ export default function AdminPage() {
       <Card className="p-4">
         <div className="flex justify-between flex-wrap gap-2">
           <h2 className="text-2xl font-bold mb-4">Страница администратора</h2>
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-3 max-md:mb-1">
             <ExportButton />
             <AllDeleteButton />
           </div>
         </div>
-
         <AdminTabs />
       </Card>
     </div>
