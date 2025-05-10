@@ -1,7 +1,8 @@
 'use client';
+
 import { useAuth } from '@/lib/auth/use-auth';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Compass, Users } from 'lucide-react';
+import { Compass, FileText, Presentation, Users } from 'lucide-react';
 import { Markdown } from '@/components/ui/markdown';
 import {
   Accordion,
@@ -13,12 +14,12 @@ import { Project } from '@/api/dto';
 import { PRESENTATION_API, TECHNICAL_SPECIFICATION_API } from '@/lib/constant';
 import { FavoriteToggle } from '@/app/project/ui/favorite-toggle';
 import classNames from 'classnames';
-import { DeleteProjectButton } from '@/app/me/projects/ui/delete-project-button';
-import { ToggleArchiveProject } from '@/app/admin/ui/tabs/projects/toggle-archive-project';
+import { DeleteProjectButton } from '@/components/ui/delete-project-button';
 import { observer } from 'mobx-react-lite';
 import { useEffect } from 'react';
 import { useCompaniesStore } from '@/store';
 import { UpdateProjectButton } from '@/app/me/projects/ui/update-project-button';
+import { ToggleArchiveProject } from '@/components/ui/toggle-archive-project';
 
 export const CompanyProjects = observer(() => {
   const { user } = useAuth();
@@ -31,7 +32,7 @@ export const CompanyProjects = observer(() => {
 
   useEffect(() => {
     companyStore.fetchCompany(companyId);
-  }, [companyId]);
+  }, [companyId, companyStore]);
 
   const companies = companyStore.getCompanies();
   const currentCompany = companies.find(company => company.id === companyId);
@@ -133,26 +134,28 @@ export const CompanyProjects = observer(() => {
             </span>
             {project.technicalSpecifications || project.presentation ? (
               <div className="w-full flex flex-col gap-2 text-center sm:flex-row justify-between border-dashed border-2 p-3 rounded-xl">
-                {project.technicalSpecifications && (
+                {project.technicalSpecifications ? (
                   <a
-                    className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2 sm:w-5/12 w-full sm:text-m"
+                    className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2 sm:w-5/12 w-full"
                     href={`${process.env.NEXT_PUBLIC_BACKEND_URL}${TECHNICAL_SPECIFICATION_API}/${project.technicalSpecifications}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    Скачать тех. задание
+                    <FileText className="h-4 w-4" />
+                    <span>Скачать тех. задание</span>
                   </a>
-                )}
-                {project.presentation && (
+                ) : null}
+                {project.presentation ? (
                   <a
-                    className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2 sm:w-5/12 w-full sm:text-m"
+                    className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2 sm:w-5/12 w-full"
                     href={`${process.env.NEXT_PUBLIC_BACKEND_URL}${PRESENTATION_API}/${project.presentation}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    Скачать презентацию
+                    <Presentation className="h-4 w-4" />
+                    <span>Скачать презентацию</span>
                   </a>
-                )}
+                ) : null}
               </div>
             ) : null}
             <div className="w-full mt-4">

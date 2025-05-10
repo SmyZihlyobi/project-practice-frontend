@@ -22,6 +22,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { z } from 'zod';
 import { UPDATE_PROJECT_SCHEMA } from '../lib/constant';
 import cn from 'classnames';
+import { Pencil } from 'lucide-react';
 
 export const UpdateProjectButton = observer(({ id }: UpdateProjectProps) => {
   const projectStore = useProjectStore;
@@ -63,6 +64,7 @@ export const UpdateProjectButton = observer(({ id }: UpdateProjectProps) => {
     try {
       setIsLoading(true);
       const { presentation, technicalSpecifications, ...updates } = values;
+
       await projectStore.updateProject(
         id,
         {
@@ -90,8 +92,8 @@ export const UpdateProjectButton = observer(({ id }: UpdateProjectProps) => {
 
   return (
     <>
-      <Button className="w-full mt-6 bg-primary" onClick={() => setIsEditing(true)}>
-        Редактировать
+      <Button variant="edit" className="w-full mt-6" onClick={() => setIsEditing(true)}>
+        <Pencil /> Редактировать
       </Button>
 
       <Dialog open={isEditing} onOpenChange={setIsEditing}>

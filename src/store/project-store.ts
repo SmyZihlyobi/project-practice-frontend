@@ -18,6 +18,7 @@ import {
   SER_FAVORITE_MUTATION,
   SER_UNFAVORITE_MUTATION,
   UNARCHIVE_PROJECT_MUTATION,
+  UPDATE_PROJECT_MUTATION,
 } from '@/api/mutations';
 import { toast } from 'sonner';
 import { IndexedDBService } from '@/lib/index-db/index-db-service';
@@ -144,6 +145,67 @@ class ProjectStore {
     } catch (error) {
       console.error(error);
     }
+  };
+
+  updateProject = async (
+    id: string,
+    updates: {
+      name?: string;
+      description?: string;
+      stack?: string;
+      teamsAmount?: number;
+      studentProject?: boolean;
+      direction?: string;
+      requiredRoles?: string;
+    },
+    presentationFile?: File,
+  ) => {
+    try {
+      this.loading = true;
+
+      const currentProject = this.getProjectById(id);
+      if (!currentProject) {
+        throw new Error('Проект не найден');
+      }
+
+      const updateData = {
+        name: updates.name ?? currentProject.name,
+        description: updates.description ?? currentProject.description,
+        stack: updates.stack ?? currentProject.stack,
+        teamsAmount: updates.teamsAmount ?? currentProject.teamsAmount,
+        studentProject: updates.studentProject ?? currentProject.studentProject,
+        direction: updates.direction ?? currentProject.direction,
+        requiredRoles: updates.requiredRoles ?? currentProject.requiredRoles,
+      };
+
+      const { data } = await apolloClient.mutate({
+        mutation: UPDATE_PROJECT_MUTATION,
+        variables: {
+          id,
+          ...updateData,
+        },
+      });
+
+      if (presentationFile) {
+        await this.uploadPresentation(id, presentationFile);
+      }
+
+      this.updateProjectInStore(data.updateProject);
+
+      return data.updateProject;
+    } catch (error) {
+      console.error('Error updating project:', error);
+      toast.error('Не удалось обновить проект');
+      throw error;
+    } finally {
+      this.loading = false;
+    }
+  };
+
+  private updateProjectInStore = (updatedProject: Project) => {
+    this.projects = this.projects.map(project =>
+      project.id === updatedProject.id ? updatedProject : project,
+    );
   };
 
   uploadTechnicalSpecification = async (id: string, technicalSpecification?: Blob) => {
