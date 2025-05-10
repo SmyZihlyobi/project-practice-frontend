@@ -14,11 +14,11 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { observer } from 'mobx-react-lite';
-import { DeleteProject } from './delete-project';
 import { Markdown } from '@/components/ui/markdown';
 import { PRESENTATION_API, TECHNICAL_SPECIFICATION_API } from '@/lib/constant';
-import { ToggleArchiveProject } from './toggle-archive-project';
 import { useProjectStore } from '@/store';
+import { DeleteProjectButton } from '@/components/ui/delete-project-button';
+import { ToggleArchiveProject } from '@/components/ui/toggle-archive-project';
 
 export const Project = observer(({ id }: { id: string }) => {
   const projectStore = useProjectStore;
@@ -89,7 +89,7 @@ export const Project = observer(({ id }: { id: string }) => {
         </Table>
         <Markdown text={currentProject.description || ''} />
         <div className="w-full flex gap-2 mt-4">
-          <DeleteProject id={currentProject.id} />
+          <DeleteProjectButton id={currentProject.id} />
           <ToggleArchiveProject id={currentProject.id} active={currentProject.active} />
         </div>
       </AccordionContent>

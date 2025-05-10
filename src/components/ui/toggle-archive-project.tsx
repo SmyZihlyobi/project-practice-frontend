@@ -1,7 +1,12 @@
-import { ToggleArchiveProps } from '../types';
 import { Button } from '@/components/ui/button';
 import { useProjectStore } from '@/store';
+import { ArchiveRestore, ArchiveX } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
+
+export interface ToggleArchiveProps {
+  id: string;
+  active: boolean;
+}
 
 export const ToggleArchiveProject = observer((props: ToggleArchiveProps) => {
   const { id } = props;
@@ -28,7 +33,15 @@ export const ToggleArchiveProject = observer((props: ToggleArchiveProps) => {
       onClick={toggleHandler}
       className="w-full mt-6"
     >
-      {active ? 'Архивировать' : 'Вернуть'}
+      {active ? (
+        <p className="flex gap-1 items-center">
+          <ArchiveX /> Архивировать
+        </p>
+      ) : (
+        <p className="flex gap-1 items-center">
+          <ArchiveRestore /> Вернуть
+        </p>
+      )}
     </Button>
   );
 });
