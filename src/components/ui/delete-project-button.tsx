@@ -6,7 +6,6 @@ export interface DeleteProjectProps {
 
 import { observer } from 'mobx-react-lite';
 import { Button } from '@/components/ui/button';
-import { DeleteProjectProps } from '../../app/me/projects/types';
 import { useProjectStore } from '@/store';
 import { Trash } from 'lucide-react';
 
