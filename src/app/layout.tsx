@@ -9,7 +9,6 @@ import { AuthProvider } from '@/lib/auth/use-auth';
 import type { Metadata } from 'next';
 import { ReCaptchaProvider } from 'next-recaptcha-v3';
 import { Fira_Code } from 'next/font/google';
-import { FeedbackDialog } from '@/components/ui/feedback';
 import Head from 'next/head';
 import './globals.css';
 import { ServiceWorkerRegistration } from '@/components/ui/service-worker-registration';
@@ -153,7 +152,6 @@ export default function RootLayout({
               <ReCaptchaProvider>
                 <main className="mt-24">
                   {children}
-                  <FeedbackDialog />
                   <Toaster />
                 </main>
               </ReCaptchaProvider>

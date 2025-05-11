@@ -138,7 +138,6 @@ class ProjectStore {
           method: 'POST',
           data: formData as never,
         });
-        toast.info('Файл будет загружен при восстановлении соединения');
       } else {
         await axiosInstance.post(PRESENTATION_URL, formData);
       }
@@ -160,24 +159,23 @@ class ProjectStore {
     },
     presentationFile?: File,
   ) => {
+    const currentProject = this.getProjectById(id);
+    if (!currentProject) {
+      throw new Error('Проект не найден');
+    }
+
+    const updateData = {
+      name: updates.name ?? currentProject.name,
+      description: updates.description ?? currentProject.description,
+      stack: updates.stack ?? currentProject.stack,
+      teamsAmount: updates.teamsAmount ?? currentProject.teamsAmount,
+      studentProject: updates.studentProject ?? currentProject.studentProject,
+      direction: updates.direction ?? currentProject.direction,
+      requiredRoles: updates.requiredRoles ?? currentProject.requiredRoles,
+    };
+
     try {
       this.loading = true;
-
-      const currentProject = this.getProjectById(id);
-      if (!currentProject) {
-        throw new Error('Проект не найден');
-      }
-
-      const updateData = {
-        name: updates.name ?? currentProject.name,
-        description: updates.description ?? currentProject.description,
-        stack: updates.stack ?? currentProject.stack,
-        teamsAmount: updates.teamsAmount ?? currentProject.teamsAmount,
-        studentProject: updates.studentProject ?? currentProject.studentProject,
-        direction: updates.direction ?? currentProject.direction,
-        requiredRoles: updates.requiredRoles ?? currentProject.requiredRoles,
-      };
-
       const { data } = await apolloClient.mutate({
         mutation: UPDATE_PROJECT_MUTATION,
         variables: {
@@ -196,6 +194,10 @@ class ProjectStore {
     } catch (error) {
       console.error('Error updating project:', error);
       toast.error('Не удалось обновить проект');
+      this.syncService.addApolloMutation(UPDATE_PROJECT_MUTATION, {
+        id,
+        ...updateData,
+      });
       throw error;
     } finally {
       this.loading = false;

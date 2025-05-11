@@ -110,25 +110,21 @@ export class SyncService {
     for (const item of items) {
       try {
         if (item.type === 'axios' && item.config.url && item.config.method) {
-          const response = await axiosInstance({
+          await axiosInstance({
             url: item.config.url,
             method: item.config.method,
             data: item.config.data,
           });
-
-          if (response.status >= 200 && response.status < 300) {
-            await this.syncDB.deleteItem(item.id);
-          }
         } else if (item.type === 'apollo' && item.config.mutation) {
           await apolloClient.mutate({
             mutation: item.config.mutation.query,
             variables: item.config.mutation.variables,
           });
-          await this.syncDB.deleteItem(item.id);
         }
       } catch (error) {
         console.error('Failed to sync item:', error);
-        // Оставляем элемент в очереди для следующей попытки
+      } finally {
+        await this.syncDB.deleteItem(item.id);
       }
     }
   }
