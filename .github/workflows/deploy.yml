@@ -35,13 +35,14 @@ jobs:
         username: ${{ secrets.SSH_USERNAME }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: 22
+        script_shell: /bin/bash
         script: |
           set -e
           echo ">>> Connecting to server..."
           cd ${{ secrets.SERVER_DESTINATION_PATH }}
           echo ">>> Changed directory to ${{ secrets.SERVER_DESTINATION_PATH }}"
 
-          SCRIPT_PATH="./deploy.sh" # Убедитесь, что deploy.sh находится здесь
+          SCRIPT_PATH="./deploy.sh"
 
           if [ ! -f "$SCRIPT_PATH" ]; then
             echo "!!! Deployment script '$SCRIPT_PATH' not found on the server at ${{ secrets.SERVER_DESTINATION_PATH }}."
