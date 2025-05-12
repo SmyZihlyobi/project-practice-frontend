@@ -37,26 +37,32 @@ jobs:
         port: 22
         script: |
           bash -c '
-            set -e
             echo ">>> Connecting to server..."
-            cd ${{ secrets.SERVER_DESTINATION_PATH }}
-            echo ">>> Changed directory to ${{ secrets.SERVER_DESTINATION_PATH }}"
+            cd ${{ secrets.SERVER_DESTINATION_PATH }} || { echo "!!! Failed to cd to ${{ secrets.SERVER_DESTINATION_PATH }}"; exit 1; }
+            echo ">>> Changed directory to project path"
 
-            SCRIPT_PATH="./deploy.sh" # Убедитесь, что deploy.sh находится здесь
+            SCRIPT_PATH="./deploy.sh"
 
             if [ ! -f "$SCRIPT_PATH" ]; then
-              echo "!!! Deployment script \"$SCRIPT_PATH\" not found on the server at ${{ secrets.SERVER_DESTINATION_PATH }}."
+              echo "!!! Deployment script \"$SCRIPT_PATH\" not found on the server"
               echo "Please ensure the repository is cloned and SERVER_DESTINATION_PATH is correct."
               exit 1
             fi
             
             echo ">>> Making deploy.sh executable..."
-            chmod +x "$SCRIPT_PATH"
+            chmod +x "$SCRIPT_PATH" || { echo "!!! Failed to chmod +x $SCRIPT_PATH"; exit 1; }
 
             DEPLOY_BRANCH="${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_branch || github.event.inputs.branch }}"
 
             echo ">>> Executing $SCRIPT_PATH for branch \"$DEPLOY_BRANCH\"..."
-            "$SCRIPT_PATH" "$DEPLOY_BRANCH"
             
-            echo ">>> Deployment script finished."
+            "$SCRIPT_PATH" "$DEPLOY_BRANCH"
+            script_exit_code=$? 
+            
+            if [ $script_exit_code -ne 0 ]; then
+              echo "!!! Deployment script ($SCRIPT_PATH) failed with exit code $script_exit_code."
+              exit $script_exit_code
+            else
+              echo ">>> Deployment script finished successfully." 
+            fi
           '
