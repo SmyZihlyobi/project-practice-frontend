@@ -36,6 +36,17 @@ fi
 DEPLOY_BRANCH="$1"
 echo ">>> Deployment requested for branch: $DEPLOY_BRANCH"
 
+echo ">>> Resetting any local changes to HEAD..."
+if ! git reset --hard HEAD; then
+    echo "!!! Git reset --hard HEAD failed. Aborting deployment."
+    exit 1
+fi
+
+echo ">>> Cleaning untracked files..."
+git clean -fd
+
+echo ">>> Local changes discarded."
+
 echo ">>> Fetching latest from origin..."
 if ! git fetch origin; then
     echo "!!! Git fetch failed. Aborting deployment."
