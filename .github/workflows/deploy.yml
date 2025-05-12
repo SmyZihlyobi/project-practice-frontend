@@ -3,20 +3,30 @@ name: Deploy to Server via SSH
 on:
   workflow_run:
     workflows: ["Build and Publish to Docker Hub"]
-    branches: [main]
+    branches: [master, development]
     types:
       - completed
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Select branch to deploy'
+        required: true
+        default: 'master'
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
+
 
     steps:
     - name: Checkout code (optional, for context)
       uses: actions/checkout@v4
       with:
-        ref: ${{ github.event.workflow_run.head_sha }}
+        ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.event.inputs.branch }}
+
 
     - name: Deploy to server using deploy.sh
       uses: appleboy/ssh-action@master
@@ -24,25 +34,27 @@ jobs:
         host: ${{ secrets.SSH_HOST }}
         username: ${{ secrets.SSH_USERNAME }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
-        port:
+        port: 22
         script: |
-          set -e # Важно для скрипта в SSH сессии
+          set -e
           echo ">>> Connecting to server..."
           cd ${{ secrets.SERVER_DESTINATION_PATH }}
           echo ">>> Changed directory to ${{ secrets.SERVER_DESTINATION_PATH }}"
-          
-          SCRIPT_PATH="./deploy.sh"
+
+          SCRIPT_PATH="./deploy.sh" # Убедитесь, что deploy.sh находится здесь
 
           if [ ! -f "$SCRIPT_PATH" ]; then
             echo "!!! Deployment script '$SCRIPT_PATH' not found on the server at ${{ secrets.SERVER_DESTINATION_PATH }}."
             echo "Please ensure the repository is cloned and SERVER_DESTINATION_PATH is correct."
             exit 1
           fi
-          
+
           echo ">>> Making deploy.sh executable..."
           chmod +x "$SCRIPT_PATH"
-          
-          echo ">>> Executing $SCRIPT_PATH..."
-          "$SCRIPT_PATH"
-          
+
+          DEPLOY_BRANCH="${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_branch || github.event.inputs.branch }}"
+
+          echo ">>> Executing $SCRIPT_PATH for branch '$DEPLOY_BRANCH'..."
+          "$SCRIPT_PATH" "$DEPLOY_BRANCH"
+
           echo ">>> Deployment script finished."
