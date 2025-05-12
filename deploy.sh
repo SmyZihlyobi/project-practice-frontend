@@ -3,6 +3,7 @@ set -e
 
 echo "===== Starting Frontend Deployment ====="
 
+
 if ! command -v docker &> /dev/null; then
     echo "!!! Docker could not be found. Please install Docker. Aborting deployment."
     exit 1
@@ -27,14 +28,17 @@ else
     exit 1
 fi
 
+
 if [ "$#" -ne 1 ]; then
     echo "Usage: $0 <branch_name>"
     echo "Error: Exactly one argument (branch name) is required."
     exit 1
 fi
 
+
 DEPLOY_BRANCH="$1"
 echo ">>> Deployment requested for branch: $DEPLOY_BRANCH"
+
 
 echo ">>> Resetting any local changes to HEAD..."
 if ! git reset --hard HEAD; then
@@ -53,6 +57,7 @@ if ! git fetch origin; then
     exit 1
 fi
 echo ">>> Git fetch successful."
+
 
 echo ">>> Checking out branch $DEPLOY_BRANCH..."
 if ! git checkout -B $DEPLOY_BRANCH origin/$DEPLOY_BRANCH; then
