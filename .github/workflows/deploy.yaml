@@ -1,0 +1,48 @@
+name: Deploy to Server via SSH
+
+on:
+  workflow_run:
+    workflows: ["Build and Publish to Docker Hub"]
+    branches: [main]
+    types:
+      - completed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+    - name: Checkout code (optional, for context)
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ github.event.workflow_run.head_sha }}
+
+    - name: Deploy to server using deploy.sh
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port:
+        script: |
+          set -e # Важно для скрипта в SSH сессии
+          echo ">>> Connecting to server..."
+          cd ${{ secrets.SERVER_DESTINATION_PATH }}
+          echo ">>> Changed directory to ${{ secrets.SERVER_DESTINATION_PATH }}"
+          
+          SCRIPT_PATH="./deploy.sh"
+
+          if [ ! -f "$SCRIPT_PATH" ]; then
+            echo "!!! Deployment script '$SCRIPT_PATH' not found on the server at ${{ secrets.SERVER_DESTINATION_PATH }}."
+            echo "Please ensure the repository is cloned and SERVER_DESTINATION_PATH is correct."
+            exit 1
+          fi
+          
+          echo ">>> Making deploy.sh executable..."
+          chmod +x "$SCRIPT_PATH"
+          
+          echo ">>> Executing $SCRIPT_PATH..."
+          "$SCRIPT_PATH"
+          
+          echo ">>> Deployment script finished."
