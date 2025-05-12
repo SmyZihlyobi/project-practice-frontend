@@ -35,27 +35,28 @@ jobs:
         username: ${{ secrets.SSH_USERNAME }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: 22
-        script_shell: /bin/bash
         script: |
-          set -e
-          echo ">>> Connecting to server..."
-          cd ${{ secrets.SERVER_DESTINATION_PATH }}
-          echo ">>> Changed directory to ${{ secrets.SERVER_DESTINATION_PATH }}"
+          bash -c '
+            set -e
+            echo ">>> Connecting to server..."
+            cd ${{ secrets.SERVER_DESTINATION_PATH }}
+            echo ">>> Changed directory to ${{ secrets.SERVER_DESTINATION_PATH }}"
 
-          SCRIPT_PATH="./deploy.sh"
+            SCRIPT_PATH="./deploy.sh" # Убедитесь, что deploy.sh находится здесь
 
-          if [ ! -f "$SCRIPT_PATH" ]; then
-            echo "!!! Deployment script '$SCRIPT_PATH' not found on the server at ${{ secrets.SERVER_DESTINATION_PATH }}."
-            echo "Please ensure the repository is cloned and SERVER_DESTINATION_PATH is correct."
-            exit 1
-          fi
+            if [ ! -f "$SCRIPT_PATH" ]; then
+              echo "!!! Deployment script \"$SCRIPT_PATH\" not found on the server at ${{ secrets.SERVER_DESTINATION_PATH }}."
+              echo "Please ensure the repository is cloned and SERVER_DESTINATION_PATH is correct."
+              exit 1
+            fi
+            
+            echo ">>> Making deploy.sh executable..."
+            chmod +x "$SCRIPT_PATH"
 
-          echo ">>> Making deploy.sh executable..."
-          chmod +x "$SCRIPT_PATH"
+            DEPLOY_BRANCH="${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_branch || github.event.inputs.branch }}"
 
-          DEPLOY_BRANCH="${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_branch || github.event.inputs.branch }}"
-
-          echo ">>> Executing $SCRIPT_PATH for branch '$DEPLOY_BRANCH'..."
-          "$SCRIPT_PATH" "$DEPLOY_BRANCH"
-
-          echo ">>> Deployment script finished."
+            echo ">>> Executing $SCRIPT_PATH for branch \"$DEPLOY_BRANCH\"..."
+            "$SCRIPT_PATH" "$DEPLOY_BRANCH"
+            
+            echo ">>> Deployment script finished."
+          '
