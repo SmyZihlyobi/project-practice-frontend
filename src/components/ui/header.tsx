@@ -246,7 +246,7 @@ export default function Header() {
                 <div className="flex flex-col gap-0">
                   <Link
                     href="/project"
-                    className="block px-3 py-3 text-base font-semibold w-full text-center md:text-left border-t-2"
+                    className="block px-3 py-3 text-base font-semibold w-full text-center md:text-left border-t-2 border-b-2"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Проекты

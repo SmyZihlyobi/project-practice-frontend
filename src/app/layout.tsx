@@ -14,6 +14,7 @@ import Head from 'next/head';
 import './globals.css';
 import { ServiceWorkerRegistration } from '@/components/ui/service-worker-registration';
 import { ScrollToTopButton } from '@/components/ui/scroll-up';
+import { MobileHeader } from '@/components/ui/mobile-header';
 
 const firaCode = Fira_Code({
   variable: '--font-fira-code-sans',
@@ -157,6 +158,7 @@ export default function RootLayout({
                   <Toaster />
                 </main>
               </ReCaptchaProvider>
+              <MobileHeader />
               <Footer />
               <ScrollToTopButton />
             </ApolloWrapper>
