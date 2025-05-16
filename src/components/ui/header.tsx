@@ -56,7 +56,9 @@ export default function Header() {
   if (isLoading) return null;
 
   return (
-    <header className="w-full lg:fixed lg:top-0 z-50 border-b-2 border-dotted bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header
+      className={`w-full ${!isAuthenticated ? 'fixed top-0 left-0 right-0 ' : 'lg:fixed lg:top-0 '} z-50 border-b-2 border-dotted bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60`}
+    >
       <nav
         aria-label="Global"
         className="mx-auto flex items-center justify-between p-6 lg:px-8 max-w-screen-2xl"
