@@ -151,7 +151,7 @@ export default function RootLayout({
             <ApolloWrapper>
               <Header />
               <ReCaptchaProvider>
-                <main className="max-sm:mt-24 sm:mt-24">
+                <main id="main" className="lg:mt-24">
                   {children}
                   <Toaster />
                 </main>

@@ -59,8 +59,8 @@ export function MobileHeader() {
   return (
     <div>
       {isAuthenticated && (
-        <header className="fixed w-full bottom-0 z-50 bg-background border-t-2 shadow-lg lg:hidden">
-          <nav className="mx-auto flex items-center justify-between p-7">
+        <header className="fixed w-full bottom-0 z-50 bg-background border-t-[1px] shadow-lg lg:hidden">
+          <nav className="mx-auto flex items-center justify-between py-4 px-7">
             <Link
               href={{
                 pathname: '/student/teams',

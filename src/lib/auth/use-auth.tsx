@@ -19,11 +19,24 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const isAuthenticated = !!user;
 
   const logout = () => {
     Cookies.remove(JWT_COOKIE_NAME);
     setUser(null);
   };
+
+  useEffect(() => {
+    const mainElement = document.getElementById('main');
+
+    if (!mainElement) return;
+
+    if (isAuthenticated) {
+      mainElement.classList.remove('mt-24');
+    } else {
+      mainElement.classList.add('mt-24');
+    }
+  }, [isAuthenticated]);
 
   useEffect(() => {
     const token = Cookies.get(JWT_COOKIE_NAME);
