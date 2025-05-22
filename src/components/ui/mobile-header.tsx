@@ -25,9 +25,13 @@ import {
 import Cookies from 'js-cookie';
 import { JWT_COOKIE_NAME } from '@/lib/constant';
 import { ThemeChanger } from '@/components/ui/theme-change';
+import { useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 
 export function MobileHeader() {
   const { user, isAuthenticated, isLoading, logout } = useAuth();
+  const pathname = usePathname();
+  const isActive = (targetPath: string) => pathname === targetPath;
 
   const renderUserName = () => {
     if (!user) return 'IKNT PROJECTS';
@@ -42,6 +46,18 @@ export function MobileHeader() {
 
     return 'Профиль';
   };
+
+  useEffect(() => {
+    const mainElement = document.getElementById('main');
+
+    if (!mainElement) return;
+
+    if (isAuthenticated) {
+      mainElement.classList.remove('mt-24');
+    } else {
+      mainElement.classList.add('mt-24');
+    }
+  }, [isAuthenticated]);
 
   const handleLogout = () => {
     Cookies.remove(JWT_COOKIE_NAME);
@@ -59,13 +75,17 @@ export function MobileHeader() {
   return (
     <div>
       {isAuthenticated && (
-        <header className="fixed w-full bottom-0 z-50 bg-background border-t-2 shadow-lg lg:hidden">
-          <nav className="mx-auto flex items-center justify-between p-7">
+        <header className="fixed w-full bottom-0 z-50 bg-background border-t-[1px] shadow-lg lg:hidden">
+          <nav className="mx-auto flex items-center justify-between py-4 px-7">
             <Link
               href={{
                 pathname: '/student/teams',
               }}
-              className=""
+              className={
+                isActive('/student/teams')
+                  ? 'dark:text-white  text-black'
+                  : 'text-gray-500 '
+              }
             >
               <Users size={22} />
             </Link>
@@ -75,6 +95,11 @@ export function MobileHeader() {
                 href={{
                   pathname: '/student/join-project',
                 }}
+                className={
+                  isActive('/student/join-project')
+                    ? 'dark:text-white  text-black'
+                    : 'text-gray-500 '
+                }
               >
                 <Plus size={22} />
               </Link>
@@ -85,6 +110,11 @@ export function MobileHeader() {
                 href={{
                   pathname: '/company/create-project',
                 }}
+                className={
+                  isActive('/company/create-project')
+                    ? 'dark:text-white  text-black'
+                    : 'text-gray-500 '
+                }
               >
                 <FilePlus2 />
               </Link>
@@ -94,6 +124,9 @@ export function MobileHeader() {
               href={{
                 pathname: '/project',
               }}
+              className={
+                isActive('/project') ? 'dark:text-white  text-black' : 'text-gray-500 '
+              }
             >
               <ClipboardList size={22} />
             </Link>
@@ -103,6 +136,11 @@ export function MobileHeader() {
                 href={{
                   pathname: '/me/projects',
                 }}
+                className={
+                  isActive('/me/projects')
+                    ? 'dark:text-white  text-black'
+                    : 'text-gray-500 '
+                }
               >
                 <Presentation size={22} />
               </Link>
@@ -113,6 +151,11 @@ export function MobileHeader() {
                 href={{
                   pathname: '/me/favorite',
                 }}
+                className={
+                  isActive('/me/favorite')
+                    ? 'dark:text-white  text-black'
+                    : 'text-gray-500'
+                }
               >
                 <Heart size={22} />
               </Link>
@@ -120,7 +163,7 @@ export function MobileHeader() {
 
             <DropdownMenu>
               <DropdownMenuTrigger className="focus:outline-none">
-                <CircleUserRound size={22} />
+                <CircleUserRound size={22} className="text-gray-500" />
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56 mb-2" align="end">
                 <DropdownMenuLabel className="font-normal">
