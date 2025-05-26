@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -23,7 +22,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { z } from 'zod';
-
+import { Building2, ArrowLeft, Loader2 } from 'lucide-react';
 import {
   DEFAULT_FORM_VALUES,
   ERROR_TOAST_DELAY,
@@ -84,7 +83,10 @@ export default function Page() {
       form.reset(DEFAULT_FORM_VALUES);
       localStorage.removeItem(LOCALSTORAGE_NAME);
 
-      toast.success('Заявка успешно отправлена. Дождитесь одобрения администратора');
+      toast.success('Заявка успешно отправлена', {
+        description: 'Дождитесь одобрения администратора',
+      });
+
       setTimeout(() => {
         router.push('/');
       }, REDIRECT_DELAY);
@@ -119,118 +121,161 @@ export default function Page() {
   };
 
   return (
-    <div className="w-full md:w-2/3 lg:w-1/3 mx-auto mt-5 mb-3 px-4">
-      <Card className="p-4">
-        <h2 className="mb-2 text-xl">Заявка на регистрацию компании</h2>
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onFormSubmit)}
-            className="flex flex-col gap-4 w-full"
-          >
-            <div className="space-y-4">
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>e-mail</FormLabel>
-                    <FormControl>
-                      <Input {...field} className="w-full" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Название компании</FormLabel>
-                    <FormControl>
-                      <Input {...field} className="w-full" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="representative"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Представитель</FormLabel>
-                    <FormControl>
-                      <Input {...field} className="w-full" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="contacts"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Контакты (tg, vk, gmail)</FormLabel>
-                    <FormControl>
-                      <Input {...field} className="w-full" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="website"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Ссылка на сайт вашей компании</FormLabel>
-                    <FormControl>
-                      <Input {...field} className="w-full" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="studentProject"
-                render={({ field }) => (
-                  <FormItem>
-                    <Checkbox
-                      className="mt-2"
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                    <FormLabel className="ml-4">Студенческий проект</FormLabel>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <Recaptcha
-              onChange={isVerified => setIsCompanyRecaptchaConfirmed(isVerified)}
-            />
-            <Button
-              type="submit"
-              disabled={isLoading || !isCompanyRecaptchaConfirmed}
-              className="w-full md:w-auto"
-            >
-              {isLoading ? 'Отправка...' : 'Зарегистрировать'}
-            </Button>
+    <div className="min-h-screen ">
+      <div className="w-full md:w-2/3 lg:w-1/3 mx-auto mt-5 mb-3 px-4">
+        <Button asChild variant="ghost" className="mb-6">
+          <Link href="/login" className="gap-2">
+            <ArrowLeft className="h-4 w-4" />
+            Вернуться к входу
+          </Link>
+        </Button>
 
-            <Link
-              href={{
-                pathname: '/login',
-              }}
-              className="mt-4 w-full flex justify-center"
-            >
-              Назад
-            </Link>
-          </form>
-        </Form>
-      </Card>
+        <Card className="p-8 shadow-lg rounded-2xl">
+          <div className="text-center space-y-2 mb-8">
+            <div className="mx-auto  w-fit p-4 rounded-full">
+              <Building2 className="h-8 w-8 text-primary" />
+            </div>
+            <h1 className="text-2xl font-bold tracking-tight">
+              Заявка на регистрацию компании
+            </h1>
+            <p className="text-muted-foreground">Заполните данные для подачи заявки</p>
+          </div>
+
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-6">
+              <div className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Рабочий email</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder="contact@company.com"
+                          className="h-12"
+                          disabled={isLoading}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-xs" />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Название компании</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder="ООО «Рога и копыта»"
+                          className="h-12"
+                          disabled={isLoading}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-xs" />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="representative"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Представитель</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder="Иванов Иван Иванович"
+                          className="h-12"
+                          disabled={isLoading}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-xs" />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="contacts"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Контакты</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder="Telegram, Vkontakte или gmail"
+                          className="h-12"
+                          disabled={isLoading}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-xs" />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="website"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Сайт компании</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder="https://company.com"
+                          className="h-12"
+                          disabled={isLoading}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-xs" />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="studentProject"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center space-x-3 space-y-0 p-4 bg-muted/50 rounded-lg">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          disabled={isLoading}
+                        />
+                      </FormControl>
+                      <FormLabel className="!mt-0">Студенческий проект</FormLabel>
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <Recaptcha
+                onChange={isVerified => setIsCompanyRecaptchaConfirmed(isVerified)}
+              />
+
+              <Button
+                type="submit"
+                disabled={isLoading || !isCompanyRecaptchaConfirmed}
+                className="w-full h-12 "
+              >
+                {isLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  'Подать заявку'
+                )}
+              </Button>
+            </form>
+          </Form>
+        </Card>
+      </div>
     </div>
   );
 }

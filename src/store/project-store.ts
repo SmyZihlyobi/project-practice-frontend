@@ -1,5 +1,5 @@
 import { apolloClient } from '@/lib/Apollo';
-import { makeAutoObservable, toJS, reaction, runInAction } from 'mobx';
+import { makeAutoObservable, toJS, runInAction } from 'mobx';
 import { ApolloError } from '@apollo/client';
 
 import { GET_FAVORITE_PROJECT_QUERY, GET_PROJECTS_QUERY } from '@/api/queries';
@@ -18,6 +18,7 @@ import {
   SER_FAVORITE_MUTATION,
   SER_UNFAVORITE_MUTATION,
   UNARCHIVE_PROJECT_MUTATION,
+  UPDATE_PROJECT_MUTATION,
 } from '@/api/mutations';
 import { toast } from 'sonner';
 import { IndexedDBService } from '@/lib/index-db/index-db-service';
@@ -57,15 +58,6 @@ class ProjectStore {
     if (typeof window !== 'undefined') {
       this.syncService.init();
     }
-
-    reaction(
-      () => this.projects.slice(),
-      async () => {
-        if (this.isProjectsFetched) {
-          await this.saveToCache();
-        }
-      },
-    );
   }
 
   private preLoad = async (): Promise<void> => {
@@ -146,13 +138,76 @@ class ProjectStore {
           method: 'POST',
           data: formData as never,
         });
-        toast.info('Файл будет загружен при восстановлении соединения');
       } else {
         await axiosInstance.post(PRESENTATION_URL, formData);
       }
     } catch (error) {
       console.error(error);
     }
+  };
+
+  updateProject = async (
+    id: string,
+    updates: {
+      name?: string;
+      description?: string;
+      stack?: string;
+      teamsAmount?: number;
+      studentProject?: boolean;
+      direction?: string;
+      requiredRoles?: string;
+    },
+    presentationFile?: File,
+  ) => {
+    const currentProject = this.getProjectById(id);
+    if (!currentProject) {
+      throw new Error('Проект не найден');
+    }
+
+    const updateData = {
+      name: updates.name ?? currentProject.name,
+      description: updates.description ?? currentProject.description,
+      stack: updates.stack ?? currentProject.stack,
+      teamsAmount: updates.teamsAmount ?? currentProject.teamsAmount,
+      studentProject: updates.studentProject ?? currentProject.studentProject,
+      direction: updates.direction ?? currentProject.direction,
+      requiredRoles: updates.requiredRoles ?? currentProject.requiredRoles,
+    };
+
+    try {
+      this.loading = true;
+      const { data } = await apolloClient.mutate({
+        mutation: UPDATE_PROJECT_MUTATION,
+        variables: {
+          id,
+          ...updateData,
+        },
+      });
+
+      if (presentationFile) {
+        await this.uploadPresentation(id, presentationFile);
+      }
+
+      this.updateProjectInStore(data.updateProject);
+
+      return data.updateProject;
+    } catch (error) {
+      console.error('Error updating project:', error);
+      toast.error('Не удалось обновить проект');
+      this.syncService.addApolloMutation(UPDATE_PROJECT_MUTATION, {
+        id,
+        ...updateData,
+      });
+      throw error;
+    } finally {
+      this.loading = false;
+    }
+  };
+
+  private updateProjectInStore = (updatedProject: Project) => {
+    this.projects = this.projects.map(project =>
+      project.id === updatedProject.id ? updatedProject : project,
+    );
   };
 
   uploadTechnicalSpecification = async (id: string, technicalSpecification?: Blob) => {
@@ -564,6 +619,10 @@ class ProjectStore {
       this.currentPage = this.totalPages || 1;
     }
     this.updatePaginatedProjects();
+  };
+
+  getProjectById = (id: string): Project | undefined => {
+    return this.projects.find(project => project.id === id);
   };
 
   deleteProject = async (id: string): Promise<void> => {

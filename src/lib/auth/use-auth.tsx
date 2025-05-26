@@ -20,6 +20,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const logout = () => {
+    Cookies.remove(JWT_COOKIE_NAME);
+    setUser(null);
+  };
+
   useEffect(() => {
     const token = Cookies.get(JWT_COOKIE_NAME);
     if (token) {
@@ -54,6 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       user,
       isLoading,
       isAuthenticated: !!user,
+      logout,
     }),
     [user, isLoading],
   );

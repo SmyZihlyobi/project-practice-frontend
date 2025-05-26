@@ -18,7 +18,7 @@ import { FavoriteToggle } from './favorite-toggle';
 import { Skeleton } from '@/components/ui/skeleton';
 import classNames from 'classnames';
 import { useProjectStore } from '@/store';
-import { Compass, Users } from 'lucide-react';
+import { Compass, FileText, Presentation, Users } from 'lucide-react';
 import { Roles } from '@/lib/constant/roles';
 
 export const Projects = observer(() => {
@@ -147,25 +147,27 @@ export const Projects = observer(() => {
               {'Технический стек: ' + project.stack.toLowerCase()}
             </span>
             {project.technicalSpecifications || project.presentation ? (
-              <div className="w-full flex flex-col gap-2 text-center sm:flex-row justify-between border-dashed border-2 p-3 rounded-xl l">
+              <div className="w-full flex flex-col gap-2 text-center sm:flex-row justify-between border-dashed border-2 p-3 rounded-xl">
                 {project.technicalSpecifications ? (
                   <a
-                    className='class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2 sm:w-5/12 w-full sm:text-m"'
+                    className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2 sm:w-5/12 w-full"
                     href={`${process.env.NEXT_PUBLIC_BACKEND_URL}${TECHNICAL_SPECIFICATION_API}/${project.technicalSpecifications}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    Скачать тех. задание
+                    <FileText className="h-4 w-4" />
+                    <span>Скачать тех. задание</span>
                   </a>
                 ) : null}
                 {project.presentation ? (
                   <a
-                    className='class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2 sm:w-5/12 w-full sm:text-m"'
+                    className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2 sm:w-5/12 w-full"
                     href={`${process.env.NEXT_PUBLIC_BACKEND_URL}${PRESENTATION_API}/${project.presentation}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    Скачать презентацию
+                    <Presentation className="h-4 w-4" />
+                    <span>Скачать презентацию</span>
                   </a>
                 ) : null}
               </div>

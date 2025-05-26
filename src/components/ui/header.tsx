@@ -1,8 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { useState } from 'react';
 import {
   Drawer,
   DrawerContent,
@@ -23,23 +22,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { User } from 'lucide-react';
+import { LogIn, User } from 'lucide-react';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const { user, isAuthenticated, isLoading } = useAuth();
-
-  useEffect(() => {
-    const token = Cookies.get(JWT_COOKIE_NAME);
-    if (token) {
-      setIsLoggedIn(true);
-    }
-  }, []);
+  const { user, isAuthenticated, isLoading, logout } = useAuth();
 
   const handleLogout = () => {
     Cookies.remove(JWT_COOKIE_NAME);
-    setIsLoggedIn(false);
+    logout();
     window.location.href = '/';
   };
 
@@ -59,14 +50,15 @@ export default function Header() {
 
   const showStudentLinks = user?.roles.includes(Roles.Student);
   const showAdminLinks = user?.roles.includes(Roles.Admin);
-
   const showCompanyLinks =
     user?.roles.includes(Roles.Admin) || user?.roles.includes(Roles.Company);
 
   if (isLoading) return null;
 
   return (
-    <header className="fixed w-full top-0 z-50 border-b-2 border-dotted bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header
+      className={`w-full ${!isAuthenticated ? 'fixed top-0 left-0 right-0 ' : 'lg:fixed lg:top-0 '} z-50 border-b-2 border-dotted bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60`}
+    >
       <nav
         aria-label="Global"
         className="mx-auto flex items-center justify-between p-6 lg:px-8 max-w-screen-2xl"
@@ -83,43 +75,44 @@ export default function Header() {
         </div>
 
         {/* Desktop Navigation */}
-        {isAuthenticated ? (
-          <div className="hidden lg:flex lg:gap-x-12">
-            <Link href="/project" className="text-sm/6 font-semibold">
-              Проекты
-            </Link>
-            <Link
-              href={{
-                pathname: '/student/teams',
-              }}
-              className="text-sm/6 font-semibold"
-            >
-              Команды
-            </Link>
-            {showStudentLinks && (
+        <div className="hidden lg:flex lg:gap-x-12">
+          <Link href="/project" className="text-sm/6 font-semibold">
+            Проекты
+          </Link>
+          {isAuthenticated && (
+            <>
               <Link
                 href={{
-                  pathname: '/student/join-project',
+                  pathname: '/student/teams',
                 }}
                 className="text-sm/6 font-semibold"
               >
-                Регистрация на проект
+                Команды
               </Link>
-            )}
-            {showCompanyLinks && (
-              <Link
-                href={{
-                  pathname: '/company/create-project',
-                }}
-                className="text-sm/6 font-semibold"
-              >
-                Создать проект
-              </Link>
-            )}
-          </div>
-        ) : (
-          <div></div>
-        )}
+              {showStudentLinks && (
+                <Link
+                  href={{
+                    pathname: '/student/join-project',
+                  }}
+                  className="text-sm/6 font-semibold"
+                >
+                  Регистрация на проект
+                </Link>
+              )}
+              {showCompanyLinks && (
+                <Link
+                  href={{
+                    pathname: '/company/create-project',
+                  }}
+                  className="text-sm/6 font-semibold"
+                >
+                  Создать проект
+                </Link>
+              )}
+            </>
+          )}
+        </div>
+
         <div className="hidden lg:flex lg:flex-1 lg:justify-end mr-12">
           {isAuthenticated ? (
             <DropdownMenu>
@@ -147,7 +140,7 @@ export default function Header() {
                 {showAdminLinks && (
                   <DropdownMenuItem>
                     <Link href={{ pathname: '/admin' }} className="w-full">
-                      Админка
+                      Админ-панель
                     </Link>
                   </DropdownMenuItem>
                 )}
@@ -177,7 +170,7 @@ export default function Header() {
                       e.preventDefault();
                       handleLogout();
                     }}
-                    className="w-full "
+                    className="w-full"
                   >
                     Выйти
                   </Link>
@@ -185,8 +178,8 @@ export default function Header() {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Link href="/login" className="text-sm/6 font-semibold">
-              Вход <span aria-hidden="true">&rarr;</span>
+            <Link href="/login" className="text-sm/6 font-semibold flex gap-1">
+              Вход <LogIn />
             </Link>
           )}
         </div>
@@ -195,38 +188,14 @@ export default function Header() {
           <ThemeChanger />
         </div>
 
-        {/* Mobile Menu Button */}
-        <div className="flex lg:hidden">
-          <Drawer open={isMenuOpen} onOpenChange={setIsMenuOpen}>
-            <DrawerTrigger asChild>
-              <button
-                type="button"
-                className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700"
-              >
-                <svg
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
-                  />
-                </svg>
-              </button>
-            </DrawerTrigger>
-            <DrawerContent>
-              <DrawerHeader className="flex items-center justify-between px-6 py-6">
-                <div className="-m-1.5 p-1.5 font-bold text-lg">{renderUserName()}</div>
+        {!isAuthenticated && (
+          <div className="lg:hidden">
+            <Drawer open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+              <DrawerTrigger asChild>
                 <button
                   type="button"
-                  className="-m-2.5 rounded-md p-2.5 text-gray-700"
-                  onClick={() => setIsMenuOpen(false)}
+                  className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700"
                 >
-                  <span className="sr-only">Close menu</span>
                   <svg
                     className="h-6 w-6"
                     fill="none"
@@ -237,113 +206,60 @@ export default function Header() {
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      d="M6 18L18 6M6 6l12 12"
+                      d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
                     />
                   </svg>
                 </button>
-              </DrawerHeader>
-              <ScrollArea className="h-[calc(100vh-350px)] px-6">
-                <div className="flex flex-col gap-0">
-                  {showAdminLinks && (
-                    <Link
-                      href="/admin"
-                      className="block px-3 py-3 text-base font-semibold w-full text-center md:text-left border-t-2"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Админка
-                    </Link>
-                  )}
-                  <Link
-                    href="/project"
-                    className="block px-3 py-3 text-base font-semibold w-full text-center md:text-left border-t-2 border-b-2"
+              </DrawerTrigger>
+              <DrawerContent>
+                <DrawerHeader className="flex items-center justify-between px-6 py-6">
+                  <div className="-m-1.5 p-1.5 font-bold text-lg">{renderUserName()}</div>
+                  <button
+                    type="button"
+                    className="-m-2.5 rounded-md p-2.5 text-gray-700"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Проекты
-                  </Link>
-                  {showStudentLinks ||
-                    (showCompanyLinks && (
-                      <Link
-                        href="/student/teams"
-                        className="block px-3 py-3 text-base font-semibold w-full text-center md:text-left border-b-2"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        Команды
-                      </Link>
-                    ))}
-                  {showStudentLinks && (
+                    <span className="sr-only">Close menu</span>
+                    <svg
+                      className="h-6 w-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth="1.5"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                </DrawerHeader>
+                <ScrollArea className="h-[calc(100vh-350px)] px-6">
+                  <div className="flex flex-col gap-0">
                     <Link
-                      href={{ pathname: '/student/join-project' }}
-                      className="block px-3 py-3 text-base font-semibold  w-full text-center md:text-left border-b-2"
+                      href="/project"
+                      className="block px-3 py-3 text-base font-semibold w-full text-center md:text-left border-t-2 border-b-2"
                       onClick={() => setIsMenuOpen(false)}
                     >
-                      Регистрация на проект
+                      Проекты
                     </Link>
-                  )}
-                  {showStudentLinks && (
                     <Link
-                      href={{
-                        pathname: '/me/favorite',
-                      }}
-                      className="block px-3 py-3 text-base font-semibold  w-full text-center md:text-left border-b-2"
+                      href="/login"
+                      className="px-3 py-3 block rounded-lg text-center font-semibold md:text-left border-b-2"
                       onClick={() => setIsMenuOpen(false)}
                     >
-                      Избранное
+                      Вход
                     </Link>
-                  )}
-                  {showCompanyLinks && (
-                    <Link
-                      href={{ pathname: '/company/create-project' }}
-                      className="block px-3 py-3 text-base font-semibold w-full text-center md:text-left border-b-2"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Создать проект
-                    </Link>
-                  )}
-                  {showCompanyLinks && (
-                    <Link
-                      href={{ pathname: '/me/projects' }}
-                      className="block px-3 py-3 text-base font-semibold w-full text-center md:text-left border-b-2"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Мои проекты
-                    </Link>
-                  )}
-                  {showCompanyLinks && (
-                    <Link
-                      href={{ pathname: '/me/settings' }}
-                      className="block px-3 py-3 text-base font-semibold w-full text-center md:text-left border-b-2"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Настройки
-                    </Link>
-                  )}
-                  <div>
-                    {isLoggedIn ? (
-                      <Button
-                        onClick={handleLogout}
-                        variant="ghost"
-                        className="w-full block border-b-2 px-3 py-3 h-auto opacity-100 md:text-left text-base font-semibold"
-                      >
-                        Выйти
-                      </Button>
-                    ) : (
-                      <Link
-                        href="/login"
-                        className="px-3 py-3 block rounded-lg text-center font-semibold md:text-left border-b-2"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        Вход
-                      </Link>
-                    )}
                   </div>
-                </div>
-                <div className="mt-2 max-w-fit ml-auto">
-                  <ThemeChanger />
-                </div>
-              </ScrollArea>
-            </DrawerContent>
-          </Drawer>
-        </div>
+                  <div className="mt-2 max-w-fit ml-auto">
+                    <ThemeChanger />
+                  </div>
+                </ScrollArea>
+              </DrawerContent>
+            </Drawer>
+          </div>
+        )}
       </nav>
     </header>
   );

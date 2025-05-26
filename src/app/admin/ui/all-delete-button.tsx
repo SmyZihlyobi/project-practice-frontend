@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/dialog';
 import { useCompaniesStore, useProjectStore, useTeamsStore } from '@/store';
 import { useState } from 'react';
+import { Bomb } from 'lucide-react';
 
 export const AllDeleteButton = () => {
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
@@ -74,7 +75,10 @@ export const AllDeleteButton = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="destructive">Очистить</Button>
+        <Button variant="destructive" className="max-md:mb-1">
+          Очистить
+          <Bomb />
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>

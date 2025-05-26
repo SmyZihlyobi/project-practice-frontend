@@ -8,7 +8,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -28,10 +27,11 @@ import Cookies from 'js-cookie';
 import { JWT_COOKIE_NAME } from '@/lib/constant';
 import { Recaptcha } from '@/components/ui/recaptcha';
 import { toast } from 'sonner';
+import { Loader2, ArrowLeft, Mail } from 'lucide-react';
 
 export default function Page() {
   const [isLoading, setIsLoading] = useState(false);
-  const [isRecaptchaConfirmed, setIsRecaptchaConfirmed] = useState<boolean>(false);
+  const [isRecaptchaConfirmed, setIsRecaptchaConfirmed] = useState(false);
 
   const form = useForm<z.infer<typeof RESET_PASSWORD_FORM_SCHEMA>>({
     resolver: zodResolver(RESET_PASSWORD_FORM_SCHEMA),
@@ -50,68 +50,95 @@ export default function Page() {
   ): Promise<void> => {
     try {
       setIsLoading(true);
-      toast.success('На указанную почту прийдет новый пароль');
+      localStorage.setItem(LOCALSTORAGE_NAME, JSON.stringify(data));
 
       const response = await axiosInstance.post<JwtResponse>(
         `/company/change-password?email=${data.email}`,
       );
 
+      toast.success('Письмо отправлено!', {
+        description: 'Новый пароль был отправлен на вашу электронную почту',
+      });
+
       Cookies.set(JWT_COOKIE_NAME, response.data.token);
+      localStorage.removeItem(LOCALSTORAGE_NAME);
+      form.reset(DEFAULT_FORM_VALUES);
+
+      setTimeout(() => {
+        window.location.href = '/login';
+      }, 2000);
+
       localStorage.removeItem(LOCALSTORAGE_NAME);
       form.reset(DEFAULT_FORM_VALUES);
     } catch (error) {
       console.error('Error during change password:', error);
+      toast.error('Ошибка отправки', {
+        description: 'Проверьте правильность email и попробуйте снова',
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="w-full md:w-1/2 mx-auto mt-5 mb-3 px-4">
-      <Card className="p-4">
-        <h2 className="mb-2 text-xl">Смена пароля</h2>
-        <h2 className="mb-2">На вашу почту придет новый пароль</h2>
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onFormSubmit)}
-            className="flex flex-col gap-4 w-full"
-          >
-            <div className="space-y-4">
+    <div className="min-h-screen ">
+      <div className="max-w-md mx-auto pt-20 px-4">
+        <Button asChild variant="ghost" className="mb-6">
+          <Link href="/login" className="gap-2">
+            <ArrowLeft className="h-4 w-4" />
+            Вернуться к входу
+          </Link>
+        </Button>
+
+        <Card className="p-8 shadow-lg rounded-2xl">
+          <div className="text-center space-y-2 mb-8">
+            <div className="mx-auto w-fit p-4 rounded-full">
+              <Mail className="h-8 w-8 text-primary" />
+            </div>
+            <h1 className="text-2xl font-bold tracking-tight">Сброс пароля</h1>
+            <p className="text-muted-foreground">
+              Введите email, связанный с вашим аккаунтом
+            </p>
+          </div>
+
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-6">
               <FormField
                 control={form.control}
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>e-mail</FormLabel>
+                    <FormLabel>Рабочий email</FormLabel>
                     <FormControl>
-                      <Input {...field} className="w-full" />
+                      <Input
+                        {...field}
+                        placeholder="example@company.com"
+                        className="h-12"
+                        disabled={isLoading}
+                      />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-xs" />
                   </FormItem>
                 )}
               />
-            </div>
-            <Recaptcha onChange={isVerified => setIsRecaptchaConfirmed(isVerified)} />
-            <Button
-              type="submit"
-              disabled={isLoading || !isRecaptchaConfirmed}
-              className="w-full md:w-auto"
-            >
-              Отправить
-            </Button>
-            <div className="inline-flex">
-              <Link
-                href={{
-                  pathname: '/login',
-                }}
-                className="mt-4 w-full flex justify-center"
+
+              <Recaptcha onChange={isVerified => setIsRecaptchaConfirmed(isVerified)} />
+
+              <Button
+                type="submit"
+                disabled={isLoading || !isRecaptchaConfirmed}
+                className="w-full h-12 bd-accent text-accent"
               >
-                Назад
-              </Link>
-            </div>
-          </form>
-        </Form>
-      </Card>
+                {isLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  'Отправить новый пароль'
+                )}
+              </Button>
+            </form>
+          </Form>
+        </Card>
+      </div>
     </div>
   );
 }
