@@ -90,7 +90,7 @@ export const Projects = observer(() => {
 
     const projectsWithRecommendations = selectedProjects.map(project => ({
       ...project,
-      matchPercentage: Math.floor(Math.random() * 51) + 50, // Генерация от 50% до 100%
+      matchPercentage: Math.floor(Math.random() * 51) + 50,
     }));
 
     projectsWithRecommendations.sort((a, b) => b.matchPercentage - a.matchPercentage);
