@@ -48,6 +48,7 @@ class ProjectStore {
   public currentStackItems: Set<string> = new Set();
   private syncService: SyncService;
   private isFilteredByActive: boolean = true;
+  public isFilteredByAIRecommendation: boolean = false;
   private roles: Set<string> = new Set();
   public selectedRoles: Set<string> = new Set();
 
@@ -516,6 +517,12 @@ class ProjectStore {
     this.updatePaginatedProjects();
   };
 
+  filterByAIRecommendation = (isFiltered: boolean): void => {
+    this.isFilteredByAIRecommendation = isFiltered;
+    this.currentPage = 1;
+    this.updatePaginatedProjects();
+  };
+
   filterByTechnicalSpecifications = (isFiltered: boolean): void => {
     if (isFiltered) this.currentProjects = this.getBaseProjects();
     else
@@ -536,6 +543,7 @@ class ProjectStore {
     this.currentPage = 1;
     this.updatePaginatedProjects();
     this.filterByActive(true);
+    this.filterByAIRecommendation(false);
   };
 
   toggleStackItem = (item: string): void => {

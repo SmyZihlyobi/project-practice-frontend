@@ -7,6 +7,8 @@ import { Label } from '@/components/ui/label';
 import { observer } from 'mobx-react-lite';
 import { useProjectStore } from '@/store';
 import { StackSearch } from './stack-search';
+import { Roles } from '@/lib/constant/roles';
+import { useAuth } from '@/lib/auth/use-auth';
 
 interface FilterProps {
   isFavoritePage?: boolean;
@@ -24,6 +26,10 @@ const Filter = observer(({ isFavoritePage = false }: FilterProps) => {
     useState<boolean>(false);
   const [isFilteredByActive, setIsFilteredByActive] = useState<boolean>(true);
   const [isFilteredByFavorite, setIsFilteredByFavorite] = useState<boolean>(false);
+  const [isFilteredByAIRecommendation, setIsFilteredByAIRecommendation] =
+    useState<boolean>(false);
+  const { user } = useAuth();
+  const showAIRecommendations = user?.roles.includes(Roles.Student);
 
   useEffect(() => {
     store.getStackItems();
@@ -52,6 +58,7 @@ const Filter = observer(({ isFavoritePage = false }: FilterProps) => {
     setIsFilteredByPresentation(false);
     setIsFilteredByTechnicalSpecifications(false);
     setIsFilteredByFavorite(false);
+    setIsFilteredByAIRecommendation(false);
     setIsFilteredByActive(!isFavoritePage);
     store.filterProjects();
   };
@@ -164,6 +171,20 @@ const Filter = observer(({ isFavoritePage = false }: FilterProps) => {
               setIsFilteredByTechnicalSpecifications(newValue);
               store.filterByTechnicalSpecifications(!newValue);
             },
+          )}
+
+          {showAIRecommendations && (
+            <>
+              {renderCheckbox(
+                'AI рекомендации',
+                isFilteredByAIRecommendation,
+                (checked: boolean) => {
+                  const newValue = Boolean(checked);
+                  setIsFilteredByAIRecommendation(newValue);
+                  store.filterByAIRecommendation(newValue);
+                },
+              )}
+            </>
           )}
 
           {renderCheckbox('Скрыть архивные', isFilteredByActive, (checked: boolean) => {
